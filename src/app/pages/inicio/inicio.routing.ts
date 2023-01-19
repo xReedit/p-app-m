@@ -44,49 +44,49 @@ const routes: Routes = [{
             component: LoginPersonalAutorizadoComponent,
             data: { titulo: 'Login Personal Autorizado' }
         },
-        {
-            path: 'lector-qr',
-            component: LectorCodigoQrComponent,
-            data: { titulo: 'Lector QR' }
-        },
+        // {
+        //     path: 'lector-qr',
+        //     component: LectorCodigoQrComponent,
+        //     data: { titulo: 'Lector QR' }
+        // },
         // {
         //     path: 'lector-qr/:co',
         //     component: LectorCodigoQrComponent,
         //     data: { titulo: 'Lector QR' }
         // },
-        {
-            path: 'lector-success',
-            component: LectorSuccessComponent,
-            canActivate: [CodigoQrGuard],
-            data: { titulo: 'Lector QR' }
-        },
-        {
-            path: 'login-client',
-            component: LoginClienteComponent,
-            canActivate: [CodigoQrGuard],
-            data: { titulo: 'Loguear' }
-        },
-        {
-            path: 'callback-auth',
-            canActivate: [CodigoQrGuard],
-            component: CallbackAuthComponent,
-            data: { titulo: 'Callback Auth' }
-        },
-        {
-            path: 'callback',
-            // canActivate: [CodigoQrGuard],
-            component: CallbackAuthComponent,
-            data: { titulo: 'Callback Auth' }
-        }
+        // {
+        //     path: 'lector-success',
+        //     component: LectorSuccessComponent,
+        //     canActivate: [CodigoQrGuard],
+        //     data: { titulo: 'Lector QR' }
+        // },
+        // {
+        //     path: 'login-client',
+        //     component: LoginClienteComponent,
+        //     canActivate: [CodigoQrGuard],
+        //     data: { titulo: 'Loguear' }
+        // },
+        // {
+        //     path: 'callback-auth',
+        //     canActivate: [CodigoQrGuard],
+        //     component: CallbackAuthComponent,
+        //     data: { titulo: 'Callback Auth' }
+        // },
+        // {
+        //     path: 'callback',
+        //     // canActivate: [CodigoQrGuard],
+        //     component: CallbackAuthComponent,
+        //     data: { titulo: 'Callback Auth' }
+        // }
 
-        // delivery
-        ,
-        {
-            path: 'direccion-delivery',
-            // canActivate: [CodigoQrGuard],
-            component: SeleccionarUbicacionDeliveryComponent,
-            data: { titulo: 'Seleccionar Direccion' }
-        }
+        // // delivery
+        // ,
+        // {
+        //     path: 'direccion-delivery',
+        //     // canActivate: [CodigoQrGuard],
+        //     component: SeleccionarUbicacionDeliveryComponent,
+        //     data: { titulo: 'Seleccionar Direccion' }
+        // }
 
     ]
 }];

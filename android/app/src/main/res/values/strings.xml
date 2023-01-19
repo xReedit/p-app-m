@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Papaya Express</string>
-    <string name="title_activity_main">Papaya Express</string>
-    <string name="package_name">express.papaya.com.pe</string>
-    <string name="custom_url_scheme">express.papaya.com.pe</string>
+    <string name="app_name">Papaya Mozo</string>
+    <string name="title_activity_main">Papaya Mozo</string>
+    <string name="package_name">mozo.papaya.com.pe</string>
+    <string name="custom_url_scheme">mozo.papaya.com.pe</string>
 </resources>

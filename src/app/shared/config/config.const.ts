@@ -27,7 +27,7 @@ export const URL_IMG_PROMO = IS_NATIVE ? 'https://restobar.papaya.com.pe/reposit
 export const URL_IMG_COMERCIO = IS_NATIVE ? 'https://restobar.papaya.com.pe/print/logo/' : '//restobar.papaya.com.pe/print/logo/';
 export const VAPID_PUBLIC = 'BOiwO8PftVFo8MrQfp3oAv4KbVtFdZAQojGKgzyxMCPgiNhg8PySbOSlkxDqd3iKA4J1GhzwFiCIGKmXRiKZM_0';
 
-export const VIEW_APP_MOZO = false; // true = app solo mozo // solo para vista incial
+export const VIEW_APP_MOZO = true; // true = app solo mozo // solo para vista incial
 export const URL_CONSULTA_RUC_DNI = 'https://apifac.papaya.com.pe/api/services/'; // consulta dni o ruc
 export const TOKEN_CONSULTA = 'tLKbDncvyKIPcgdVAGqt7rmy7W9mU9cnbawpZdc7JJv7l6h9cU'; // token de prueba
 export const TOKEN_SMS = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoicGFwYXlhLXNtcyIsImlhdCI6MTAwMDIwMDAzMDAwfQ.bKnTHEEGW_SustFir-40ZAYcHtfIo7Gyjq7c2onsAj0'; // token de prueba

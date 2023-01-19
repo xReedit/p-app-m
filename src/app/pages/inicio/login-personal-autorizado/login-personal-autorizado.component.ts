@@ -28,16 +28,29 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
 
     // console.log('aaaaaaaaaaaaaaaaaaaaa');
     // salvar configpunto
+    this.usuario = new UsuarioAutorizadoModel();
+
     const configPunto = localStorage.getItem('sys::punto');
+    let _us: any = localStorage.getItem('::us');    
     // this.authService.loggedOutUser(false);
     localStorage.clear();
+
+    if (_us) {       
+      localStorage.setItem('::us', _us)
+      _us = JSON.parse(_us);      
+      if ( _us.recordar ) {
+        this.usuario.nomusuario = _us.nomusuario;
+        this.usuario.pass = _us.pass;
+        this.usuario.recordar = _us.recordar
+      }
+    }
 
     if ( configPunto ) {
       localStorage.setItem('sys::punto', configPunto);
     }
 
 
-    this.usuario = new UsuarioAutorizadoModel();
+    
 
     // cerramos socket para que cargue carta nuevamente
     if ( this.socketService.isSocketOpen ) {

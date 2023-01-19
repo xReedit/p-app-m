@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'express.papaya.com.pe',
-  appName: 'Papaya Express',
+  appId: 'mozo.papaya.com.pe',
+  appName: 'Papaya App Mozo',
   webDir: 'dist/pwa-app-pedido',
   bundledWebRuntime: false,    
   plugins: {

@@ -25,7 +25,8 @@
             Incorrectas.</span>
         </div>
 
-        <hr>
+        <mat-checkbox [(ngModel)] = "usuario.recordar" [checked]="usuario.recordar" >Recordar</mat-checkbox>
+        <hr>        
         <div class="text-center">
           <!-- <button mat-flat-button [disabled]="!frmpass.valid">Listo, Ingresar</button> -->
           <button mat-flat-button color="primary" [disabled]="!frmpass.valid">Listo, Ingresar</button>

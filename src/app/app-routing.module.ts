@@ -45,46 +45,46 @@ const routes: Routes = [
       canActivate: [AuthGuard],
       data: { 'tituloModulo': 'Pedido' }
     },
-    {
-      path: 'lanzar-encuesta',
-      loadChildren: () => import('./pages/encuesta/encuesta.module').then(m => m.EncuestaModule),
-      canActivate: [AuthGuard],
-      data: { 'tituloModulo': 'Encuesta' }
-    },
-    {
-      path: 'pagar-cuenta',
-      loadChildren: () => import('./pages/pagar-cuenta/pagar-cuenta.module').then(m => m.PagarCuentaModule),
-      canActivate: [AuthGuard],
-      data: { 'tituloModulo': 'Cuenta' }
-    },
-    {
-      path: 'pedido-confirmado',
-      loadChildren: () => import('./pages/pedido-confirmado/pedido-confirmado.module').then(m => m.PedidoConfirmadoModule),
-      canActivate: [AuthGuard],
-      data: { 'tituloModulo': 'pedido-confirmado' }
-    },
-    {
-      path: 'cliente-profile',
-      loadChildren: () => import('./pages/cliente-profile/cliente-profile.module').then(m => m.ClienteProfileModule),
-      canActivate: [ClienteProfileGuard],
-      data: { 'tituloModulo': 'Cliente Profile' }
-    },
-    {
-      path: 'zona-delivery',
-      loadChildren: () => import('./pages/zona-establecimientos/zona-establecimientos.module').then(m => m.ZonaEstablecimientosModule),
-      // canActivate: [ClienteProfileGuard],
-      data: { 'tituloModulo': 'Cliente Zona Delivery' }
-    },
     // {
-    //   path: 'cash-atm',
-    //   loadChildren: () => import('./pages/cash/cash.module').then(m => m.CashModule),
-    //   data: { 'tituloModulo': 'Atm' }
+    //   path: 'lanzar-encuesta',
+    //   loadChildren: () => import('./pages/encuesta/encuesta.module').then(m => m.EncuestaModule),
+    //   canActivate: [AuthGuard],
+    //   data: { 'tituloModulo': 'Encuesta' }
     // },
-    {
-      path: 'reservar-mesa',
-      loadChildren: () => import('./pages/reservar-mesa/reservar-mesa.module').then(m => m.ReservarMesaModule),
-      data: { 'tituloModulo': 'Reserva' }
-    },
+    // {
+    //   path: 'pagar-cuenta',
+    //   loadChildren: () => import('./pages/pagar-cuenta/pagar-cuenta.module').then(m => m.PagarCuentaModule),
+    //   canActivate: [AuthGuard],
+    //   data: { 'tituloModulo': 'Cuenta' }
+    // },
+    // {
+    //   path: 'pedido-confirmado',
+    //   loadChildren: () => import('./pages/pedido-confirmado/pedido-confirmado.module').then(m => m.PedidoConfirmadoModule),
+    //   canActivate: [AuthGuard],
+    //   data: { 'tituloModulo': 'pedido-confirmado' }
+    // },
+    // {
+    //   path: 'cliente-profile',
+    //   loadChildren: () => import('./pages/cliente-profile/cliente-profile.module').then(m => m.ClienteProfileModule),
+    //   canActivate: [ClienteProfileGuard],
+    //   data: { 'tituloModulo': 'Cliente Profile' }
+    // },
+    // {
+    //   path: 'zona-delivery',
+    //   loadChildren: () => import('./pages/zona-establecimientos/zona-establecimientos.module').then(m => m.ZonaEstablecimientosModule),
+    //   // canActivate: [ClienteProfileGuard],
+    //   data: { 'tituloModulo': 'Cliente Zona Delivery' }
+    // },
+    // // {
+    // //   path: 'cash-atm',
+    // //   loadChildren: () => import('./pages/cash/cash.module').then(m => m.CashModule),
+    // //   data: { 'tituloModulo': 'Atm' }
+    // // },
+    // {
+    //   path: 'reservar-mesa',
+    //   loadChildren: () => import('./pages/reservar-mesa/reservar-mesa.module').then(m => m.ReservarMesaModule),
+    //   data: { 'tituloModulo': 'Reserva' }
+    // },
     // {
     //   path: '*',
     //   loadChildren: () => import('./pages/inicio/inicio.module').then(m => m.InicioModule),

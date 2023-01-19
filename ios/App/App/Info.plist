@@ -4,16 +4,18 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>express.papaya.com.pe</string>
+		<string>mozo.papaya.com.pe</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Papaya Express</string>
+	<string>Papaya App Mozo</string>
 	<key>CFBundleDocumentTypes</key>
 	<array/>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -45,14 +47,14 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Para poder escanear el código QR solicitado</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Para poder leer el código QR solicitado.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2022 Papaya.com.pe. All rights reserved.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Se necesita acceso a la ubicación del dispositivo, para obtener la direccion actual donde se entregará su pedido.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Se necesita acceso a la ubicación del dispositivo, para obtener la direccion actual donde se entregará su pedido.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Para poder leer el código QR solicitado.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>Main.storyboard</string>
 	<key>UIMainStoryboardFile</key>
@@ -66,10 +68,8 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-	</array>	
+	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>CFBundleIconName</key>
-	<string>AppIcon</string>
 </dict>
 </plist>

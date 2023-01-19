@@ -57,7 +57,7 @@ export class AuthServiceSotrage {
 
     loggedOutUser() {
         localStorage.removeItem('::token');
-        localStorage.removeItem('::us');
+        // localStorage.removeItem('::us');
         if ( this.getLoggedStatus() ) {
             this.auth.logout();
         }

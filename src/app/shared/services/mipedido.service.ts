@@ -1532,7 +1532,7 @@ export class MipedidoService {
       // implement igv 030220
       if ( rpt.descripcion === 'I.G.V') {
         rpt.importe = isActivo ? porcentaje : 0;
-        rptPorcentajes.push(rpt); // solo agrega importe 0 si es IGV
+        // rptPorcentajes.push(rpt); // solo agrega importe 0 si es IGV
       } else {
         rpt.importe = isImpuesto ? isActivo ? importe : 0 : importe;
         rpt.importe = parseFloat(rpt.importe.toString()).toFixed(2);

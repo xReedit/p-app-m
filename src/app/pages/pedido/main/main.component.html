@@ -43,6 +43,12 @@
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
         <span class="pt-2 fs-16 fw-600">Enviando pedido...</span>
 
+        <div class="animated flash" *ngIf="listenStatusService.isMsjConexionLentaSendPedido$ | async">
+          <p class="text-danger fs-13 m-0">Tienen una conexion lenta.</p>
+          <p *ngIf="isMozoApp" class="text-danger fs-13 m-0">Acerquese a un punto wifi si es el caso..</p>          
+        </div>
+        
+
         <!-- <button (click)="pruebaMsjs()">ok</button> -->
       </ng-template>
       

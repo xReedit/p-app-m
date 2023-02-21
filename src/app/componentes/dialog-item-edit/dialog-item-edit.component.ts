@@ -15,6 +15,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 // import { type } from 'os';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 
 @Component({
   selector: 'app-dialog-item-edit',
@@ -49,7 +50,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     private uttilService: UtilitariosService,
     private infoToken: InfoTockenService,
     private dialogRef: MatDialogRef<DialogItemEditComponent>,
-    //  private crudService: CrudHttpService,
+     private crudService: CrudHttpService,
     private socketService: SocketService,
     @Inject(MAT_DIALOG_DATA) data: any,
     private establecimientoService: EstablecimientoService
@@ -86,7 +87,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     // listen cambios en el stock
     this.miPedidoService.itemStockChangeObserve$
     .pipe(takeUntil(this.destroyDlg$))
-    .subscribe((res: ItemModel) => {
+    .subscribe((res: ItemModel) => {      
       // para que la ultima cantidad modificada
       if ( this.isFirstOpen ) {this.isFirstOpen = false; return; }
 
@@ -135,6 +136,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   shoFirstChartUpperOptions(_item: any) {
     if ( !_item.subitems ) { return; }
       _item.subitems.map((i: any) => {
+        if ( !i.opciones ) { return; }
           i.opciones.map((o: any) => {
             o.des = this.uttilService.primeraConMayusculas(o.des.toLowerCase());
           });
@@ -258,7 +260,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     this.addSubItem( subitemContent, subItemCant);
   }
 
-  addSubItem(subitemContent: SubItemContent, subitem: SubItem): void {
+  addSubItem(subitemContent: SubItemContent, subitem: SubItem): void {    
     // chequeamos cuantos subitem estan checkes
     // console.log('aadd subitem', subitem);
     // console.log('aadd subitemContent', subitemContent);
@@ -338,6 +340,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   }
 
   addItemToDialogItem(tpcSelect: ItemTipoConsumoModel, suma: number): void {
+
 
     let paseCantSuItem = true;
     this.item.subitems_selected = this._subitems_selected;

@@ -621,14 +621,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // saca del local por que puede que se haya puestro propina
     this._arrSubtotales = JSON.parse(atob(localStorage.getItem('sys::st')));
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
-
-    // console.log('this._arrSubtotales', this._arrSubtotales);
+    
 
     // usuario o cliente
     const dataUsuario = this.infoToken.getInfoUs();
     // const dataUsuario = this.infoToken.infoUsToken;
-
-    // console.log('aaaaaaaaaaaa');
 
     const dataFrmConfirma: any = {};
     if ( this.isCliente || this.isPuntoAuntoPedido && !this.isReservaCliente) {
@@ -646,14 +643,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       dataFrmConfirma.nom_us = dataUsuario.nombres.split(' ')[0].toUpperCase();
     }
 
-
-    // console.log('bbbbbbbbbbbbbb');
-
-    // header //
-
-    // const _subTotalesSave = _p_header.delivery === 1 ? this.frmDelivery.subTotales : this._arrSubtotales;
-    // debugger
-    // const idPwaPago = this.registrarPagoService.getIdPwaPago();
 
 
 
@@ -702,8 +691,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       idpedido: 0 // setea despues de guardar el pedido para enviarlo al socket
     };
 
-    // console.log('ddddddddddd');
-    // console.log('_p_header', _p_header);
 
     // enviar a print_server_detalle // para imprimir
     const arrPrint = this.jsonPrintService.enviarMiPedido(this.isCliente);
@@ -772,184 +759,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       this.infoToken.setIdCliente();
     }
 
-    // console.log('ffffffffffffffffffff');
-
-    // enviar a guardar // guarda pedido e imprime comanda
-
-    // console.log('coonsole.log', dataSend);
     // prioridad socket, por crud demora mucho aveces se queda enviando datos...
-    this.savePedidoSocket(dataSend, isPagoConTarjeta, _subTotalesSave);
+    this.savePedidoSocket2(dataSend, isPagoConTarjeta, _subTotalesSave);
 
-    // prioridad guardar por post
-    // this.crudService.postFree(JSON.stringify(dataSend), 'pedido', 'registrar-nuevo-pedido', false)
-    //     .subscribe((res: any) => {
-
-    // // // this.socketService.emit('nuevoPedido', dataSend); // !> 150920
-    // // this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => { // prioridad guardar por post
-    //   // seteamos el metodo pago que el cliente selecciona
-    //   // this.infoToken.setMetodoPagoSelected(_p_header.arrDatosDelivery.metodoPago);
-    //   // error
-    //   // console.log('recibido la respuesta del servidor', resSocket);
-    //   // if ( resSocket === false ) {
-    //   if ( !res.success ) {
-    //     // si tiene error lo intenta enviar por http
-    //     // this.crudService.postFree(JSON.stringify(dataSend), 'pedido', 'registrar-nuevo-pedido', false) // prioridad guardar por post
-    //     // .subscribe((res: any) => { // prioridad guardar por post
-    //     this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
-
-    //       // if ( !res.success ) {
-    //       if ( resSocket === false ) {
-    //         alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
-    //         // guardamos el error
-    //         const dataError = {
-    //           elerror: res.error,
-    //           elorigen: 'resumen-pedido'
-    //         };
-
-    //         this.crudService.postFree(dataError, 'error', 'set-error', false)
-    //         .subscribe(resp => console.log(resp));
-
-    //         this.listenStatusService.setLoaderSendPedido(false);
-    //         return;
-    //       }
-
-    //       setTimeout(() => {
-    //         this.listenStatusService.setLoaderSendPedido(false);
-    //         this.miPedidoService.stopTimerLimit();
-    //         this.miPedidoService.prepareNewPedido();
-    //       }, 600);
-    //       // post
-    //       // dataSend.dataPedido.idpedido = res.data[0].idpedido;
-    //       // dataSend.dataPrint = res.data[0].data;
-    //       // this.socketService.emit('nuevoPedido2', dataSend);
-
-    //       // socket
-    //       const _res = resSocket[0];
-    //       dataSend.dataPedido.idpedido = _res.idpedido;
-    //       dataSend.dataPrint = _res.data[1] ? _res.data[1]?.print : null;
-
-    //       this.newFomrConfirma();
-    //       // this.backConfirmacion();
-
-    //       // hora del pedido
-    //       this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
-
-    //       // this.miPedidoService.prepareNewPedido();
-
-    //       // this.miPedidoService.prepareNewPedido();
-
-    //       // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
-    //       // if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
-    //       // if ( this.isDeliveryCliente && _p_header.arrDatosDelivery.metodoPago.idtipo_pago !== 2) {
-    //         // if ( this.isDeliveryCliente && this.infoToken.infoUsToken.metodoPago.idtipo_pago !== 2) {
-    //       if ( this.isDeliveryCliente && !isPagoConTarjeta) {
-    //         this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
-    //         this.confirmarPedidoDeliveryEnviado();
-
-    //         // this.pagarCuentaDeliveryCliente();
-    //         // enviamos a pagar
-    //         return;
-    //       }
-
-    //       if ( this.isReservaCliente ) {
-    //         this.confirmarPedidoDeliveryEnviado();
-    //         return;
-    //       }
-
-
-
-    //       this.backConfirmarPedido();
-    //     });
-
-    //   } else { // si no tiene error
-
-    //     // socket
-    //     // const res = resSocket[0];
-    //     // dataSend.dataPedido.idpedido = res.idpedido;
-    //     // dataSend.dataPrint = res.data[1] ? res.data[1]?.print : null;
-    //     // this.socketService.emit('nuevoPedido2', dataSend);
-
-    //     dataSend.dataPedido.idpedido = res.data[0].idpedido;
-    //     dataSend.dataPrint = res.data[0].data;
-    //     this.socketService.emit('nuevoPedido2', dataSend);
-
-    //     this.newFomrConfirma();
-    //     // this.backConfirmacion();
-
-    //     // hora del pedido
-    //     this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
-
-    //     // this.miPedidoService.prepareNewPedido();
-
-
-    //     setTimeout(() => {
-    //       this.listenStatusService.setLoaderSendPedido(false);
-    //       this.miPedidoService.stopTimerLimit();
-    //       this.miPedidoService.prepareNewPedido();
-    //     }, 600);
-
-    //     //
-
-    //     // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
-    //     // if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
-    //     // if ( this.isDeliveryCliente && _p_header.arrDatosDelivery.metodoPago.idtipo_pago !== 2) {
-    //     // if ( this.isDeliveryCliente && this.infoToken.infoUsToken.metodoPago.idtipo_pago !== 2) {
-    //     if ( this.isDeliveryCliente && !isPagoConTarjeta) {
-    //       this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
-    //       this.confirmarPedidoDeliveryEnviado();
-
-    //       // this.pagarCuentaDeliveryCliente();
-    //       // enviamos a pagar
-    //       return;
-    //     }
-
-    //     if ( this.isReservaCliente ) {
-    //       this.confirmarPedidoDeliveryEnviado();
-    //       return;
-    //     }
-
-    //     this.backConfirmarPedido();
-    //   }
-
-    //   // this.backConfirmarPedido()
-    // });
-
-      // hora del pedido
-      // this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
-
-      //
-      // this.navigatorService.addLink('mipedido');
-      // this.isVisibleConfirmarAnimated = false;
-      // this.isRequiereMesa = false;
-      // this.isVisibleConfirmar = false;
-      //
-      // this.backConfirmacion();
-
-      // this.newFomrConfirma();
-
-      // this.miPedidoService.prepareNewPedido();
-
-      // // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
-      // if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
-      //   this.pagarCuentaDeliveryCliente();
-      //   // enviamos a pagar
-      //   return;
-      // }
-
-      // this.miPedidoService.prepareNewPedido();
-
-      // this.backConfirmacion();
-
-      // // si es usuario cliente lo envia a estado
-      // if ( this.isCliente ) {
-      //   this.navigatorService.setPageActive('estado');
-      //   // this.estadoPedidoClientService.get(); // inicia calc tiempo aprox y cuenta total
-      // } else {
-      //   this.navigatorService.setPageActive('carta');
-      // }
-
-      this.isDeliveryValid = false; // formulario no valido para delivery
-
+    this.isDeliveryValid = false; // formulario no valido para delivery
 
 
   }
@@ -1239,27 +1052,94 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     }
   }
 
-  private savePedidoSocket(dataSend: any, isPagoConTarjeta: boolean, _subTotalesSave: any) {
+
+  private async savePedidoSocket(dataSend: any, isPagoConTarjeta: boolean, _subTotalesSave: any) {
     // this.speechDataProviderService.setIsPedidoConfirmado();
     // console.log('111111111111');
 
 
     this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
       // console.log('222222', resSocket);
-        if ( resSocket === false ) {
-          alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
-          // guardamos el error
-          const dataError = {
-            elerror: resSocket,
-            elorigen: 'resumen-pedido'
-          };
+      if (resSocket === false) {
+        alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
+        // guardamos el error
+        const dataError = {
+          elerror: resSocket,
+          elorigen: 'resumen-pedido'
+        };
 
-          this.crudService.postFree(dataError, 'error', 'set-error', false)
+        this.crudService.postFree(dataError, 'error', 'set-error', false)
           .subscribe(resp => console.log(resp));
 
-          this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
-          this.isSavingPedido = false;
-          return;
+        this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
+        this.isSavingPedido = false;
+        return;
+      }
+
+      setTimeout(() => {
+        this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
+        this.isSavingPedido = false;
+        this.miPedidoService.stopTimerLimit();
+        this.miPedidoService.prepareNewPedido();
+      }, 800);
+
+
+      const _res = resSocket[0];
+      dataSend.dataPedido.idpedido = _res.idpedido;
+      dataSend.dataPrint = _res.data[1] ? _res.data[1]?.print : null;
+
+      this.newFomrConfirma();
+
+      // hora del pedido
+      this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
+
+      // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
+      if (this.isDeliveryCliente && !isPagoConTarjeta) {
+        this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
+        this.confirmarPedidoDeliveryEnviado();
+
+        // this.pagarCuentaDeliveryCliente();
+        // enviamos a pagar
+        return;
+      }
+
+      if (this.isReservaCliente) {
+        this.confirmarPedidoDeliveryEnviado();
+        return;
+      }
+
+
+
+      this.backConfirmarPedido();
+    });
+  }
+
+  // 20022023
+  // acelerar el envio en conexiones lentas
+  private async savePedidoSocket2(dataSend: any, isPagoConTarjeta: boolean, _subTotalesSave: any) {
+    
+
+    const resSocket = await this.socketService.asyncEmitPedido('nuevoPedido', 'nuevoPedidoRes', JSON.stringify(dataSend))
+                            .catch((e) => {
+                              this.errorSendPedido(e)
+                            })    
+    
+    // this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
+        if ( resSocket === false ) {
+          this.errorSendPedido(resSocket)
+          // alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
+          // // guardamos el error
+          // const dataError = {
+          //   elerror: resSocket,
+          //   elorigen: 'resumen-pedido'
+          // };
+
+          // this.crudService.postFree(dataError, 'error', 'set-error', false)
+          // .subscribe(resp => console.log(resp));
+
+          // this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
+          // this.isSavingPedido = false;
+          // return;
         }
 
         setTimeout(() => {
@@ -1297,7 +1177,24 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
 
         this.backConfirmarPedido();
-    });
+    // });
+  }
+
+
+  private errorSendPedido(resSocket: any) {
+      alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
+      // guardamos el error
+      const dataError = {
+        elerror: resSocket,
+        elorigen: 'resumen-pedido'
+      };
+
+      this.crudService.postFree(dataError, 'error', 'set-error', false)
+        .subscribe(resp => console.log(resp));
+
+      this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
+      this.isSavingPedido = false;
+      return;
   }
 
 

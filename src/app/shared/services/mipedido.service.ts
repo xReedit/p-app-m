@@ -510,6 +510,14 @@ export class MipedidoService {
 
     this.socketService.emit('itemModificado', item);
 
+    // devuelve temporalmente la cantidad actual a espera del socket
+    // para evitar valores -1
+    // 20022023 acelerar el envio en conexiones lentas
+    item.cantidad += sumar ? -1 : 1;
+
+
+    // console.log('item', item);1
+
     // console.log('listItemsPedido', this.listItemsPedido);
     // console.log('mipedido', this.miPedido);
     // console.log('itemModificado en add', item);

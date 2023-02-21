@@ -67,6 +67,9 @@ export class ListenStatusService {
   private isFinishLoaderSendPedidoSource = new BehaviorSubject<boolean>(false);
   public isFinishLoaderSendPedido$ = this.isFinishLoaderSendPedidoSource.asObservable();
 
+  private isMsjConexionLentaSendPedidoSourse = new BehaviorSubject<boolean>(false);
+  public isMsjConexionLentaSendPedido$ = this.isMsjConexionLentaSendPedidoSourse.asObservable();
+
   private isLoaderCartaSource = new BehaviorSubject<boolean>(false);
   public isLoaderCarta$ = this.isLoaderCartaSource.asObservable();
 
@@ -173,6 +176,14 @@ export class ListenStatusService {
     // }
   }
 
+  setIisMsjConexionLentaSendPedidoSourse(value: boolean) {
+    this.isMsjConexionLentaSendPedidoSourse.next(value)
+  }
+
+  getIisMsjConexionLentaSendPedidoSourse(): boolean {
+    return this.isMsjConexionLentaSendPedidoSourse.getValue();
+  }
+
   setIsFinishLoaderSendPedidoSource(value: boolean) {
     this.isFinishLoaderSendPedidoSource.next(value);
   }
@@ -180,6 +191,7 @@ export class ListenStatusService {
   closeFinishLoaderSendPedidoSource() {
     this.isLoaderSendPedidoSource.next(false);
     this.isFinishLoaderSendPedidoSource.next(false);
+    this.setIisMsjConexionLentaSendPedidoSourse(false)
   }
 
   setLoaderCarta(value: boolean) {

@@ -37,11 +37,11 @@
                <i title="Buscar" class="fa fa-search" aria-hidden="true"></i> 
                <span class="ml-1">Buscar</span>
           </button>
-          <button mat-menu-item class="fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
+          <!-- <button mat-menu-item class="fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
                (click)="actualizarPage()">
                <i title="Compartir Carta" class="fa fa-refresh" aria-hidden="true"></i>
                <span class="ml-1">Actualizar</span>
-          </button>
+          </button> -->
      </mat-menu>
 
      <!-- boton configuracion punto de autopedido -->
@@ -66,6 +66,12 @@
                <i title="Buscar" class="fa fa-search" aria-hidden="true"></i>
           </div>
      </div> -->
+
+     <!-- actualizar -->
+     <div class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
+          title="Actualizar" (click)="actualizarPage()">
+          <i title="Actualizar" class="fa fa-refresh" aria-hidden="true"></i>
+     </div>
 
      <!-- cerrar session -->
      <div class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor" title="Cerrar Sesion" (click)="cerrarSession()">

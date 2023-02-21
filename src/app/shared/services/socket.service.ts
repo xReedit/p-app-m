@@ -15,6 +15,7 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { MipedidoService } from './mipedido.service';
 import { Router } from '@angular/router';
+import { ListenStatusService } from './listen-status.service';
 
 
 @Injectable({
@@ -42,7 +43,8 @@ export class SocketService {
 
   constructor(
     private infoTockenService: InfoTockenService,
-    private router: Router
+    private router: Router,
+    private listenStatusService: ListenStatusService
     ) {
 
   }
@@ -81,9 +83,10 @@ export class SocketService {
     this.socket = io(this.urlSocket, {
       secure: true,
       rejectUnauthorized: false,
-      // forceNew: true,
+      forceNew: true,
       query: dataSocket,
-      transports: ['polling'], upgrade: false
+      transports: ['websocket'],
+      // upgrade: false
       // forceNew: true
     });
 
@@ -409,6 +412,34 @@ export class SocketService {
       });
     });
   }
+
+  async emitResPedido(evento: string, data: any) {
+    return new Observable(observer => {
+      this.socket.emit(evento, data, (res) => {
+        console.log('respuesta socket', res);
+        observer.next(res);
+      });
+    });
+  }
+
+  asyncEmitPedido(eventName: string, eventNameRes: string, data: any) {
+  return new Promise((resolve, reject) => {
+    try {      
+      this.socket.emit(eventName, data);
+      this.socket.on(eventNameRes, result => {
+        this.socket.off(eventNameRes);
+          resolve(result);
+      });
+    } catch (error) {
+      return false;
+    }
+    // setTimeout(reject, 1000);
+    setTimeout(() => {      ;
+      this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(true)      
+      return false;
+    }, 6000); // despues de 6 segundos indicara que se acerque al punto wifi  
+  });
+}
 
   private listen( evento: string ) {
     return new Observable(observer => {

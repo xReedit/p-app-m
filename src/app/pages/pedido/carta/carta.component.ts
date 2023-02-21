@@ -218,6 +218,12 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.listenStatusService.setLoaderCarta(false);
         // console.log('cerrar loader carta');
 
+        
+        // si se quedo cargando
+        if (this.listenStatusService.getIisMsjConexionLentaSendPedidoSourse() ) {
+          this.listenStatusService.closeFinishLoaderSendPedidoSource();
+        }
+
         if (this.socketService.isSocketOpenReconect) {
           // actualizar cantidad actual (stock actual) de ObjCarta del item
           // if ( !this.miPedidoService.findIsHayItems() ) {

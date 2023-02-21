@@ -8,6 +8,7 @@ import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { ComandAnalizerService } from 'src/app/shared/services/speech/comand-analizer.service';
+import { VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
 
 @Component({
   selector: 'app-main',
@@ -29,7 +30,7 @@ export class MainComponent implements OnInit {
   loaderPage = false;
   timeLoader = null;
   isSpeechVoiceAcivado = false;
-
+  isMozoApp = VIEW_APP_MOZO;
 
   private lastValScrollTop = 0;
   importeTotalProductos = 0;

@@ -144,23 +144,27 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // console.log('this.establecimientoService.get()', this.establecimientoService.get());
 
     // calificacion y comentarios
-    this.isShowCalificacion = this.establecimientoService.get().calificacion >= 3.7;
-    if ( this.isShowCalificacion ) {
-      this.dataCalificacion = {
-        calificacion: this.establecimientoService.get().calificacion,
-        cantidad: 0,
-        listCalificacion: []
-      };
+    if (this.infoToken.getInfoUs().isCliente) {
+      console.log('es cliente');
 
-      const _dataSendCalificacion = {
-        idsede: this.establecimientoService.get().idsede
-      };
-
-      this.crudService.postFree(_dataSendCalificacion, 'delivery', 'get-calificacion-sede', false)
-      .subscribe((res: any) => {
-        this.dataCalificacion.listCalificacion = res.data;
-        this.dataCalificacion.cantidad = this.dataCalificacion.listCalificacion.map(c => c.numpedidos).reduce((a, b) => a + b, 0);
-      });
+      this.isShowCalificacion = this.establecimientoService.get().calificacion >= 3.7;
+      if ( this.isShowCalificacion ) {
+        this.dataCalificacion = {
+          calificacion: this.establecimientoService.get().calificacion,
+          cantidad: 0,
+          listCalificacion: []
+        };
+  
+        const _dataSendCalificacion = {
+          idsede: this.establecimientoService.get().idsede
+        };
+  
+        this.crudService.postFree(_dataSendCalificacion, 'delivery', 'get-calificacion-sede', false)
+        .subscribe((res: any) => {
+          this.dataCalificacion.listCalificacion = res.data;
+          this.dataCalificacion.cantidad = this.dataCalificacion.listCalificacion.map(c => c.numpedidos).reduce((a, b) => a + b, 0);
+        });
+      }
     }
 
     if ( this.infoToken.getInfoUs().isCliente && this.infoToken.getInfoUs().isDelivery &&  !this.infoToken.getInfoUs().isReserva) {
@@ -196,7 +200,6 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // }
 
     this.unsubscribeCarta = this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
-
       if (res.pageActive === 'carta') {
         if (this.countSeeBack < 2) { this.countSeeBack++; return; }
         this.goBack();
@@ -208,7 +211,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // console.log('aaa');
     this.establecimientoService.getComsionEntrega();
     // if (!this.socketService.isSocketOpen) {
+      console.log('aaaa');
       this.unsubscribeCarta = this.socketService.onGetCarta().subscribe((res: any) => {
+        console.log('res', res);
 
         // console.log('onGetCarta', res);
         // this.objCartaCarta = {

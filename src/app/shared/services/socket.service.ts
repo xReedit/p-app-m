@@ -80,13 +80,14 @@ export class SocketService {
     // console.log('dataSocket', dataSocket);
 
     // desarrollo
+    console.log('this.urlSocket', this.urlSocket);
     this.socket = io(this.urlSocket, {
       secure: true,
       rejectUnauthorized: false,
       forceNew: true,
       query: dataSocket,
       transports: ['websocket'],
-      // upgrade: false
+      upgrade: false,
       // forceNew: true
     });
 
@@ -130,6 +131,7 @@ export class SocketService {
 
   onGetCarta() {
     return new Observable(observer => {
+      console.log('this.socket', this.socket);
         this.socket.on('getLaCarta', (res: any) => {
         observer.next(res);
       });

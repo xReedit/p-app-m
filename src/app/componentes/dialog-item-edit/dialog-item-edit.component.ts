@@ -202,6 +202,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
             // z.isRequeridComplet = !z.isObligatorio ? true : false;
 
             z.opciones.map((x: SubItem) => {
+                x.cantidad = parseFloat(x.cantidad).toFixed(0);
                 x.iditem_subitem = x.iditem_subitem;
                 x.precio_visible = x.precio === 0 ? false : true;
                 x.precio = x.precio_visible ? x.precio : 0;

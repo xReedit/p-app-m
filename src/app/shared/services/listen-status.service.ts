@@ -93,6 +93,11 @@ export class ListenStatusService {
   // back carta
   private listenGoBackCartaSource = new BehaviorSubject<boolean>(false);
   public listenGoBackCarta$ = this.listenGoBackCartaSource.asObservable();
+  
+
+  // back marcas holding
+  private listenGoBackMarcasSource = new BehaviorSubject<boolean>(false);
+  public listenGoBackMarcas$ = this.listenGoBackMarcasSource.asObservable();
 
   // observable lista cliente solicita atencion
   // private callClienteSolicitaAtencionSoruce = new BehaviorSubject<string>('');
@@ -217,6 +222,10 @@ export class ListenStatusService {
 
   setListenGoCarta() {
     this.listenGoBackCartaSource.next(true);
+  }
+
+  setListenGoBackMarcas() {
+    this.listenGoBackMarcasSource.next(true);
   }
 
   // setCallListClienteAtencion(num_mesa: string) {

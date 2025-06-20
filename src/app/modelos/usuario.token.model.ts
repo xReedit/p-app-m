@@ -3,8 +3,12 @@ import { MetodoPagoModel } from './metodo.pago.model';
 import { TipoComprobanteModel } from './tipo.comprobante.model';
 import { PropinaModel } from './propina.model';
 import { TiempoEntregaModel } from './tiempo.entrega.model';
+import { HoldingModel } from './holding.model';
 
 export class UsuarioTokenModel {
+    holding: HoldingModel; 
+    is_holding: string;
+    is_mozo_accept_payments: string;
     acc: string;
     cargo: string;
     estadistica: number;
@@ -32,6 +36,7 @@ export class UsuarioTokenModel {
     isReserva: boolean; // si es delivery
     isRetiroCash: boolean; // si es delivery
     isPuntoAutoPedido: boolean; // si es punto de autopedido
+    isPuntoTomaPedidos: boolean; // si es punto de toma de pedidos
     isTomaPedidoRapido: boolean; // si es se toma pedido rapido se muestra como punto de autopedido
     direccionEnvioSelected: DeliveryDireccionCliente;
     tiempoEntrega: TiempoEntregaModel;

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import * as io from 'socket.io-client';
+// import * as io from 'socket.io-client';
+import { io } from "socket.io-client";
 import { Observable } from 'rxjs/internal/Observable';
 
 
@@ -23,7 +24,8 @@ import { ListenStatusService } from './listen-status.service';
 })
 export class SocketService {
   // private objLaCartaSocket: any;
-  private socket: SocketIOClient.Socket;
+  // private socket: SocketIOClient.Socket;
+  private socket: any;
   // private item: ItemModel;
   private urlSocket = URL_SERVER_SOCKET;
 
@@ -74,7 +76,8 @@ export class SocketService {
       isOutCarta: _isOutCarta,
       isCashAtm: _isCashAtm,
       isFromApp: opFrom,
-      firts_socketid: infToken.socketId
+      firts_socketid: infToken.socketId,
+      isHolding: this.infoTockenService.getIsHolding() === true ? 1 : 0,
     };
 
     // console.log('dataSocket', dataSocket);
@@ -87,7 +90,7 @@ export class SocketService {
       forceNew: true,
       query: dataSocket,
       transports: ['websocket'],
-      upgrade: false,
+      upgrade: false,      
       // forceNew: true
     });
 
@@ -123,6 +126,13 @@ export class SocketService {
     // });
 
     // this.onListenSocketDisconnet();
+  }
+
+  reconnect() {
+    this.closeConnection();
+    setTimeout(() => {    
+      this.connect();
+    }, 1000);
   }
 
   getIdSocket(): string {
@@ -369,6 +379,15 @@ export class SocketService {
 
           observer.next(_rpt);
         }
+      });
+    });
+  }
+
+  // holding
+  onCallPedidoListoMarca() {
+    return new Observable(observer => {
+      this.socket.on('restobar-call-mozo-holding', (res: any) => {
+        observer.next(res);
       });
     });
   }

@@ -14,29 +14,30 @@
 } */
 
 .main-contemt {
-    overflow:  hidden !important;
+  overflow: hidden !important;
 }
 
 .x100 {
-    height: 100vh;
-    overflow: auto;    
+  height: 100vh;
+  overflow: auto;
 }
 
 .toolbar-main {
-    animation-duration: 0.3s;
-    animation-timing-function: ease-out;
-    animation-fill-mode: both;
+  width: 100%;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
 }
 
 
 @keyframes fadeOutTool {
-  from {    
+  from {
     margin-top: 0px;
   }
 
-  to {     
+  to {
     margin-top: -60px;
-    display: none; 
+    display: none;
     visibility: hidden;
   }
 }
@@ -46,12 +47,12 @@
 }
 
 @keyframes fadeInTool {
-  from {    
+  from {
     margin-top: -60px;
-    display: inline-block;
+    /* display: inline-block; */
   }
 
-  to {    
+  to {
     margin-top: 0px;
   }
 }
@@ -60,7 +61,7 @@
   animation-name: fadeInTool;
 }
 
-.x100-toolbar-visible {    
+.x100-toolbar-visible {
   height: calc(100vh - 105px);
   overflow: auto;
 }
@@ -82,15 +83,15 @@
 
 .countTotal {
   float: right;
-  background: #f44336;  
+  background: #f44336;
   color: #eeeeee;
 }
 
 .footer-btn-go-lista {
   position: fixed;
   bottom: -10px;
-  width: 100%;  
-  text-align: center;  
+  width: 100%;
+  text-align: center;
   background: #e0e0e0;
   display: flex;
   justify-content: space-between;
@@ -124,7 +125,9 @@
 
 
 
-::ng-deep.header-less-tabs.mat-tab-group .mat-tab-header { display: none; }
+::ng-deep.header-less-tabs.mat-tab-group .mat-tab-header {
+  display: none;
+}
 
 
 

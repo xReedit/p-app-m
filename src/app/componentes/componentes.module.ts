@@ -58,6 +58,14 @@ import { CompViewPromoComponent } from './comp-view-promo/comp-view-promo.compon
 import { CompListCallClientComponent } from './comp-list-call-client/comp-list-call-client.component';
 import { DatosFacturacionClienteComponent } from './datos-facturacion-cliente/datos-facturacion-cliente.component';
 import { CompListMesasComponent } from './comp-list-mesas/comp-list-mesas.component';
+import { HoldingMarcasComponent } from './holding/marcas/marcas.component';
+import { ListComponent } from './holding/marcas/list/list.component';
+import { ItemComponent } from './holding/marcas/item/item.component';
+import { FormaPagoComponent } from './holding/forma-pago/forma-pago.component';
+import { CompListPedidosHoldingComponent } from './comp-list-pedidos-holding/comp-list-pedidos-holding.component';
+import { MainTabPedidosHoldingComponent } from './comp-list-pedidos-holding/main/main.component';
+import { ListPedidosListoMarcasComponent } from './comp-list-pedidos-holding/list-pedidos-listo-marcas/list-pedidos-listo-marcas.component';
+import { ListPedidosClientesComponent } from './comp-list-pedidos-holding/list-pedidos-clientes/list-pedidos-clientes.component';
 
 @NgModule({
   declarations: [
@@ -107,6 +115,14 @@ import { CompListMesasComponent } from './comp-list-mesas/comp-list-mesas.compon
     CompListCallClientComponent,
     DatosFacturacionClienteComponent,
     CompListMesasComponent,
+    HoldingMarcasComponent,
+    ListComponent,
+    ItemComponent,
+    FormaPagoComponent,
+    CompListPedidosHoldingComponent,
+    MainTabPedidosHoldingComponent,
+    ListPedidosListoMarcasComponent,
+    ListPedidosClientesComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
@@ -163,7 +179,13 @@ import { CompListMesasComponent } from './comp-list-mesas/comp-list-mesas.compon
     CompViewPromoComponent,
     CompListCallClientComponent,
     DatosFacturacionClienteComponent,
-    CompListMesasComponent
+    CompListMesasComponent,
+    HoldingMarcasComponent,
+    FormaPagoComponent,
+    CompListPedidosHoldingComponent,
+    MainTabPedidosHoldingComponent,
+    ListPedidosListoMarcasComponent,
+    ListPedidosClientesComponent,
     // DialogDesicionComponent
   ],
 

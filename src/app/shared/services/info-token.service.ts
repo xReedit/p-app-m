@@ -5,6 +5,7 @@ import { TipoComprobanteModel } from 'src/app/modelos/tipo.comprobante.model';
 import { PropinaModel } from 'src/app/modelos/propina.model';
 import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
 import { Router } from '@angular/router';
+import { HoldingModel } from 'src/app/modelos/holding.model';
 
 
 
@@ -78,6 +79,11 @@ export class InfoTockenService {
   isTomaPedidoRapido(): boolean {
     // this.verificarContunuarSession();
     return this.infoUsToken.isTomaPedidoRapido || false;
+  }
+
+  isPuntoTomaPedidos(): boolean {
+    // this.verificarContunuarSession();
+    return this.infoUsToken.isPuntoTomaPedidos || false;
   }
 
   isUsuarioAutorizado(): boolean {
@@ -268,6 +274,43 @@ export class InfoTockenService {
     this.set();
   }
 
+  setIdSede( val: number) {
+    this.infoUsToken.idsede = val;
+    this.set();
+  }
+
+  setIdOrg( val: number) {
+    this.infoUsToken.idorg = val;
+    this.set();
+  }
+
+  setHolding(holding: HoldingModel){
+    this.infoUsToken.holding = holding
+    this.set();
+  }
+
+  setIsMozoAcceptPayments(val: string){
+    this.infoUsToken.is_mozo_accept_payments = val;
+    this.set();
+  }
+
+  getHolding(){
+    return this.infoUsToken.holding || null;
+  }  
+
+  getIsHolding(): boolean {
+    return this.infoUsToken.is_holding == '1';
+  }
+
+  getIsMozoAcceptPayments(): boolean {
+    return this.infoUsToken.is_mozo_accept_payments == '1';
+  }
+
+  // si el mozo es tambien caja
+  getIsMozoIsCaja(): boolean {
+    return this.infoUsToken.per.indexOf('Pe8,') > -1;
+  }
+
   getIsAvtiveMozoVoz(): boolean {
     return this.infoUsToken.isActiveMozoVoz;
   }
@@ -288,6 +331,14 @@ export class InfoTockenService {
   getToken(): any { return localStorage.getItem('::token'); }
   getTokenAuth(): any { return localStorage.getItem('::token:auth'); }
 
+  // cuando es punto pedido y cambia de usuario, solo cambiamos en el infotoken idusuario y nombres
+  changeUserMozo(userMozo: any) {
+    this.infoUsToken.idusuario = userMozo.idusuario;
+    this.infoUsToken.nombres = userMozo.nombres;
+    this.infoUsToken.usuario = userMozo.usuario;
+    this.set();
+  }
+
   converToJSON(): void {
     if (localStorage.getItem('::token')) {
       let _token =  JSON.parse(atob(localStorage.getItem('::token').split('.')[1]));
@@ -295,10 +346,13 @@ export class InfoTockenService {
       // si existe idcliente, setea al usuario
       if ( _token?.idcliente ) {
         const _newUs = new UsuarioTokenModel();
-        _newUs.isCliente = true;
-        _newUs.idcliente = _token.idcliente;
+        _newUs.is_holding = _token.is_holding || '0';
+        _newUs.is_mozo_accept_payments = _token.is_mozo_accept_payments || '0';
         _newUs.idorg = _token.idorg;
         _newUs.idsede = _token.idsede;
+
+        _newUs.isCliente = true;
+        _newUs.idcliente = _token.idcliente;
         _newUs.nombres = _token.datalogin ? _token.datalogin.name : _token.nombres ;
         _newUs.idusuario = 0;
         _newUs.usuario = 'cliente';
@@ -409,7 +463,10 @@ export class InfoTockenService {
       }
 
       this.cerrarSessionGoIni();
+    } else {
+      this.converToJSON();
     }
+
     if ( !this.infoUsToken || !this.infoUsToken.isCliente || !this.infoUsToken.isDelivery) { // si es usuario autorizado no cuenta tiempo
       return true;
     }

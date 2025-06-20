@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { FormaPagoComponent } from 'src/app/componentes/holding/forma-pago/forma-pago.component';
 
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { ReglascartaService } from 'src/app/shared/services/reglascarta.service';
@@ -33,6 +34,7 @@ import { EstablecimientoService } from 'src/app/shared/services/establecimiento.
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech-data-provider.service';
+import { HoldingService } from 'src/app/shared/services/holding.service';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -42,6 +44,7 @@ import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech
   styleUrls: ['./resumen-pedido.component.css']
 })
 export class ResumenPedidoComponent implements OnInit, OnDestroy {
+  [x: string]: any;
 
   // private unsubscribeRe = new Subscription();
   private destroy$: Subject<boolean> = new Subject<boolean>();
@@ -96,6 +99,12 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private isSavingPedido = false;
 
+  isShowPaymentMozo = false;
+  totalAmountPedido = 0;  
+  dataPayametMozo: any = null;
+
+  @ViewChild('formaPagoComponent') formaPagoComponent: FormaPagoComponent;
+
   constructor(
     private miPedidoService: MipedidoService,
     private reglasCartaService: ReglascartaService,
@@ -112,12 +121,19 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     private establecimientoService: EstablecimientoService,
     private utilService: UtilitariosService,
     private verifyClientService: VerifyAuthClientService,
-    private speechDataProviderService: SpeechDataProviderService
+    private speechDataProviderService: SpeechDataProviderService,
+    private holdingService: HoldingService
     ) { }
 
   ngOnInit() {
 
     // this.establecimientoService.get();
+
+    console.log('this.infoToken', this.infoToken);  
+
+    this.isShowPaymentMozo = this.infoToken.getIsHolding() || this.infoToken.getIsMozoAcceptPayments() || this.infoToken.getIsMozoIsCaja();
+
+    console.log('this.isShowPaymentMozo', this.isShowPaymentMozo);
 
     this.systemOS = this.utilService.getOS();
 
@@ -305,6 +321,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
     this.hayItems = parseFloat(this._arrSubtotales[0].importe) > 0 ? true : false;
+
+    this.totalAmountPedido = this._arrSubtotales[this._arrSubtotales.length - 1].importe;
 
     setTimeout(() => {
       this.isReloadListPedidos = false;
@@ -644,6 +662,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     }
 
 
+    console.log('this.infoToken.infoUsToken' , this.infoToken.infoUsToken);
 
 
     const _p_header = {
@@ -668,8 +687,12 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       is_print_subtotales: this.miPedidoService.objDatosSede.datossede[0].is_print_subtotales,
       isprint_copy_short: this.miPedidoService.objDatosSede.datossede[0].isprint_copy_short,
       isprint_all_short: this.miPedidoService.objDatosSede.datossede[0].isprint_all_short,
-      appv: 'v.2z'
-    };
+      appv: 'v.2z',
+      is_holding: this.infoToken.infoUsToken.is_holding,
+      holding: this.infoToken.getHolding(),
+      paymentMozo: this.dataPayametMozo,
+      idcliente: this.infoToken.infoUsToken.idcliente || 0,
+    };    
 
     // console.log('cccccccccccccc');
     // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
@@ -703,6 +726,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
         Array_print: x.arrPrinters
       });
     });
+
+    console.log('dataPrint =====>', dataPrint);
 
 
 
@@ -762,6 +787,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // prioridad socket, por crud demora mucho aveces se queda enviando datos...
     this.savePedidoSocket2(dataSend, isPagoConTarjeta, _subTotalesSave);
 
+    // resetea el forma de pago si está disponible
+    if (this.formaPagoComponent) {
+      this.formaPagoComponent.resetPayments();
+    }
+
     this.isDeliveryValid = false; // formulario no valido para delivery
 
 
@@ -815,6 +845,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // this.isRequiereMesa = isTPCLocal;
     this.isRequiereMesa = this.isRequiereMesa && (!isMesaValid && !this.frmConfirma.reserva);
+
+    this.checkPaymentMozo();
 
   }
 
@@ -1142,17 +1174,26 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
           // return;
         }
 
-        setTimeout(() => {
+        // para holding marca pedido cliente pagado
+        this.holdingService.setMarcarPedidoClientePagado();
+
+        setTimeout(() => {          
           this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
           this.isSavingPedido = false;
           this.miPedidoService.stopTimerLimit();
-          this.miPedidoService.prepareNewPedido();
+          this.miPedidoService.prepareNewPedido();          
         }, 800);
 
 
         const _res = resSocket[0];
         dataSend.dataPedido.idpedido = _res.idpedido;
-        dataSend.dataPrint = _res.data[1] ? _res.data[1]?.print : null;
+        
+        try {          
+          dataSend.dataPrint = _res.data[1] ? _res.data[1]?.print : null;
+        } catch (error) {
+          dataSend.dataPrint = null;
+        }
+
 
         this.newFomrConfirma();
 
@@ -1196,6 +1237,24 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       this.isSavingPedido = false;
       return;
   }
+
+  paymentMozo(event: any) {
+    console.log('event', event);
+    this.dataPayametMozo = event;
+    this.dataPayametMozo.idusuario = this.infoToken.getInfoUs().idusuario;
+    this.checkPaymentMozo();
+  }
+
+  checkPaymentMozo() {
+    if ( !this.isShowPaymentMozo ) return;
+
+    const numMesa = this.frmConfirma.nummesa;
+    if ( numMesa.length === 0 ) return;
+
+    const _isPaymentSuccess = this.dataPayametMozo ? this.dataPayametMozo.isPaymentSuccess : false;
+
+    this.isRequiereMesa = !_isPaymentSuccess;
+  }  
 
 
 }

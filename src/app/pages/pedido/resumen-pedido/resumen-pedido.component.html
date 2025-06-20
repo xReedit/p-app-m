@@ -232,6 +232,13 @@
                                 name="referencia">
                             </mat-form-field>
                             </div>
+
+                            <!-- forma de pago -->
+                            <ng-container *ngIf="isShowPaymentMozo">
+                                <app-forma-pago #formaPagoComponent [totalAmount]="totalAmountPedido" (paymentsSelected)="paymentMozo($event)"></app-forma-pago>
+                            </ng-container>
+                            
+
                             <br>
                             <div class="w-50">               
                                 <mat-checkbox [(ngModel)]="frmConfirma.reserva" name="reserva" (change)="checkIsRequierMesa()">

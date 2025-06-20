@@ -3,7 +3,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'mozo.papaya.com.pe',
   appName: 'Papaya App Mozo',
-  webDir: 'dist/pwa-app-pedido',
+  webDir: 'dist/pwa-app-pedido-mozo',
   bundledWebRuntime: false,    
   plugins: {
     SplashScreen: {

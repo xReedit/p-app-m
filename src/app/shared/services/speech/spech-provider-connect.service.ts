@@ -1,5 +1,5 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
-import { Socket } from 'ngx-socket-io';
+// import { Socket } from 'ngx-socket-io';
 import { URL_SERVER_SOCKET_SPEECH } from '../../config/config.const';
 
 @Injectable({

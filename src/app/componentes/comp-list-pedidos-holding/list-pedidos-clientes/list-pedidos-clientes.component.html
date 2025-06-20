@@ -1,0 +1,31 @@
+<div class="m-3">    
+    <div>
+        <h4 class="m-0">Pedidos de Clientes</h4>   
+        <p class="fs-12 m-0 text-secondary mb-3">Para confirmar pago.</p>     
+    </div>
+    <ng-container *ngIf="listPedidosClientes.length === 0">
+        <div class="alert alert-warning">No hay pedidos de clientes pendientes de pago.</div>            
+    </ng-container>
+
+    <div *ngIf="listPedidosClientes.length > 0">        
+        <div>
+            <div *ngFor="let pedido of listPedidosClientes" class="mb-3 item-pedido-cliente">
+                <div>
+                    <p>{{pedido.fecha_hora_pedido | date:'dd/MM/yyyy HH:mm'}}</p>
+                    <p><strong>Cliente: </strong>{{pedido.nombre_cliente}}</p>
+                    <p><strong>Mesa: </strong>{{pedido.mesa}}</p>
+                </div>
+                <div>
+                    <p align="center">
+                        <ng-container *ngIf="pedido.confirmando_pago; else elseTemplate">
+                            <p class="text-success m-0">Pago Confirmado</p>
+                        </ng-container>
+                        <ng-template #elseTemplate>                                
+                            <button class="btn btn-sm btn-success fs-10" (click)="verPedido(pedido)">Ver Pedido</button>
+                        </ng-template>                            
+                    </p>
+                </div>
+            </div>
+        </div> 
+    </div>
+</div>

@@ -10,7 +10,7 @@ import { CoreModule } from './core/core.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 // import { GlobalErrorHandler } from './shared/services/error.global.handler';
 import { environment } from '../environments/environment';
-import { SocketIoModule } from 'ngx-socket-io';
+// import { SocketIoModule } from 'ngx-socket-io';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 // import { AgmCoreModule } from '@agm/core';
@@ -18,6 +18,8 @@ import { AuthConfig, AuthModule } from '@auth0/auth0-angular';
 // import config from '../../capacitor.config';
 // import { IS_NATIVE } from './shared/config/config.const';
 import { domain, clientId, callbackUri } from './auth.config';
+
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 
 // const redirectUri = callbackUri;
 // const redirectUri = `<%= "${config.appId}" %>://${account.namespace}/capacitor/<%= "${config.appId}" %>/callback`;
@@ -34,7 +36,7 @@ const configAuth: AuthConfig = {
 
 @NgModule({
   declarations: [
-    AppComponent,
+    AppComponent,    
     // DirectionsMapDirectiveDirective,
     // DebounceClickDirective
   ],
@@ -46,18 +48,19 @@ const configAuth: AuthConfig = {
     FormsModule,
     AppRoutingModule,
     CoreModule,
-    SocketIoModule,
+    // SocketIoModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     // AgmCoreModule.forRoot({
     //   apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
     //   libraries: ['places']
     // }),
     AuthModule.forRoot(configAuth),
+    SweetAlert2Module.forRoot(),
     // ServiceWorkerModule.register('assets/js/custom-service-worker.js', { enabled: environment.production })
   ],
   providers: [
     // {provide: ErrorHandler, useClass: GlobalErrorHandler},
-    {provide: LocationStrategy, useClass: PathLocationStrategy} // 22012022 eliminar el #
+    {provide: LocationStrategy, useClass: PathLocationStrategy} // 22012022 eliminar el #    
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

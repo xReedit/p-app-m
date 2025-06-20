@@ -16,7 +16,7 @@ export class MainComponent implements OnInit {
 
   async ngOnInit() {
     // solo para url carta delivery
-    const nomsede = this.activatedRoute.snapshot.params.nomsede;
+    const nomsede = this.activatedRoute.snapshot.params.nomsede;    
     
 
     if ( nomsede ) {

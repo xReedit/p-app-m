@@ -45,6 +45,11 @@ const routes: Routes = [
       canActivate: [AuthGuard],
       data: { 'tituloModulo': 'Pedido' }
     },
+    {
+      path: 'holding',
+      loadChildren: () => import('./pages/holding/holding.module').then(m => m.HoldingModule),
+      canActivate: [AuthGuard],      
+    },
     // {
     //   path: 'lanzar-encuesta',
     //   loadChildren: () => import('./pages/encuesta/encuesta.module').then(m => m.EncuestaModule),

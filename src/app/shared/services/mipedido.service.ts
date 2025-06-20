@@ -99,7 +99,6 @@ export class MipedidoService {
 
     }
 
-
   // cuando obtenemos la cuenta
   setObjMiPedido(obj: any): void {
     this.miPedido = obj;
@@ -377,6 +376,8 @@ export class MipedidoService {
     this.mpObjSeccionSelected.ver_stock_cero = seccion.ver_stock_cero;
     this.mpObjSeccionSelected.iddescuento = seccion.iddescuento;
     this.mpObjSeccionSelected.descuento = seccion.descuento;
+    this.mpObjSeccionSelected.idsede = seccion.idsede;
+    this.mpObjSeccionSelected.idorg = seccion.idorg;    
   }
 
   getObjSeccionSeleced() {
@@ -1485,6 +1486,7 @@ export class MipedidoService {
   // isClienteDelivery = si es delivery el costo del servicio es segun calculo
 
   getArrSubTotales(rulesSubTotales: any[]): any {
+    console.log('rulesSubTotales', rulesSubTotales);
 
     const subTotal = this.getSubTotalMiPedido();
     let isCalcCostoServicioDelivery = this.establecimientoService.establecimiento.pwa_delivery_hablitar_calc_costo_servicio === 1;
@@ -1736,7 +1738,9 @@ export class MipedidoService {
           sumSubTotal += z.items
             .map((x: ItemModel) => {
               cantItemOrder += x.cantidad_seleccionada;
-              return x.precio_print;
+              return typeof x.precio_print === 'string' 
+                ? parseFloat(x.precio_print || 0) 
+                : (x.precio_print || 0);
             })
             .reduce((a, b) => a + b, 0);
         });
@@ -1747,6 +1751,7 @@ export class MipedidoService {
 
     return sumSubTotal;
   }
+
 
   // devuelve el importe total del item de la lista mi pedido
   getImporteTotalItemFromMiPedido(item: ItemModel): number {
@@ -1839,6 +1844,14 @@ export class MipedidoService {
       //         const itemFind = s.opciones.filter((_subItem: SubItem) => _subItem.iditem_subitem === parseInt(subitem.iditem_subitem.toString(), 0))[0];
       //         if ( itemFind ) {
       //           itemFind.cantidad = subitem.cantidad;
+
+      //           // buscar los demas items que tengan este subitem porcion o producto
+      //           const idFind = itemFind.idproducto.toString() + itemFind.idporcion.toString();
+      //           const _otherListSubItem = this.findSubItemCartaById(idFind, res.iditem.toString());
+      //           _otherListSubItem.map( (x: SubItem ) => {
+      //             x.cantidad = subitem.cantidad;
+      //           });
+
       //         }
       //       });
       //     });
@@ -1861,6 +1874,7 @@ export class MipedidoService {
       if ( res.listItemPorcion != null ) {
         res.listItemPorcion.map((x: any) => {
           _itemInCarta = this.findItemCartaByIdCartaLista(x.idcarta_lista);
+
           _itemInCarta.cantidad = parseInt(x.cantidad, 0);
           this.setCantidadItemModificadoPwa(res.item, _itemInCarta, parseInt(x.cantidad, 0), true);
           // _itemInCarta.subitems = res.subitems;

@@ -31,7 +31,7 @@ export class InicioComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    console.log('llego a inicio');
     this.miPedidoService.countItemsObserve$.subscribe((res) => {
       this.countTotalItems = res;
     });

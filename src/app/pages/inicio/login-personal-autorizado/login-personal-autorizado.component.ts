@@ -5,6 +5,7 @@ import { AuthServiceSotrage } from 'src/app/shared/services/auth.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
+import { HoldingService } from 'src/app/shared/services/holding.service';
 
 @Component({
   selector: 'app-login-personal-autorizado',
@@ -22,7 +23,9 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
     private router: Router,
     private authService: AuthServiceSotrage,
     private infoToken: InfoTockenService,
-    private establecimientoService: EstablecimientoService) { }
+    private establecimientoService: EstablecimientoService,
+    private holdingService: HoldingService
+  ) { }
 
   ngOnInit() {
 
@@ -64,6 +67,7 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
     this.authService.setLocalToken('');
     this.authService.getUserLogged(this.usuario).subscribe(res => {
       setTimeout(() => {
+        console.log('res logear', res);
         if (res.success) {
           this.authService.setLocalToken(res.token);
           this.authService.setLocalTokenAuth(res.token);
@@ -73,7 +77,14 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
           this.infoToken.setIsUsuarioAutorizacion(true);
           this.infoToken.converToJSON();
           this.loadDataEstablecimiento(res.usuario.idsede);
-          this.router.navigate(['./pedido']);
+
+          if ( res.usuario.is_holding == '1' ) {
+            this.loadHolding(res.usuario.idsede);
+            this.router.navigate(['./pedido/holding']);            
+          } else {
+            this.router.navigate(['./pedido']);
+          }
+
           // this.loading = false;
         } else {
           this.loading = false;
@@ -86,6 +97,10 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
 
   private loadDataEstablecimiento(id: number) {
     this.establecimientoService.loadEstablecimientoById(id);
+  }
+
+  private loadHolding(idsede: number) {
+    this.holdingService.setHolding(idsede);
   }
 
 }

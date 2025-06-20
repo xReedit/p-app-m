@@ -12,9 +12,16 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
+    "skipLibCheck": true,
     "paths": {
       "@angular/*": [
         "./node_modules/@angular/*"
+      ],
+      "rxjs": [
+        "./node_modules/rxjs"
+      ],
+      "rxjs/*": [
+        "./node_modules/rxjs/*"
       ]
     },
     "typeRoots": [

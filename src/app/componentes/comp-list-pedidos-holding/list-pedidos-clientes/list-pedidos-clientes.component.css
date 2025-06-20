@@ -1,0 +1,15 @@
+.item-pedido-cliente {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: aliceblue;
+}
+
+.item-pedido-cliente p {
+    margin: 0;
+    font-size: 12px;
+}

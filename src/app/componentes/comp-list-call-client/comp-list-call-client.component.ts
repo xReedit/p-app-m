@@ -12,7 +12,10 @@ export class CompListCallClientComponent implements OnInit {
 
   isCliente = false;
   listCallsClients = [];
+  listCallsMarcas = [];
   private isListenSocket = false;
+
+  isHolding = false;
 
   constructor(
     private infoToken: InfoTockenService,
@@ -21,7 +24,8 @@ export class CompListCallClientComponent implements OnInit {
 
   ngOnInit(): void {
     this.isCliente = this.infoToken.infoUsToken.isCliente || false;
-
+    
+    
     this.socketService.isSocketOpen$
       .subscribe(isOpen => {
         if ( !isOpen ) { return; }
@@ -34,9 +38,18 @@ export class CompListCallClientComponent implements OnInit {
   private listenSocket() {
     if ( this.isCliente) { return; }
 
+    // holding llama marca    
+    this.socketService.onCallPedidoListoMarca()
+    .subscribe((res: any) => {            
+      res.en_camino = false;  
+      this.isHolding = true;
+      this.addItemCallListLLamadaMarca(res);
+    });
+
     // load llamados
     this.socketService.onLoadCallClienteLlama()
     .subscribe((resList: any) => {
+      this.isHolding = false;
       resList.map((x: any) => this.addItemCallList(x.num_mesa));
     });
 
@@ -87,6 +100,26 @@ export class CompListCallClientComponent implements OnInit {
       // tslint:disable-next-line:max-line-length
       window.navigator.vibrate([100, 50, 100, 100, 100, 50 , 50, 100, 50, 100, 100, 100, 50 , 50, 100, 50, 100, 100, 100, 50 , 50, 100, 50, 100, 100, 100, 50 , 50, 100, 50, 100, 100, 100, 50 , 50, 100, 50, 100, 100, 100, 50 , 50, 100, 50, 100, 100, 100, 50 , 50, 100, 50, 100, 100, 100, 50 , 50, 100, 50, 100, 100, 100, 50 , 50]);
     } catch (error) {}
+  }
+
+  private addItemCallListLLamadaMarca(item: any) {
+    console.log('item', item);	
+    const itemCall = this.listCallsMarcas.filter(x =>  x.idpedido === item.idpedido)[0];
+    if ( !itemCall ) {
+      this.playAudio();
+      this.listCallsMarcas.push(item);
+    }
+
+  }
+
+  private removeItemCallMarcaList(idpedido: string) {
+    this.listCallsMarcas = this.listCallsMarcas.filter(x =>  x.idpedido !== idpedido);
+  }
+
+  goCallMarca(marca: any) {    
+    // marca.en_camino = true;
+    this.socketService.emit('notificar-marca-mozo-en-camino', marca); 
+    this.removeItemCallMarcaList(marca.idpedido);
   }
 
 }

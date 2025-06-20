@@ -7,24 +7,44 @@ import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { SeccionModel } from 'src/app/modelos/seccion.model';
 import { ItemModel } from 'src/app/modelos/item.model';
 import { PedidoModel } from 'src/app/modelos/pedido.model';
+import { InfoTockenService } from './info-token.service';
 
 @Injectable({
   providedIn: 'root'
 })
+
+
 export class JsonPrintService {
   datosSede: any = [];
 
   private impresoras: any = [];
+  private isUsuarioHolding: boolean = false;
+  private readonly STORAGE_KEY = 'print_data_holding';
+  private dataLocalPrinters: any = [];
 
 
-  constructor(
-    private socketService: SocketService,
-    private pedidoService: MipedidoService
+  constructor(    
+    private pedidoService: MipedidoService,
+    private infoTokenService: InfoTockenService
     ) {
-
-
-
+      this.isUsuarioHolding = this.infoTokenService.infoUsToken.is_holding == '1';
   }
+
+  // private saveLocalPrintData(bodyPrint: any[]): void {
+  //   if (!this.isUsuarioHolding) return; 
+  //   localStorage.setItem(this.STORAGE_KEY, JSON.stringify(bodyPrint));
+  // }
+
+  // private getLocalPrintData(): any {
+  //   if (!this.isUsuarioHolding) return []; 
+  //   this.dataLocalPrinters = JSON.parse(localStorage.getItem(this.STORAGE_KEY)) || [];
+  //   return this.dataLocalPrinters;
+  // }
+
+  // removeLocalPrintData(): void {
+  //   if (!this.isUsuarioHolding) return; 
+  //   localStorage.removeItem(this.STORAGE_KEY);
+  // }
 
   // obtener los datos de la sede
   private getDataSede(): void {
@@ -44,7 +64,7 @@ export class JsonPrintService {
 
     const _objMiPedido = this.pedidoService.getMiPedido();
     const _tpcPrinter = this.pedidoService.getObjNewItemTiposConsumo();
-    const xRptPrint: any = []; // respuesta para enviar al backend
+    const xRptPrint: any = [];// this.getLocalPrintData(); // respuesta para enviar al backend
     const listOnlyPrinters: any = []; // lista de solo impresoras
     let xImpresoraPrint: any = []; // array de impresoras
     let xArrayBodyPrint: any = []; // el array de secciones e items a imprimir
@@ -130,11 +150,12 @@ export class JsonPrintService {
 
         xImpresoraPrint.push(childPrinter);
 
+        
         xRptPrint.push({
           arrBodyPrint: xArrayBodyPrint,
           arrPrinters: xImpresoraPrint
         });
-
+        
         listOnlyPrinters.push(childPrinter);
       });
     }
@@ -152,7 +173,7 @@ export class JsonPrintService {
 
       _objMiPedido.tipoconsumo
         .map((tpc: TipoConsumoModel, indexP: number) => {
-          xArrayBodyPrint[indexP] = { 'des': tpc.descripcion, 'id': tpc.idtipo_consumo, 'titlo': tpc.titulo, 'conDatos': false};
+          xArrayBodyPrint[indexP] = { 'des': tpc.descripcion, 'id': tpc.idtipo_consumo, 'titulo': tpc.titulo, 'conDatos': false};
           isPedidoDelivery = tpc.descripcion.toLowerCase() === 'delivery';
 
           tpc.secciones
@@ -296,6 +317,7 @@ export class JsonPrintService {
       // console.log('xArrayBodyPrint', xArrayBodyPrint);
       // console.log('xImpresoraPrint', xImpresoraPrint);
       xRptPrint.push({
+        idsede: this.datosSede.datossede[0].idsede,
         arrBodyPrint: xArrayBodyPrint,
         arrPrinters: xImpresoraPrint
       });
@@ -305,6 +327,10 @@ export class JsonPrintService {
 
 
     xRptPrint.listPrinters = listOnlyPrinters;
+
+    // if ( this.isUsuarioHolding ) {
+    //   this.saveLocalPrintData(xRptPrint);
+    // }
 
     return xRptPrint;
 

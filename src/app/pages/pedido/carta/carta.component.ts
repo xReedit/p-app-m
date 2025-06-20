@@ -25,6 +25,7 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DialogCalificacionSedeComponent } from 'src/app/componentes/dialog-calificacion-sede/dialog-calificacion-sede.component';
 import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech-data-provider.service';
 import { CocinarPromoShowService } from 'src/app/shared/services/promo/cocinar-promo-show.service';
+import { take } from 'rxjs/operators';
 
 
 
@@ -36,6 +37,9 @@ import { CocinarPromoShowService } from 'src/app/shared/services/promo/cocinar-p
 export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private unsubscribeCarta = new Subscription();
+  // private destroy$ = new Subject<boolean>();
+  private subscriptions = new Subscription(); // nuevo
+
   // private destroyCarta$: Subject<boolean> = new Subject<boolean>();
   // objCartaCarta: any;
   objCartaBus: any = [];
@@ -48,6 +52,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   public showSecciones = false;
   public showItems = false;
   public showToolBar = false;
+  public showHoldingMarcas = false;
+  public isHolding = false;
 
   // max_minute_order = MAX_MINUTE_ORDER;
   // time = new Date();
@@ -178,6 +184,20 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(res => {
         if ( res === true ) { this.goBack(); }
       });
+
+    
+    this.navigatorService.resNavigatorSourceObserve$
+    .pipe(        
+      takeUntil(this.destroy$)
+    )
+    .subscribe((res: any) => {
+      if (res.pageActive === 'carta') {
+        // if (this.countSeeBack < 2) { this.countSeeBack++; return; }
+        this.goBack();
+      } else {
+        this.countSeeBack = 0;
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -192,6 +212,15 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.listeStatusBusqueda();
 
+    this.listenStatusService.listenGoBackMarcas$.subscribe(res => {
+      if ( res === true ) {
+        this.showHoldingMarcas = true;
+        this.showCategoria = false;
+        this.showToolBar = false;
+        this.countSeeBack = 0;
+      }
+    });
+
     // descarga la constate del items scala delivery // tanto para cliente como para usuario
     // if ( this.infoToken.isDelivery() ) {
       if ( !this.infoToken.isReserva() ) {
@@ -199,14 +228,14 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     // }
 
-    this.unsubscribeCarta = this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
-      if (res.pageActive === 'carta') {
-        if (this.countSeeBack < 2) { this.countSeeBack++; return; }
-        this.goBack();
-      } else {
-        this.countSeeBack = 0;
-      }
-    });
+    // this.unsubscribeCarta = this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {      
+    //   if (res.pageActive === 'carta') {
+    //     if (this.countSeeBack < 2) { this.countSeeBack++; return; }
+    //     this.goBack();
+    //   } else {
+    //     this.countSeeBack = 0;
+    //   }
+    // });    
 
     // console.log('aaa');
     this.establecimientoService.getComsionEntrega();
@@ -247,6 +276,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
             // console.log('objCartaCarta desde socket reconect');
             this.navigatorService.setPageActive('carta');
+            if ( this.infoToken.getIsHolding() ) {
+              this.showToolBar = true;
+            }
           // }
 
           // para cargar la lista de mesas si se desconecta
@@ -342,7 +374,16 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.miPedidoService.setObjNewItemTiposConsumo(this.objNewItemTiposConsumo);
 
-        this.navigatorService.addLink('carta-i-');
+
+        // HOLDING MARCAS
+        if ( this.infoToken.getIsHolding() ) {
+          this.showHoldingMarcas = true;
+          this.isHolding = true;
+          this.showCategoria = false;                    
+        } else {
+          this.navigatorService.addLink('carta-i-');
+        }
+
 
         // console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
         // this.tiposConsumo.secciones = [];
@@ -414,7 +455,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // this.showCategoria = false;
     this.showSecciones = false;
     this.showItems = false;
-    this.showToolBar = false;
+    // this.showToolBar = false;
     this.showCategoria = true;
   }
 
@@ -422,9 +463,15 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // console.log('======= unsubscribe ======= ');
     this.unsubscribeCarta.unsubscribe();
     this.destroy$.next(true);
+    this.destroy$.complete();
     this.destroy$.unsubscribe();
-    // this.unsubscribe$.next();
-    // this.unsubscribe$.complete();
+    this.subscriptions.unsubscribe(); // nuevo
+    
+    // Limpiar variables
+    this.objSecciones = [];
+    this.objItems = [];
+    this.objCartaBus = [];
+    this.isFirstLoadListen = false;
   }
 
   private showAnimateBloqueoCategoria(categoria: CategoriaModel) {
@@ -562,8 +609,22 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     if (this.showSecciones) {
-      this.showSecciones = false; this.showToolBar = false; this.showCategoria = true;
+      this.showSecciones = false;    
+
+      if ( !this.isHolding ) {
+        this.showToolBar = false;
+      }
+
+      this.showCategoria = true;
+      return;
       // this.navigatorService.addLink('carta-i-');
+    }
+
+    if (this.showCategoria && this.isHolding && !this.showHoldingMarcas) {
+      this.showHoldingMarcas = true;
+      this.showCategoria = false;
+      this.showToolBar = false;
+      this.countSeeBack = 0; // para que no regrese
     }
   }
 
@@ -850,6 +911,21 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     //   promo.abierto = 0;
     //   console.log('aaaaaaaaaaaaaa');
     // }
+  }
+
+
+  onMarcaSelected(marca: any) {    
+    this.showToolBar = true;
+    this.tituloToolBar = "MARCAS";    
+    this.infoToken.setIdSede(marca.idsede_marca);
+    this.infoToken.setIdOrg(marca.idorg_marca);
+    this.socketService.reconnect();    
+    this.initCarta();
+    setTimeout(() => {
+      // this.navigatorService.addLink('marcas');
+      this.showHoldingMarcas = false;
+      this.showCategoria = true;
+    }, 200);
   }
 
 }

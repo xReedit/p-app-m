@@ -69,8 +69,19 @@ export class NavigatorLinkService {
       });
   }
 
+  // funcion para regresar al primer pagina del historial
+  goFirstPage(nom_page: string) {
+    this.historyNavigator.forEach((item) => {
+      if (item.key === nom_page) {
+        this.addLink(item.url);
+      } else {
+        this.managerGoBack(nom_page, '');
+      }
+    });
+  }
 
   setPageActive(_pageActive): void {
+    console.log('_pageActive ===', _pageActive);
     // return;
     this.pageActive = _pageActive;
     this.lastUrlHistory = _pageActive !== 'carta' ? _pageActive : this.lastUrlHistory;
@@ -194,17 +205,18 @@ export class NavigatorLinkService {
 
   // usar router de servicio
   _router(link: string) {
+    console.log('link', link);
     this.router.navigate([link]);
     return false;
   }
 
   __router(link: string) {
+    console.log('link2', link);
     this.router.navigate([link]);
     return false;
   }
 
   disableGoBack(): void {
-
     this.disabledBack = true;
     history.pushState(null, null, location.href);
     window.onpopstate = function () {

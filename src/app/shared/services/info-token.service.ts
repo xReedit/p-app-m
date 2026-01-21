@@ -308,7 +308,7 @@ export class InfoTockenService {
 
   // si el mozo es tambien caja
   getIsMozoIsCaja(): boolean {
-    return this.infoUsToken.per.indexOf('Pe8,') > -1;
+    return this.infoUsToken.per.indexOf('Pe9,') > -1;
   }
 
   getIsAvtiveMozoVoz(): boolean {

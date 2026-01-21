@@ -897,6 +897,10 @@ export class MipedidoService {
         sec.items.map( x => {
           x.indicaciones = '';
           x.cantidad_seleccionada = 0;
+          // para evitar que se quede marcado
+          if ('cantidad_selected' in x) {
+            x.cantidad_selected = 0;
+          }
           x.itemtiposconsumo = null;
           // return x;
         });
@@ -1237,7 +1241,14 @@ export class MipedidoService {
         const _item = this.findItemCarta(item);
         _item.indicaciones = '';
         _item.cantidad_seleccionada = 0;
+        
         // _item.cantidad_selected = 0;
+
+        // para evitar que se quede marcado
+        if ('cantidad_selected' in _item) {
+          _item.cantidad_selected = 0;
+        }
+        
         _item.itemtiposconsumo = null;
         // _item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
         //   tpc.cantidad_seleccionada = 0;

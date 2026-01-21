@@ -29,6 +29,11 @@ export class DialogDesicionComponent implements OnInit {
         this.msj = 'Esta seguro de eliminar su cuenta de Papaya Express?';
         this.titleBtnSuccess = data.titleBtnSuccess;
         break;
+      case 4:
+        this.msj = 'No se pudo enviar el pedido. Por favor verifique su conexión a internet. ¿Desea intentar nuevamente?';
+        this.titleBtnSuccess = 'Reintentar';
+        this.titleBtnCancel = 'Cancelar';
+        break;
     }
   }
 

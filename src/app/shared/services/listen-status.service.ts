@@ -228,6 +228,10 @@ export class ListenStatusService {
     this.listenGoBackMarcasSource.next(true);
   }
 
+  resetListenGoBackMarcas() {
+    this.listenGoBackMarcasSource.next(false);
+  }
+
   // setCallListClienteAtencion(num_mesa: string) {
   //   this.callClienteSolicitaAtencionSoruce.next(num_mesa);
   // }

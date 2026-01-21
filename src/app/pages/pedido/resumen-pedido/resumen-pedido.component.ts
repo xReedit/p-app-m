@@ -25,8 +25,9 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogLoadingComponent } from './dialog-loading/dialog-loading.component';
 import { DialogResetComponent } from './dialog-reset/dialog-reset.component';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
+import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 import { Subject } from 'rxjs/internal/Subject';
-import { takeUntil, take, last, takeLast } from 'rxjs/operators';
+import { takeUntil, take, last, takeLast, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedido-cliente.service';
 // import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
@@ -208,7 +209,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // speech data finaliza pedido
     this.speechDataProviderService.commandFinalizarPedido$
-    .pipe(takeUntil(this.destroy$))
+    .pipe(
+      takeUntil(this.destroy$),
+      distinctUntilChanged(),
+      debounceTime(500)
+    )
     .subscribe((res: boolean) => {
       if (res) {
         // this.confirmarPeiddo();        
@@ -230,7 +235,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // speech show pedido
     this.speechDataProviderService.commandIsShowPedido$
-    .pipe(takeUntil(this.destroy$))
+    .pipe(
+      takeUntil(this.destroy$),
+      distinctUntilChanged(),
+      debounceTime(500)
+    )
     .subscribe((res: boolean) => {
       if (res) {
         // this.backConfirmacion();
@@ -373,7 +382,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // cuando es solo llevar // estar pendiente de pago suscces para enviar el pedido
     this.listenStatusService.isPagoSucces$
-    .pipe(takeUntil(this.destroy$))
+    .pipe(
+      takeUntil(this.destroy$),
+      distinctUntilChanged(),
+      debounceTime(300)
+    )
     .subscribe(res => {
       if ( !res ) {return; }
       // toma la respuesta de pago
@@ -410,7 +423,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // escucha que haya cuenta del cliente
     this.estadoPedidoClientService.hayCuentaCliente$
-    .pipe(takeUntil(this.destroy$))
+    .pipe(
+      takeUntil(this.destroy$),
+      distinctUntilChanged(),
+      debounceTime(300)
+    )
     .subscribe((res: any) => {
       if ( res ) {
 
@@ -422,7 +439,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // escucha isOutEstablecimientoDelivery
     this.listenStatusService.isOutEstablecimientoDelivery$
-    .pipe(takeUntil(this.destroy$))
+    .pipe(
+      takeUntil(this.destroy$),
+      distinctUntilChanged(),
+      debounceTime(200)
+    )
     .subscribe((res: any) => {
       if ( res ) {
         this.goBackOutEstablecimiento();
@@ -432,10 +453,15 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // ver la cuenta de mesa desde afuera
     this.listenStatusService.showCuentaMesaNumero$
-    .pipe(takeUntil(this.destroy$))
+    .pipe(
+      takeUntil(this.destroy$),
+      distinctUntilChanged(),
+      debounceTime(300)
+    )
     .subscribe((numMesa: number) => {
       if ( numMesa !== 0 ) {
         this.xLoadCuentaMesa(numMesa.toString());
+        this.listenStatusService.setShowCuentaMesaNumero(0);
       }
     });
   }
@@ -1149,93 +1175,104 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   // 20022023
   // acelerar el envio en conexiones lentas
   private async savePedidoSocket2(dataSend: any, isPagoConTarjeta: boolean, _subTotalesSave: any) {
-    
+    try {
+      const resSocket = await this.socketService.asyncEmitPedido('nuevoPedido', 'nuevoPedidoRes', JSON.stringify(dataSend));
+      
+      // Validar que la respuesta sea válida
+      if (!resSocket || resSocket === false || resSocket === undefined) {
+        this.errorSendPedido(resSocket, dataSend, isPagoConTarjeta, _subTotalesSave);
+        return;
+      }
 
-    const resSocket = await this.socketService.asyncEmitPedido('nuevoPedido', 'nuevoPedidoRes', JSON.stringify(dataSend))
-                            .catch((e) => {
-                              this.errorSendPedido(e)
-                            })    
-    
-    // this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
-        if ( resSocket === false ) {
-          this.errorSendPedido(resSocket)
-          // alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
-          // // guardamos el error
-          // const dataError = {
-          //   elerror: resSocket,
-          //   elorigen: 'resumen-pedido'
-          // };
+      // Validar que tenga la estructura esperada
+      if (!Array.isArray(resSocket) || resSocket.length === 0) {
+        this.errorSendPedido('Respuesta inválida del servidor', dataSend, isPagoConTarjeta, _subTotalesSave);
+        return;
+      }
 
-          // this.crudService.postFree(dataError, 'error', 'set-error', false)
-          // .subscribe(resp => console.log(resp));
+      // para holding marca pedido cliente pagado
+      this.holdingService.setMarcarPedidoClientePagado();
 
-          // this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
-          // this.isSavingPedido = false;
-          // return;
-        }
+      setTimeout(() => {          
+        this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
+        this.isSavingPedido = false;
+        this.miPedidoService.stopTimerLimit();
+        this.miPedidoService.prepareNewPedido();          
+      }, 800);
 
-        // para holding marca pedido cliente pagado
-        this.holdingService.setMarcarPedidoClientePagado();
+      const _res = resSocket[0];
+      dataSend.dataPedido.idpedido = _res.idpedido;
+      
+      try {          
+        dataSend.dataPrint = _res.data[1] ? _res.data[1]?.print : null;
+      } catch (error) {
+        dataSend.dataPrint = null;
+      }
 
-        setTimeout(() => {          
-          this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
-          this.isSavingPedido = false;
-          this.miPedidoService.stopTimerLimit();
-          this.miPedidoService.prepareNewPedido();          
-        }, 800);
+      this.newFomrConfirma();
 
+      // hora del pedido
+      this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
 
-        const _res = resSocket[0];
-        dataSend.dataPedido.idpedido = _res.idpedido;
-        
-        try {          
-          dataSend.dataPrint = _res.data[1] ? _res.data[1]?.print : null;
-        } catch (error) {
-          dataSend.dataPrint = null;
-        }
+      // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
+      if (this.isDeliveryCliente && !isPagoConTarjeta) {
+        this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
+        this.confirmarPedidoDeliveryEnviado();
+        return;
+      }
 
+      if (this.isReservaCliente) {
+        this.confirmarPedidoDeliveryEnviado();
+        return;
+      }
 
-        this.newFomrConfirma();
-
-        // hora del pedido
-        this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
-
-        // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
-        if ( this.isDeliveryCliente && !isPagoConTarjeta) {
-          this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
-          this.confirmarPedidoDeliveryEnviado();
-
-          // this.pagarCuentaDeliveryCliente();
-          // enviamos a pagar
-          return;
-        }
-
-        if ( this.isReservaCliente ) {
-          this.confirmarPedidoDeliveryEnviado();
-          return;
-        }
-
-
-
-        this.backConfirmarPedido();
-    // });
+      this.backConfirmarPedido();
+      
+    } catch (error) {
+      console.error('Error al enviar pedido:', error);
+      this.errorSendPedido(error, dataSend, isPagoConTarjeta, _subTotalesSave);
+    }
   }
 
 
-  private errorSendPedido(resSocket: any) {
-      alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
-      // guardamos el error
-      const dataError = {
-        elerror: resSocket,
-        elorigen: 'resumen-pedido'
-      };
+  private errorSendPedido(resSocket: any, dataSend?: any, isPagoConTarjeta?: boolean, _subTotalesSave?: any) {
+    // Limpiar el loader inmediatamente
+    this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
+    this.isSavingPedido = false;
 
-      this.crudService.postFree(dataError, 'error', 'set-error', false)
-        .subscribe(resp => console.log(resp));
+    // Guardar el error en el servidor
+    const dataError = {
+      elerror: JSON.stringify(resSocket),
+      elorigen: 'resumen-pedido'
+    };
 
-      this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
-      this.isSavingPedido = false;
-      return;
+    this.crudService.postFree(dataError, 'error', 'set-error', false)
+      .subscribe(resp => console.log(resp));
+
+    // Mostrar diálogo con opción de reintentar
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.data = { idMjs: 4 };
+
+    const dialogError = this.dialog.open(DialogDesicionComponent, _dialogConfig);
+    dialogError.afterClosed().subscribe(result => {
+      if (result && dataSend) {
+        // El usuario quiere reintentar
+        this.isSavingPedido = false;
+        this.listenStatusService.setLoaderSendPedido(true);
+        
+        setTimeout(() => {
+          this.isSavingPedido = true;
+          this.savePedidoSocket2(dataSend, isPagoConTarjeta, _subTotalesSave);
+        }, 500);
+      } else {
+        // El usuario canceló, dejar el pedido como está
+        console.log('Usuario canceló el reenvío del pedido');
+      }
+    });
+
+    return;
   }
 
   paymentMozo(event: any) {

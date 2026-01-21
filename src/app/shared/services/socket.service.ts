@@ -444,23 +444,38 @@ export class SocketService {
   }
 
   asyncEmitPedido(eventName: string, eventNameRes: string, data: any) {
-  return new Promise((resolve, reject) => {
-    try {      
-      this.socket.emit(eventName, data);
-      this.socket.on(eventNameRes, result => {
-        this.socket.off(eventNameRes);
-          resolve(result);
-      });
-    } catch (error) {
-      return false;
-    }
-    // setTimeout(reject, 1000);
-    setTimeout(() => {      ;
-      this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(true)      
-      return false;
-    }, 6000); // despues de 6 segundos indicara que se acerque al punto wifi  
-  });
-}
+    return new Promise((resolve, reject) => {
+      let isResolved = false;
+      
+      // Timeout de 15 segundos para rechazar la Promise si no hay respuesta
+      const timeout = setTimeout(() => {
+        if (!isResolved) {
+          isResolved = true;
+          this.socket.off(eventNameRes);
+          this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(true);
+          reject(new Error('Timeout: No se recibió respuesta del servidor. Verifique su conexión a internet.'));
+        }
+      }, 15000);
+      
+      try {      
+        this.socket.emit(eventName, data);
+        this.socket.on(eventNameRes, result => {
+          if (!isResolved) {
+            isResolved = true;
+            clearTimeout(timeout);
+            this.socket.off(eventNameRes);
+            resolve(result);
+          }
+        });
+      } catch (error) {
+        if (!isResolved) {
+          isResolved = true;
+          clearTimeout(timeout);
+          reject(error);
+        }
+      }
+    });
+  }
 
   private listen( evento: string ) {
     return new Observable(observer => {

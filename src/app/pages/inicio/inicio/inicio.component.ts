@@ -300,36 +300,36 @@ export class InicioComponent implements OnInit, OnDestroy {
 
 
   verificarVersion() {
-    const dataSend = {
-      name_app: 'app_mozo'      
-    }
+    // const dataSend = {
+    //   name_app: 'app_mozo'      
+    // }
     
-    this.crudHttpService.postFree(dataSend, 'version-app', 'get-version-app', false).subscribe((res: any) => {
+  //   this.crudHttpService.postFree(dataSend, 'version-app', 'get-version-app', false).subscribe((res: any) => {
 
-      try {
-        if ( res.data[0] ) {
-          if (res.data[0].version !== this.APP_VERSION_ACTUAL ) {
-            Swal.fire({
-              title: 'Actualización de la App',
-              text: 'Se detectó una nueva versión de la App. Desea actualizar?',
-              icon: 'info',
-              theme: 'dark',
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              showCancelButton: true,
-              confirmButtonText: 'Actualizar',
-              cancelButtonText: 'Cancelar',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                this.openAppStore(res.data[0].properties);
-              }
-            });
-         }
-        }
-      } catch (error) {
-        console.log('error', error);
-      }
-    }); 
+  //     try {
+  //       if ( res.data[0] ) {
+  //         if (res.data[0].version !== this.APP_VERSION_ACTUAL ) {
+  //           Swal.fire({
+  //             title: 'Actualización de la App',
+  //             text: 'Se detectó una nueva versión de la App. Desea actualizar?',
+  //             icon: 'info',
+  //             theme: 'dark',
+  //             confirmButtonColor: '#3085d6',
+  //             cancelButtonColor: '#d33',
+  //             showCancelButton: true,
+  //             confirmButtonText: 'Actualizar',
+  //             cancelButtonText: 'Cancelar',
+  //           }).then((result) => {
+  //             if (result.isConfirmed) {
+  //               this.openAppStore(res.data[0].properties);
+  //             }
+  //           });
+  //        }
+  //       }
+  //     } catch (error) {
+  //       console.log('error', error);
+  //     }
+  //   }); 
   }
 
   // Método para abrir la tienda de aplicaciones

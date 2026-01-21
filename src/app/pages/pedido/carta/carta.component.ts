@@ -25,7 +25,7 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DialogCalificacionSedeComponent } from 'src/app/componentes/dialog-calificacion-sede/dialog-calificacion-sede.component';
 import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech-data-provider.service';
 import { CocinarPromoShowService } from 'src/app/shared/services/promo/cocinar-promo-show.service';
-import { take } from 'rxjs/operators';
+import { take, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 
 
 
@@ -84,6 +84,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   private isFirstLoadListen = false; // si es la primera vez que se carga, para no volver a cargar los observables
+  private isSelectingMarca = false; // bandera para prevenir que el observable se dispare durante la selección de marca
 
 
   // tamaño de la pamtalla
@@ -185,6 +186,24 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         if ( res === true ) { this.goBack(); }
       });
 
+    // listen go back marcas - movido aquí para evitar múltiples suscripciones
+    this.listenStatusService.listenGoBackMarcas$
+      .pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged(),
+        debounceTime(100)
+      )
+      .subscribe(res => {
+        if ( res === true && !this.isSelectingMarca ) {
+          this.showHoldingMarcas = true;
+          this.showCategoria = false;
+          this.showToolBar = false;
+          this.countSeeBack = 0;
+          // Resetear el observable inmediatamente para evitar emisiones duplicadas
+          this.listenStatusService.resetListenGoBackMarcas();
+        }
+      });
+
     
     this.navigatorService.resNavigatorSourceObserve$
     .pipe(        
@@ -211,15 +230,6 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.listenStatusService.setLoaderCarta(true);
 
     this.listeStatusBusqueda();
-
-    this.listenStatusService.listenGoBackMarcas$.subscribe(res => {
-      if ( res === true ) {
-        this.showHoldingMarcas = true;
-        this.showCategoria = false;
-        this.showToolBar = false;
-        this.countSeeBack = 0;
-      }
-    });
 
     // descarga la constate del items scala delivery // tanto para cliente como para usuario
     // if ( this.infoToken.isDelivery() ) {
@@ -457,6 +467,11 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showItems = false;
     // this.showToolBar = false;
     this.showCategoria = true;
+    
+    // Si se está seleccionando una marca, ocultar la vista de marcas
+    if (this.isSelectingMarca) {
+      this.showHoldingMarcas = false;
+    }
   }
 
   ngOnDestroy(): void {
@@ -914,7 +929,13 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
-  onMarcaSelected(marca: any) {    
+  onMarcaSelected(marca: any) {
+    // Activar bandera para prevenir que el observable se dispare
+    this.isSelectingMarca = true;
+    
+    // Resetear el observable antes de procesar para evitar conflictos
+    this.listenStatusService.resetListenGoBackMarcas();
+    
     this.showToolBar = true;
     this.tituloToolBar = "MARCAS";    
     this.infoToken.setIdSede(marca.idsede_marca);
@@ -925,6 +946,10 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       // this.navigatorService.addLink('marcas');
       this.showHoldingMarcas = false;
       this.showCategoria = true;
+      // Desactivar bandera después de completar la selección
+      setTimeout(() => {
+        this.isSelectingMarca = false;
+      }, 500);
     }, 200);
   }
 

@@ -3,7 +3,6 @@ import { Routes, RouterModule, Router, PreloadAllModules } from '@angular/router
 // import { LayoutMainComponent } from './core/layout-main/layout-main.component';
 import { AuthGuard } from './shared/guards/auth.guard';
 import { ClienteProfileGuard } from './shared/guards/cliente-profile-guards';
-import { LectorCodigoQrComponent } from './pages/inicio/lector-codigo-qr/lector-codigo-qr.component';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 
 

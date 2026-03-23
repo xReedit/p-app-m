@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace 'mozo.papaya.com.pe'
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "mozo.papaya.com.pe"

@@ -67,6 +67,9 @@ export class SocketService {
 
     const infToken = this.infoTockenService.infoUsToken || infoUser;
 
+    const idHolding = infToken?.holding?.idsede_holding || 0;
+    const isHolding = idHolding ? '1' : '0';
+
     const dataSocket = {
       idorg: infToken.idorg || 0,
       idsede: infToken.idsede || 0,
@@ -77,7 +80,8 @@ export class SocketService {
       isCashAtm: _isCashAtm,
       isFromApp: opFrom,
       firts_socketid: infToken.socketId,
-      isHolding: this.infoTockenService.getIsHolding() === true ? 1 : 0,
+      isHolding: isHolding,
+      idholding: idHolding,
     };
 
     // console.log('dataSocket', dataSocket);
@@ -391,6 +395,18 @@ export class SocketService {
       });
     });
   }
+
+  // cliente notifica al mozo para confirmar su pedido
+  onNewPedidoClienteMesaHolding() {
+    return new Observable(observer => {
+      this.socket.on('nuevo-pedido-cliente-holding', (res: any) => {
+        alert('nuevo-pedido-cliente-holding');
+        observer.next(res);
+      });
+    });
+  }
+
+
 
   // onDeliveryGetLastIdPedido() {
   //   return new Observable(observer => {

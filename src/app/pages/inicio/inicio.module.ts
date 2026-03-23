@@ -8,7 +8,6 @@ import { MaterialModule } from 'src/app/core/material/material.module';
 import { MainComponent } from './main/main.component';
 import { InicioComponent } from './inicio/inicio.component';
 import { LoginPersonalAutorizadoComponent } from './login-personal-autorizado/login-personal-autorizado.component';
-import { LectorCodigoQrComponent } from './lector-codigo-qr/lector-codigo-qr.component';
 
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { LectorSuccessComponent } from './lector-success/lector-success.component';
@@ -27,7 +26,6 @@ import { RedirecLectorComponent } from './redirec-lector/redirec-lector.componen
     MainComponent,
     InicioComponent,
     LoginPersonalAutorizadoComponent,
-    LectorCodigoQrComponent,
     LectorSuccessComponent,
     CallbackAuthComponent,
     LoginClienteComponent,

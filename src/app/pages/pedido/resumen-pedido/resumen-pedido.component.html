@@ -215,14 +215,23 @@
 
                             <div *ngIf="!frmConfirma.reserva" class="xanimated xfadeIn">
                             <span class="fw-100 fs-20">Indique # de mesa</span>
-                            <div class="w-100">
-                                <mat-form-field class="text-center fs-20">
+                            <div class="w-100" style="display: flex; align-items: center; gap: 10px; justify-content: center;">
+                                <mat-form-field class="text-center fs-20" style="flex: 1; max-width: 200px;">
                                 <input 
-                                    type="number"
+                                    type="text"
                                     matInput
                                     [(ngModel)]="frmConfirma.nummesa" name="mesa"
                                     [required]="isRequiereMesa" (keyup)="checkIsRequierMesa(txtNumMesa.value)" #txtNumMesa>
                                 </mat-form-field>
+                                <button                              
+                                    matRipple       
+                                    class="btn-grid-mesas" 
+                                    color="primary" 
+                                    (click)="abrirSelectorMesa()"
+                                    type="button"                                    
+                                    >
+                                    <i class="fa fa-table" aria-hidden="true"></i>
+                                </button>
                             </div>
                             </div>
                                             

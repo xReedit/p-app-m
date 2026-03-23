@@ -351,7 +351,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
     // ver si selecciono subitems y si ese subitem tiene stock disponible
     this.item.subitems_selected.map((t: SubItem) => {
-      if (t.cantidad !== 'ND') {
+      if (t.cantidad !== 'ND' || t.cantidad !== null) {
         if ( parseFloat(t.cantidad.toString()) === 0 ) {
           paseCantSuItem = false;
           return;

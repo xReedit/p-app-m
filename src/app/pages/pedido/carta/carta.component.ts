@@ -467,11 +467,6 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showItems = false;
     // this.showToolBar = false;
     this.showCategoria = true;
-    
-    // Si se está seleccionando una marca, ocultar la vista de marcas
-    if (this.isSelectingMarca) {
-      this.showHoldingMarcas = false;
-    }
   }
 
   ngOnDestroy(): void {

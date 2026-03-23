@@ -46,6 +46,11 @@ export class CompListCallClientComponent implements OnInit {
       this.addItemCallListLLamadaMarca(res);
     });
 
+    this.socketService.onNewPedidoClienteMesaHolding()
+    .subscribe((res: any) => {
+      alert('nuevo-pedido-cliente-holding');
+    });
+
     // load llamados
     this.socketService.onLoadCallClienteLlama()
     .subscribe((resList: any) => {

@@ -228,7 +228,15 @@ export class MainComponent implements OnInit {
   }
 
   clickMarca($event: any) {
-    const titleTab = $event.target.textContent.toLowerCase();    
+    // Solo procesar si el clic fue directamente en el tab label (mat-tab-label)
+    const target = $event.target as HTMLElement;
+    const isTabLabel = target.closest('.mat-tab-label') !== null;
+    
+    if (!isTabLabel) {
+      return; // Ignorar clics que no sean en los tabs
+    }
+    
+    const titleTab = target.textContent?.toLowerCase().trim() || '';    
     if ( titleTab === 'marcas' ) {
       this.listenStatusService.setListenGoBackMarcas();
     }

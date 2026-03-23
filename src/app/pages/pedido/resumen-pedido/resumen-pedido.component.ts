@@ -26,6 +26,7 @@ import { DialogLoadingComponent } from './dialog-loading/dialog-loading.componen
 import { DialogResetComponent } from './dialog-reset/dialog-reset.component';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
+import { SelectorMesaModalComponent } from './selector-mesa-modal/selector-mesa-modal.component';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil, take, last, takeLast, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedido-cliente.service';
@@ -179,6 +180,20 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
       this.newFomrConfirma();
 
+      if ( this.infoToken.getIsHolding() ) {
+        const mesaHolding = this.holdingService.getLocalStoragePedidoClienteHoldingMesa();
+        const referenciaHolding = this.holdingService.getLocalStoragePedidoClienteHoldingReferencia();
+
+        if ( mesaHolding !== null ) {
+          this.frmConfirma.nummesa = mesaHolding;
+          this.frmConfirma.nummesa_resplado = mesaHolding;
+        }
+
+        if ( referenciaHolding !== null ) {
+          this.frmConfirma.referencia = referenciaHolding;
+        }
+      }
+
       // this.frmDelivery = new DatosDeliveryModel();
     });
 
@@ -310,6 +325,20 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       delivery: false
     };
 
+    if ( this.infoToken.getIsHolding() ) {
+      const mesaHolding = this.holdingService.getLocalStoragePedidoClienteHoldingMesa();
+      const referenciaHolding = this.holdingService.getLocalStoragePedidoClienteHoldingReferencia();
+
+      if ( mesaHolding !== null ) {
+        this.frmConfirma.nummesa = mesaHolding;
+        this.frmConfirma.nummesa_resplado = mesaHolding;
+      }
+
+      if ( referenciaHolding !== null ) {
+        this.frmConfirma.referencia = referenciaHolding;
+      }
+    }
+
     // traer los ultimos datos de comisiones
     this.establecimientoService.getComsionEntrega();
 
@@ -353,8 +382,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   listenMiPedido() {
     // 090121 // comentamos estas lineas para corregir error de "Aun no tiene ningun producto en lista"
-    // if ( this.isFirstLoadListen ) {return; }
-    // this.isFirstLoadListen = true; // para que no vuelva a cargar los observables cuando actualizan desde sockets
+    if ( this.isFirstLoadListen ) {return; }
+    this.isFirstLoadListen = true; // para que no vuelva a cargar los observables cuando actualizan desde sockets
 
 
     this.miPedidoService.countItemsObserve$
@@ -847,29 +876,39 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   checkIsRequierMesa(num: string = ''): void {
     // console.log('check mesa', num);
-    if ( num !== '' ) {
-      num = num.replace(/\D/gm, '');
-      this.frmConfirma.nummesa = num;
+    const establecimiento = this.establecimientoService.get();
+    const mesasAlfanumericas = establecimiento.mesas_alfanumerica === '1';
 
+    if ( num !== '' ) {
+      // Solo eliminar caracteres no numéricos si las mesas NO son alfanuméricas
+      if (!mesasAlfanumericas) {
+        num = num.replace(/\D/gm, '');
+      }
+      this.frmConfirma.nummesa = num;
 
       // revisar si el cliente ya hizo pedido en esta mesa
       // this.getLatPedidoClienteThisITable(num);
     }
 
     this.frmConfirma.nummesa_resplado = num;
-    // const arrReqFrm = <FormValidRptModel>this.miPedidoService.findEvaluateTPCMiPedido();
-    // const isTPCLocal = arrReqFrm.isTpcLocal;
-    // this.isRequiereMesa = arrReqFrm.isRequiereMesa;
-    let numMesasSede = parseInt(this.miPedidoService.objDatosSede.datossede[0].mesas, 0);
-    numMesasSede = isNaN(numMesasSede) ? 0 : numMesasSede; // para asegurar si no viene este dato
+    
+    // Si las mesas son alfanuméricas, validar que tenga contenido
+    // Si son numéricas, validar contra el número de mesas
+    let isMesaValid = false;
+    
+    if (mesasAlfanumericas) {
+      // Para mesas alfanuméricas, solo validar que no esté vacío
+      isMesaValid = this.frmConfirma.nummesa ? this.frmConfirma.nummesa.trim() !== '' : false;
+    } else {
+      // Para mesas numéricas, validar contra el número total de mesas
+      let numMesasSede = parseInt(this.miPedidoService.objDatosSede.datossede[0].mesas, 0);
+      numMesasSede = isNaN(numMesasSede) ? 0 : numMesasSede;
+      
+      const numMesaIngresado = this.frmConfirma.nummesa ? parseInt(this.frmConfirma.nummesa, 0) : 0;
+      isMesaValid = numMesaIngresado > 0 && numMesaIngresado <= numMesasSede;
+    }
 
-    let isMesaValid = this.frmConfirma.nummesa ? this.frmConfirma.nummesa !== '' ? true : false : false;
-    // valida la mesa que no sea mayor a las que hay
-    const numMesaIngresado = isMesaValid ? parseInt(this.frmConfirma.nummesa, 0) : 0;
-    isMesaValid = numMesaIngresado <= 0 || numMesaIngresado > numMesasSede ? false : true;
     this.isRequiereMesa = this.arrReqFrm.isRequiereMesa;
-
-    // this.isRequiereMesa = isTPCLocal;
     this.isRequiereMesa = this.isRequiereMesa && (!isMesaValid && !this.frmConfirma.reserva);
 
     this.checkPaymentMozo();
@@ -1146,6 +1185,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       dataSend.dataPedido.idpedido = _res.idpedido;
       dataSend.dataPrint = _res.data[1] ? _res.data[1]?.print : null;
 
+      // para holding marca pedido cliente pagado y limpia data temporal (mesa/referencia)
+      this.holdingService.setMarcarPedidoClientePagado();
+
       this.newFomrConfirma();
 
       // hora del pedido
@@ -1291,7 +1333,58 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     const _isPaymentSuccess = this.dataPayametMozo ? this.dataPayametMozo.isPaymentSuccess : false;
 
     this.isRequiereMesa = !_isPaymentSuccess;
-  }  
+  }
+
+  abrirSelectorMesa(): void {
+    const establecimiento = this.establecimientoService.get();
+    let areasMesas = establecimiento.areas_mesas;
+    
+    // Si no hay áreas configuradas, generar automáticamente basándose en la cantidad de mesas
+    if (!areasMesas || areasMesas.length === 0) {
+      // Obtener la cantidad total de mesas del establecimiento
+      let numMesasSede = this.establecimientoService.getNumMesas();
+      
+      // Si no está en el servicio, intentar obtenerlo de objDatosSede
+      if (numMesasSede === 0 && this.miPedidoService.objDatosSede?.datossede?.[0]?.mesas) {
+        numMesasSede = parseInt(this.miPedidoService.objDatosSede.datossede[0].mesas, 10);
+        numMesasSede = isNaN(numMesasSede) ? 0 : numMesasSede;
+      }
+      
+      if (numMesasSede === 0) {
+        alert('No hay mesas configuradas en el establecimiento');
+        return;
+      }
+      
+      // Crear un área por defecto con todas las mesas
+      const mesasAlfanumericas = establecimiento.mesas_alfanumerica === 'si';
+      
+      areasMesas = [{
+        titulo: 'MESAS',
+        prefijo_mesa: mesasAlfanumericas ? 'M' : '',
+        num_mesa_ini: 1,
+        num_mesa_fin: numMesasSede,
+        tipo_mesa: mesasAlfanumericas ? 'alfanumerica' : 'numerica'
+      }];
+    }
+
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = {
+      areasMesas: areasMesas
+    };
+    dialogConfig.width = '90%';
+    dialogConfig.maxWidth = '900px';
+    dialogConfig.panelClass = 'selector-mesa-dialog';
+
+    const dialogRef = this.dialog.open(SelectorMesaModalComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe((mesaSeleccionada: string) => {
+      if (mesaSeleccionada) {
+        this.frmConfirma.nummesa = mesaSeleccionada;
+        this.frmConfirma.nummesa_resplado = mesaSeleccionada;
+        this.checkIsRequierMesa(mesaSeleccionada);
+      }
+    });
+  }
 
 
 }

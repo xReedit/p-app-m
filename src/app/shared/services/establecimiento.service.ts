@@ -44,6 +44,17 @@ export class EstablecimientoService {
     this.set(this.establecimiento);
   }
 
+  setNumMesas(val: number) {
+    this.establecimiento = this.get();
+    (this.establecimiento as any).num_mesas = val;
+    this.set(this.establecimiento);
+  }
+
+  getNumMesas(): number {
+    this.establecimiento = this.get();
+    return (this.establecimiento as any).num_mesas || 0;
+  }
+
   getImpresoras() {
     this.establecimiento = this.get();
     return this.establecimiento.impresoras;
@@ -68,7 +79,27 @@ export class EstablecimientoService {
       // console.log('get-establecimientos', res);
       this.establecimiento = res.data[0];
       this.set(this.establecimiento);
+
+      // tipo de mesas
+      const _dataSendTipoMesa = {
+        idsede: id,
+        tipo_mesa: this.establecimiento.mesas_alfanumerica
+      };
+
+      console.log('_dataSendTipoMesa', _dataSendTipoMesa)
+
+      this.crudService.postFree(_dataSendTipoMesa, 'ini', 'areas-mesas', false)
+      .subscribe(res => {
+        console.log('res.data mesas ==> ', res.data)
+        this.establecimiento.areas_mesas = res.data;
+        this.set(this.establecimiento);
+      });
+      
+
     });
+
+    
+
   }
 
   // busca la direccion del cliente en el cache de establecimientos

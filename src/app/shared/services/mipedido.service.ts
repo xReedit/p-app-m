@@ -1929,6 +1929,12 @@ export class MipedidoService {
       // console.log('datos de la sede ps', this.objDatosSede);
 
       this.establecimientoService.setImpresoras(this.objDatosSede.impresoras);
+      
+      // Guardar la cantidad de mesas
+      const numMesas = parseInt(this.objDatosSede.datossede[0].mesas, 10);
+      if (!isNaN(numMesas)) {
+        this.establecimientoService.setNumMesas(numMesas);
+      }
 
       this.max_minute_order = res[0].datossede[0].pwa_time_limit;
       // this.pwa_delivery_importe_min = res[0].datossede[0].pwa_delivery_importe_min;

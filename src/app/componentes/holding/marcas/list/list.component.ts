@@ -23,7 +23,11 @@ export class ListComponent {
   constructor(    
   ) {}
 
-  selectMarca(marca: Marca): void {
+  selectMarca(marca: Marca, event?: Event): void {
+    // Detener la propagación para evitar que el evento llegue al mat-tab-group
+    if (event) {
+      event.stopPropagation();
+    }
     console.log('this.selectedMarca', marca);
     this.marcaSelected.emit(marca);
   }

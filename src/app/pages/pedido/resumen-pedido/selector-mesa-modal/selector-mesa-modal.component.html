@@ -1,0 +1,25 @@
+<div class="modal-selector-mesa">
+  <div class="modal-header">
+    <h2>Seleccionar Mesa</h2>
+    <button (click)="cerrarModal()" class="btn-close" matRipple>
+      <i class="fa fa-times"></i>
+    </button>
+  </div>
+
+  <mat-tab-group [(selectedIndex)]="selectedAreaIndex" *ngIf="areas.length > 0">
+    <mat-tab *ngFor="let area of areas" [label]="area.titulo">
+      <div class="mesas-grid">
+        <button 
+          *ngFor="let mesa of area.mesas"          
+          class="btn-mesa"
+          (click)="seleccionarMesa(mesa)">
+          {{ mesa }}
+        </button>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <div *ngIf="areas.length === 0" class="sin-areas">
+    <p>No hay áreas de mesas configuradas</p>
+  </div>
+</div>

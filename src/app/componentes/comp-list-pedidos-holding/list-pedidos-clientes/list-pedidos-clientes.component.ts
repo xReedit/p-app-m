@@ -66,8 +66,9 @@ export class ListPedidosClientesComponent implements OnInit {
         idpedido_cliente_confirmar_holding: item.idpedido_cliente_confirmar_holding,
         fecha_hora_pedido: item.fecha_hora,
         dataPedido: dataPedido,
-        nombre_cliente: dataPedido.p_header.nom_us,
-        mesa: dataPedido.p_header.m
+        nombre_cliente: dataPedido.p_header.r,
+        mesa: dataPedido.p_header.m,
+        referencia: dataPedido.p_header.r
       });
       
       // Si hay más de 3 elementos, eliminar el último (el más antiguo ahora)
@@ -92,6 +93,8 @@ export class ListPedidosClientesComponent implements OnInit {
     pedido.confirmando_pago = true;
     console.log('verPedido', pedido);
     this.holdingService.setLocalStoragePedidoClienteHolding(pedido.idpedido_cliente_confirmar_holding);
+    this.holdingService.setLocalStoragePedidoClienteHoldingMesa(pedido.mesa);
+    this.holdingService.setLocalStoragePedidoClienteHoldingReferencia(pedido.referencia);
     this.holdingService.setPedidoClienteHoldingMarcarAtendido(pedido.idpedido_cliente_confirmar_holding, this.infoTokenService.getInfoUs().idusuario);
     this.miPedidoService.setObjMiPedido(pedido.dataPedido.p_body);
     this.navigatorLinkService.setPageActive('mipedido');

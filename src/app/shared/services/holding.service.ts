@@ -17,6 +17,9 @@ export class HoldingService {
     holding: HoldingModel;
 
     private eventHttp = 'holding';
+    private readonly LS_PEDIDO_CLIENTE_HOLDING_ID = 'sys::pedido_cliente_holding';
+    private readonly LS_PEDIDO_CLIENTE_HOLDING_MESA = 'sys::pedido_cliente_holding_mesa';
+    private readonly LS_PEDIDO_CLIENTE_HOLDING_REFERENCIA = 'sys::pedido_cliente_holding_referencia';
     constructor(
         private crudService: CrudHttpService,
         private infoToken: InfoTockenService,
@@ -89,29 +92,55 @@ export class HoldingService {
 
 
     setLocalStoragePedidoClienteHolding(id: any) {
-      localStorage.setItem('sys::pedido_cliente_holding', id);
+      localStorage.setItem(this.LS_PEDIDO_CLIENTE_HOLDING_ID, id);
+    }
+
+    setLocalStoragePedidoClienteHoldingMesa(mesa: any) {
+      localStorage.setItem(this.LS_PEDIDO_CLIENTE_HOLDING_MESA, mesa ?? '');
+    }
+
+    getLocalStoragePedidoClienteHoldingMesa() {
+      const mesa = localStorage.getItem(this.LS_PEDIDO_CLIENTE_HOLDING_MESA);
+      return mesa ? mesa : null;
+    }
+
+    removeLocalStoragePedidoClienteHoldingMesa() {
+      localStorage.removeItem(this.LS_PEDIDO_CLIENTE_HOLDING_MESA);
+    }
+
+    setLocalStoragePedidoClienteHoldingReferencia(referencia: any) {
+      localStorage.setItem(this.LS_PEDIDO_CLIENTE_HOLDING_REFERENCIA, referencia ?? '');
+    }
+
+    getLocalStoragePedidoClienteHoldingReferencia() {
+      const referencia = localStorage.getItem(this.LS_PEDIDO_CLIENTE_HOLDING_REFERENCIA);
+      return referencia ? referencia : null;
+    }
+
+    removeLocalStoragePedidoClienteHoldingReferencia() {
+      localStorage.removeItem(this.LS_PEDIDO_CLIENTE_HOLDING_REFERENCIA);
     }
 
     getLocalStoragePedidoClienteHolding() {
-      const id = localStorage.getItem('sys::pedido_cliente_holding');
+      const id = localStorage.getItem(this.LS_PEDIDO_CLIENTE_HOLDING_ID);
       return id ? id : null;
     }
 
     removeLocalStoragePedidoClienteHolding() {
-      localStorage.removeItem('sys::pedido_cliente_holding');
+      localStorage.removeItem(this.LS_PEDIDO_CLIENTE_HOLDING_ID);
     }
 
     setMarcarPedidoClientePagado() {
       const id = this.getLocalStoragePedidoClienteHolding();
       if ( !id ) return;
 
-
-
       const dataSend = {
         idpedido_cliente_confirmar_holding: parseInt(id)
       }
 
       this.removeLocalStoragePedidoClienteHolding();
+      this.removeLocalStoragePedidoClienteHoldingMesa();
+      this.removeLocalStoragePedidoClienteHoldingReferencia();
 
       console.log('setMarcarPedidoClientePagado', dataSend);
       this.crudService.postFree(dataSend, this.eventHttp, 'set-marcar-pedido-cliente-holding-pagado')

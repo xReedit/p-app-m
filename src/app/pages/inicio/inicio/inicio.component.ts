@@ -38,7 +38,7 @@ export class InicioComponent implements OnInit, OnDestroy {
   isNativePlataform = IS_NATIVE;
   isSessionActive = false;
 
-  APP_VERSION_ACTUAL = 'v.3d';
+  APP_VERSION_ACTUAL = 'v.3e';
   
   private countnDev = 0;
   private countLogo = 0;  

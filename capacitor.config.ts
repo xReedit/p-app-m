@@ -14,8 +14,6 @@ const config: CapacitorConfig = {
     }
   },
   cordova: {},
-  // ponytail: solo para probar contra el backend local por http desde el celular; quitar para produccion (https)
-  android: { allowMixedContent: true },
 };
 
 export default config;

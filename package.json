@@ -7,7 +7,7 @@
     "prestart": "npm run sync-env",
     "start": "ng serve",
     "prebuild": "npm run sync-env",
-    "build": "ng build",
+    "build": "ng build --configuration production",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",

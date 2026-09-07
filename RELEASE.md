@@ -24,30 +24,21 @@ cd android
 # resultado: android/app/build/outputs/bundle/release/app-release.aab (SIN firmar)
 ```
 
-Firmar con la clave de subida. OJO: `D:\Projects\Papaya.keystore` NO es la llave (es el certificado
-de depuración de Android exportado). Candidatas en `D:\Projects\capacitor\`: `key_app_pedido.jks`
-(la más probable), `key2.jks`, `key-practica1.jks`; todas piden contraseña incluso para listarse.
+Llave de subida (la registró Android Studio en `android/.idea/workspace.xml`):
 
-Para saber cuál es: en Play Console > Papaya App Mozo > Configuración > Integridad de la app,
-copiar el SHA-1 del "certificado de clave de subida" y compararlo con:
+- Keystore: `D:\certificados\host-papayapp-mozondroid\certificado android\key-mozo.jks`
+- Alias: `key-mozo`
+- En la misma carpeta está `private_key.pepk` (Play App Signing) y en `..elease\` el último `.aab` subido.
 
-```bash
-"C:\Program Files\Java\jdk1.8.0_351\bin\keytool.exe" -list -v -keystore D:\Projects\capacitor\key_app_pedido.jks
-# pide la contraseña; muestra el alias y el SHA1 de cada entrada
-```
-
-Con la llave y el alias correctos:
+Firmar y verificar:
 
 ```bash
-"C:\Program Files\Java\jdk1.8.0_351\bin\jarsigner.exe" -verbose -sigalg SHA256withRSA -digestalg SHA-256 ^
-  -keystore D:\Projects\capacitor\key_app_pedido.jks ^
-  android\app\build\outputs\bundle\release\app-release.aab <alias>
+"C:\Program Files\Java\jdk1.8.0_351in\jarsigner.exe" -verbose -sigalg SHA256withRSA -digestalg SHA-256 ^
+  -keystore "D:\certificados\host-papayapp-mozondroid\certificado android\key-mozo.jks" ^
+  androidppuild\outputsundleeleasepp-release.aab key-mozo
 
-"C:\Program Files\Java\jdk1.8.0_351\bin\jarsigner.exe" -verify android\app\build\outputs\bundle\release\app-release.aab
+"C:\Program Files\Java\jdk1.8.0_351in\jarsigner.exe" -verify androidppuild\outputsundleeleasepp-release.aab
 ```
-
-Si ninguna coincide, Play Console permite solicitar el cambio de clave de subida
-(Integridad de la app > Solicitar cambio de clave de subida) generando una llave nueva.
 
 (Alternativa: Android Studio > Build > Generate Signed Bundle / APK con el mismo keystore.)
 

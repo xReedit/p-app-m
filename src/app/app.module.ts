@@ -51,7 +51,7 @@ const configAuth: AuthConfig = {
     // SocketIoModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     // AgmCoreModule.forRoot({
-    //   apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
+    //   apiKey: environment.googleMapsApiKey,
     //   libraries: ['places']
     // }),
     AuthModule.forRoot(configAuth),

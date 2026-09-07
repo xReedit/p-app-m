@@ -39,6 +39,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   url_img = URL_IMG_CARTA;
 
   isWaitBtnMenos = false;
+  private confirmado = false;
 
   private destroyDlg$: Subject<boolean> = new Subject<boolean>();
   private isFirstOpen = true; // controla los observables // el observable de cantidad no se ejecuta en la primera interaccion
@@ -110,8 +111,52 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+
+    // Si cerro SIN confirmar (backdrop/escape/cerrar), limpiar la seleccion stale
+    if (!this.confirmado && this.item) {
+      this.item.subitems_selected = [];   // [] — el tipo es SubItem[], no acepta null
+      this._subitems_selected = [];
+    }
+
+    this.resetDialogItemState();
     this.destroyDlg$.next(true);
     this.destroyDlg$.unsubscribe();
+
+    
+  }
+
+  private resetDialogItemState(): void {
+    this._subitems_selected = [];
+    this.item.indicaciones = '';
+    this.item.subitems_selected = null;
+    this.item.subitems_view = null;
+
+    if ( !this.item.subitems || this.item.subitems.length === 0 ) { return; }
+
+    this.item.subitems.map((subitemContent: any) => {
+      if ( subitemContent.isObligatorio !== undefined ) {
+        subitemContent.isObligatorio = subitemContent.subitem_required_select === 1;
+      }
+
+      if ( !subitemContent.opciones ) { return; }
+
+      subitemContent.opciones.map((opcion: any) => {
+        opcion.selected = false;
+        opcion.stop_add = false;
+
+        if ( opcion.cantidad_selected !== undefined ) {
+          opcion.cantidad_selected = 0;
+        }
+
+        if ( opcion.desIni ) {
+          opcion.des = opcion.desIni;
+        }
+
+        if ( opcion.precio_first !== undefined && opcion.precio_first !== null ) {
+          opcion.precio = Number(opcion.precio_first).toFixed(2);
+        }
+      });
+    });
   }
 
   // reset control cantidad
@@ -293,7 +338,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     this.item.subitems.map((sc: SubItemContent) => {
       sc.opciones.filter((s: SubItem) => s.selected)
                 .map((s: SubItem) => {
-                  this._subitems_selected.push(s);
+                  // this._subitems_selected.push(s);
+                  this._subitems_selected.push(JSON.parse(JSON.stringify(s)));                  
                 });
     });
 
@@ -363,6 +409,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     // ver si selecciono subitems y si ese subitem tiene stock disponible
 
     this.miPedidoService.addItem2(tpcSelect, this.item, suma);
+    this.confirmado = true;
 
     tpcSelect.animar_cantidad = true;
     setTimeout(() => {
@@ -408,6 +455,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   }
 
   cerrarDlg(): void {
+    this.resetDialogItemState();
     this.dialogRef.close();
   }
 

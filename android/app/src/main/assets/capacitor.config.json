@@ -15,5 +15,8 @@
 			]
 		}
 	},
-	"cordova": {}
+	"cordova": {},
+	"android": {
+		"allowMixedContent": true
+	}
 }

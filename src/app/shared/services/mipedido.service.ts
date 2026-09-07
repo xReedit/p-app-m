@@ -604,7 +604,8 @@ export class MipedidoService {
           newSubItemView.cantidad_seleccionada = 1;
           newSubItemView.precio += parseFloat(x.precio.toString());
           // newSubItemView.indicaciones += x.indicaciones === undefined ? '' :  ' (' + x.indicaciones + ')';
-          newSubItemView.subitems.push(x);
+          // newSubItemView.subitems.push(x);
+          newSubItemView.subitems.push(JSON.parse(JSON.stringify(x)));
           newSubItemView.idtipo_consumo = x.idtipo_consumo;
         });
 
@@ -902,6 +903,10 @@ export class MipedidoService {
             x.cantidad_selected = 0;
           }
           x.itemtiposconsumo = null;
+          x.is_visible_control_last_add = false;
+          
+          // resetear subitems (extras) del item en la carta
+          this.resetSubitemsItem(x);
           // return x;
         });
       });
@@ -1254,6 +1259,9 @@ export class MipedidoService {
         //   tpc.cantidad_seleccionada = 0;
         _item.is_visible_control_last_add = false;
         // });
+
+        // resetear subitems (extras) del item
+        this.resetSubitemsItem(_item);
       });
     } catch (error) {
       // console.log(error);
@@ -1264,6 +1272,29 @@ export class MipedidoService {
     // this.laCartaObjSource.next(this.objCarta);
 
     this.listItemsPedido = [];
+  }
+
+  // resetear subitems (extras) de un item - limpia cantidad_selected de las opciones
+  private resetSubitemsItem(_item: any): void {
+    if (!_item.subitems || _item.subitems === '0' || _item.subitems.length === 0) { return; }
+    _item.subitems.map((subitemContent: any) => {
+      if (subitemContent.show_cant_item === 1 && subitemContent.opciones) {
+        subitemContent.opciones.map((opcion: any) => {
+          if (opcion.cantidad_selected > 0) {
+            opcion.des = opcion.desIni || opcion.des;
+            opcion.precio = opcion.precio_first ? opcion.precio_first.toFixed(2) : opcion.precio;
+            opcion.cantidad_selected = 0;
+            opcion.stop_add = false;
+            opcion.selected = false;
+          }
+        });
+      } else if (subitemContent.opciones) {
+        subitemContent.opciones.map((opcion: any) => {
+          opcion.selected = false;
+        });
+      }
+    });
+    _item.subitems_selected = null;
   }
 
   updatePedidoFromStrorage() {

@@ -8,7 +8,6 @@ import { LectorSuccessComponent } from './lector-success/lector-success.componen
 import { CallbackAuthComponent } from './callback-auth/callback-auth.component';
 import { CodigoQrGuard } from 'src/app/shared/guards/codigo-qr.guard';
 import { LoginClienteComponent } from './login-cliente/login-cliente.component';
-import { SeleccionarUbicacionDeliveryComponent } from './seleccionar-ubicacion-delivery/seleccionar-ubicacion-delivery.component';
 import { RedirecLectorComponent } from './redirec-lector/redirec-lector.component';
 
 const routes: Routes = [{

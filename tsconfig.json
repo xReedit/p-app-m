@@ -1,6 +1,8 @@
 {
   "compileOnSave": false,
-  // "enableIvy": false,
+  "exclude": [
+    "src/app/_unused/**/*"
+  ],
   "compilerOptions": {
     "baseUrl": "./",
     "downlevelIteration": true,

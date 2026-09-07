@@ -292,7 +292,7 @@
 <!-- ver la cuenta solo personal autorizado -->
 <div class="text-center" *ngIf="!hayItems && !isCliente && !isPuntoAuntoPedido">
     <br>    
-    <img class="img-cuenta" src="./assets/images/icon_1.gif" width="300px" alt="..">
+    <img class="img-cuenta" src="assets/images/icon_1.gif" width="300px" alt="..">
     <br>
     <span class="fw-100 fs-20">Ver cuenta de la mesa #:</span>
     <div class="w-100">
@@ -305,6 +305,7 @@
         </mat-form-field>
     </div>        
     <span class="fs-14 font-weight-bold text-danger animated flash" [hidden]="!msjErr">No se encontro cuenta de esta mesa.</span>
+    <span class="fs-14 font-weight-bold text-danger animated flash" [hidden]="!msjErrConexion">No se pudo cargar la cuenta, verifique su conexión y vuelva a intentar.</span>
     <br><br>
     <button mat-flat-button color="primary" (click)="xLoadCuentaMesa(txt_mesa_cuenta.value)">Listo, buscar</button>
     <br><br><br>

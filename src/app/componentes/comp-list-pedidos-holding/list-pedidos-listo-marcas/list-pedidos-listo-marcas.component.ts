@@ -57,7 +57,7 @@ export class ListPedidosListoMarcasComponent implements OnInit {
   private playAudio() {
     const audio = new Audio();
     // audio.src = 'https://restobar.papaya.com.pe/sound/notifica-llamado.mp3';
-    audio.src = '../assets/sound/notifica-llamado.mp3';
+    audio.src = 'assets/sound/notifica-llamado.mp3';
     audio.load();
 
     try {

@@ -21,7 +21,7 @@
       <ng-container *ngIf="listenStatusService.isFinishLoaderSendPedido$ | async; else elseTemplateNoFinish">
         
         <ng-container *ngIf="isUsuarioCliente; else elseTemplateIsMozo">
-          <img src="./assets/images/printer_3.gif" alt="send-printer">        
+          <img src="assets/images/printer_3.gif" alt="send-printer">        
           <div style="max-width: 220px;">
             <p class="pt-2 fs-18 fw-600">Pedido Recibido.</p>
             <hr>
@@ -32,7 +32,7 @@
         </ng-container>
         <ng-template #elseTemplateIsMozo>
 
-            <img src="./assets/images/success_3.gif" width="130px" alt="send-success">        
+            <img src="assets/images/success_3.gif" width="130px" alt="send-success">        
             <p class="pt-2 fs-18 fw-600">Pedido Enviado</p>
           
         </ng-template>
@@ -41,7 +41,7 @@
                 
       </ng-container>
       <ng-template #elseTemplateNoFinish>        
-        <img src="./assets/images/plane_3.gif" alt="send">
+        <img src="assets/images/plane_3.gif" alt="send">
         <br><br>
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
         <span class="pt-2 fs-16 fw-600">Enviando pedido...</span>

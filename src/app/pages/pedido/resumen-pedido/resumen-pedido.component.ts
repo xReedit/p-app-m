@@ -28,7 +28,7 @@ import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/di
 import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 import { SelectorMesaModalComponent } from './selector-mesa-modal/selector-mesa-modal.component';
 import { Subject } from 'rxjs/internal/Subject';
-import { takeUntil, take, last, takeLast, distinctUntilChanged, debounceTime } from 'rxjs/operators';
+import { takeUntil, take, last, takeLast, distinctUntilChanged, debounceTime, timeout } from 'rxjs/operators';
 import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedido-cliente.service';
 // import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
@@ -62,6 +62,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   rulesSubtoTales: any;
 
   msjErr = false;
+  msjErrConexion = false;
+  private cargandoCuenta = false;
 
   isReserva = false;
   isRequiereMesa = false;
@@ -662,7 +664,12 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.infoToken.setMetodoPagoSelected(this.infoToken.infoUsToken.metodoPago);
 
     setTimeout(() => {
-      this.enviarPedido();
+      // cualquier error al armar el pedido cerraba el loader nunca y bloqueaba isSavingPedido
+      try {
+        this.enviarPedido();
+      } catch (error) {
+        this.errorSendPedido(error);
+      }
     }, 1400);
 
     // const _dialogConfig = new MatDialogConfig();
@@ -747,7 +754,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       holding: this.infoToken.getHolding(),
       paymentMozo: this.dataPayametMozo,
       idcliente: this.infoToken.infoUsToken.idcliente || 0,
-    };    
+      // clave de idempotencia: los reintentos reusan dataSend, el backend no guarda dos veces la misma clave
+      idem: Date.now().toString(36) + Math.random().toString(36).slice(2),
+    };
 
     // console.log('cccccccccccccc');
     // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
@@ -977,9 +986,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   // _resCuentaFromCliente desde la cuenta del cliente
-  xLoadCuentaMesa(mesa: string, _resCuentaFromCliente: any = null): void {
+  xLoadCuentaMesa(mesa: string, _resCuentaFromCliente: any = null, intento = 0): void {
+    if (this.cargandoCuenta) { return; }
     this.isHayCuentaBusqueda = false;
     this.msjErr = false;
+    this.msjErrConexion = false;
     this.numMesaCuenta = mesa;
     const datos = { mesa: mesa };
 
@@ -993,9 +1004,24 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.crudService.postFree(datos, 'pedido', 'lacuenta').subscribe((res: any) => {
-      this.desglozarCuenta(res);
-    });
+    this.cargandoCuenta = true;
+    this.crudService.postFree(datos, 'pedido', 'lacuenta')
+      .pipe(timeout(15000))
+      .subscribe({
+        next: (res: any) => {
+          this.cargandoCuenta = false;
+          this.desglozarCuenta(res);
+        },
+        error: (err: any) => {
+          this.cargandoCuenta = false;
+          // el backend responde 429 si se pide la misma mesa dos veces en < 3s: esperar y reintentar una vez
+          if (err && err.status === 429 && intento < 1) {
+            setTimeout(() => this.xLoadCuentaMesa(mesa, null, intento + 1), 3200);
+            return;
+          }
+          this.msjErrConexion = true;
+        }
+      });
   }
 
 
@@ -1216,10 +1242,22 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   // 20022023
   // acelerar el envio en conexiones lentas
-  private async savePedidoSocket2(dataSend: any, isPagoConTarjeta: boolean, _subTotalesSave: any) {
+  private async savePedidoSocket2(dataSend: any, isPagoConTarjeta: boolean, _subTotalesSave: any, intento = 0) {
+    let resSocket: any;
     try {
-      const resSocket = await this.socketService.asyncEmitPedido('nuevoPedido', 'nuevoPedidoRes', JSON.stringify(dataSend));
-      
+      resSocket = await this.socketService.asyncEmitPedido('nuevoPedido', JSON.stringify(dataSend));
+    } catch (error) {
+      // ponytail: 3 reintentos automaticos con la misma clave idem (2s entre cada uno), luego dialogo al mozo
+      if (intento < 3) {
+        await new Promise(r => setTimeout(r, 2000));
+        return this.savePedidoSocket2(dataSend, isPagoConTarjeta, _subTotalesSave, intento + 1);
+      }
+      console.error('Error al enviar pedido:', error);
+      this.errorSendPedido(error, dataSend, isPagoConTarjeta, _subTotalesSave);
+      return;
+    }
+
+    try {
       // Validar que la respuesta sea válida
       if (!resSocket || resSocket === false || resSocket === undefined) {
         this.errorSendPedido(resSocket, dataSend, isPagoConTarjeta, _subTotalesSave);
@@ -1284,7 +1322,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // Guardar el error en el servidor
     const dataError = {
-      elerror: JSON.stringify(resSocket),
+      // JSON.stringify(new Error()) da "{}", asi nunca sabiamos que fallo
+      elerror: resSocket instanceof Error ? resSocket.message : JSON.stringify(resSocket),
       elorigen: 'resumen-pedido'
     };
 
@@ -1308,6 +1347,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
           this.isSavingPedido = true;
           this.savePedidoSocket2(dataSend, isPagoConTarjeta, _subTotalesSave);
         }, 500);
+      } else if (result) {
+        // fallo al armar el pedido (no hay dataSend): reintentar desde cero
+        this.showLoaderPedido();
       } else {
         // El usuario canceló, dejar el pedido como está
         console.log('Usuario canceló el reenvío del pedido');

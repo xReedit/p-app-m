@@ -9,7 +9,6 @@ import { environment } from './../../../../environments/environment';
 import { AuthNativeService } from 'src/app/shared/services/auth-native.service';
 import { AuthService } from '@auth0/auth0-angular';
 
-import { Browser } from '@capacitor/browser';
 import { callbackUri } from 'src/app/auth.config';
 import { mergeMap } from 'rxjs/operators';
 import { App } from '@capacitor/app';
@@ -75,9 +74,6 @@ export class InicioComponent implements OnInit, OnDestroy {
         this.infoToken.setIsUsuarioAutorizacion(false);
       }      
 
-      // document.body.style.backgroundColor = '#fff';
-      // document.body.style.background = '#fff';
-      this.verificarVersion();
     }, 2000);
 
     // verificar si existe una nueva version
@@ -298,56 +294,6 @@ export class InicioComponent implements OnInit, OnDestroy {
     if ( this.countLogo === 4 && this.countnDev === 2 ) { this.router.navigate(['./zona-delivery']); }
   }
 
-
-  verificarVersion() {
-    // const dataSend = {
-    //   name_app: 'app_mozo'      
-    // }
-    
-  //   this.crudHttpService.postFree(dataSend, 'version-app', 'get-version-app', false).subscribe((res: any) => {
-
-  //     try {
-  //       if ( res.data[0] ) {
-  //         if (res.data[0].version !== this.APP_VERSION_ACTUAL ) {
-  //           Swal.fire({
-  //             title: 'Actualización de la App',
-  //             text: 'Se detectó una nueva versión de la App. Desea actualizar?',
-  //             icon: 'info',
-  //             theme: 'dark',
-  //             confirmButtonColor: '#3085d6',
-  //             cancelButtonColor: '#d33',
-  //             showCancelButton: true,
-  //             confirmButtonText: 'Actualizar',
-  //             cancelButtonText: 'Cancelar',
-  //           }).then((result) => {
-  //             if (result.isConfirmed) {
-  //               this.openAppStore(res.data[0].properties);
-  //             }
-  //           });
-  //        }
-  //       }
-  //     } catch (error) {
-  //       console.log('error', error);
-  //     }
-  //   }); 
-  }
-
-  // Método para abrir la tienda de aplicaciones
-  openAppStore(storeInfo: any) {    
-    const userAgent = navigator.userAgent || navigator.vendor;    
-
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window['MSStream']) {
-      // iOS - Usar la URL proporcionada por el servidor
-      if (storeInfo.ios && storeInfo.ios.url) {
-        Browser.open({ url: storeInfo.ios.url });
-      }
-    } else if (/android/i.test(userAgent)) {
-      // Android - Usar la URL proporcionada por el servidor
-      if (storeInfo.android && storeInfo.android.url) {
-        Browser.open({ url: storeInfo.android.url });
-      }
-    }
-  }
 
   
 

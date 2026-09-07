@@ -459,37 +459,22 @@ export class SocketService {
     });
   }
 
-  asyncEmitPedido(eventName: string, eventNameRes: string, data: any) {
+  // Envia el pedido y espera el ack del servidor. Si el socket se desconecta o pasan timeoutMs,
+  // la promesa rechaza de inmediato y el que llama decide reintentar (el backend no duplica por la clave idem).
+  asyncEmitPedido(eventName: string, data: any, timeoutMs = 15000): Promise<any> {
     return new Promise((resolve, reject) => {
-      let isResolved = false;
-      
-      // Timeout de 15 segundos para rechazar la Promise si no hay respuesta
-      const timeout = setTimeout(() => {
-        if (!isResolved) {
-          isResolved = true;
-          this.socket.off(eventNameRes);
-          this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(true);
-          reject(new Error('Timeout: No se recibió respuesta del servidor. Verifique su conexión a internet.'));
-        }
-      }, 15000);
-      
-      try {      
-        this.socket.emit(eventName, data);
-        this.socket.on(eventNameRes, result => {
-          if (!isResolved) {
-            isResolved = true;
-            clearTimeout(timeout);
-            this.socket.off(eventNameRes);
-            resolve(result);
-          }
-        });
-      } catch (error) {
-        if (!isResolved) {
-          isResolved = true;
-          clearTimeout(timeout);
-          reject(error);
-        }
+      if (!this.socket) {
+        reject(new Error('socket no inicializado'));
+        return;
       }
+      this.socket.timeout(timeoutMs).emit(eventName, data, (err: Error, res: any) => {
+        if (err) {
+          this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(true);
+          reject(err);
+          return;
+        }
+        resolve(res);
+      });
     });
   }
 

@@ -1,6 +1,11 @@
 <div class="marcas-grid">
     <div *ngFor="let marca of marcas; trackBy: trackByMarcaId" class="marca-item" (click)="selectMarca(marca, $event)" matRipple>
-        <img [src]="marca.imagen_url_comercial" [alt]="marca.nombre_comercial" *ngIf="marca.imagen_url_comercial">
+        <ng-container *ngIf="marca.imagen_url_comercial; else defaultImg">
+            <img [src]="marca.imagen_url_comercial" [alt]="marca.nombre_comercial">
+        </ng-container>
+        <ng-template #defaultImg>
+            <img src="assets/images/048-grill.png" [alt]="marca.nombre_comercial">
+        </ng-template>
         <p class="nombre">{{marca.nombre_comercial}}</p>
         <p class="oferta">{{marca.oferta_comercial}}</p>
     </div>

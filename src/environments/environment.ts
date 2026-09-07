@@ -2,9 +2,12 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+import { environmentSecret } from './environment.secret';
+
 export const environment = {
   production: true,
-  view_mozo: false // true = app solo mozo
+  view_mozo: false, // true = app solo mozo
+  googleMapsApiKey: environmentSecret.googleMapsApiKey
 };
 
 /*

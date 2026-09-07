@@ -23,6 +23,7 @@ export class DialogVerificarTelefonoComponent implements OnInit {
   conteoInterval: any;
   numSegundosActivarBtn = 15;
   isContandoShow = false;
+  sinVerificacion = false;
   private isClienteNoRegister = false;
 
   constructor(
@@ -33,7 +34,7 @@ export class DialogVerificarTelefonoComponent implements OnInit {
     private verifyClientService: VerifyAuthClientService
   ) {
     this.data = data;
-
+    this.sinVerificacion = data?.sinVerificacion || false;
 
     // cliente aun no definido
     // busca el cliente por el numero de telefono sino lo encuentra
@@ -198,6 +199,11 @@ export class DialogVerificarTelefonoComponent implements OnInit {
 
       this.sendSMS(codMedio);
     });
+  }
+
+  confirmarNumero(): void {
+    this.data.verificado = true;
+    this.dialogRef.close(this.data);
   }
 
   cerrarDlg(): void {

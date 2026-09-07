@@ -17,7 +17,8 @@ import { MapsServiceService } from './maps-service.service';
   providedIn: 'root'
 })
 export class CalcDistanciaService {
-  directionsService = new google.maps.DirectionsService();
+  // se crea al usarse: el script de Google Maps carga tarde y el servicio se inyecta en /pedido antes de eso
+  private get directionsService() { return new google.maps.DirectionsService(); }
   // private directionsDisplay = new google.maps.DirectionsRenderer();
 
   private origin = {};

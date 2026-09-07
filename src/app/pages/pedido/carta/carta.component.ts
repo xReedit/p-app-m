@@ -45,7 +45,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   objCartaBus: any = [];
   isBusqueda = false;
   rutaImgItem = URL_IMG_CARTA;
-  imgNull = './assets/images/icon-app/img-null.png';
+  imgNull = 'assets/images/icon-app/img-null.png';
   private isCargado = true;
 
   public showCategoria = false;
@@ -210,7 +210,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       takeUntil(this.destroy$)
     )
     .subscribe((res: any) => {
-      if (res.pageActive === 'carta') {
+      if (res.pageActive === 'carta' && !this.isSelectingMarca) {
         // if (this.countSeeBack < 2) { this.countSeeBack++; return; }
         this.goBack();
       } else {
@@ -288,6 +288,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
             this.navigatorService.setPageActive('carta');
             if ( this.infoToken.getIsHolding() ) {
               this.showToolBar = true;
+              this.showHoldingMarcas = false;
+              this.showCategoria = true;
+              this.isSelectingMarca = false;
             }
           // }
 
@@ -935,17 +938,13 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tituloToolBar = "MARCAS";    
     this.infoToken.setIdSede(marca.idsede_marca);
     this.infoToken.setIdOrg(marca.idorg_marca);
-    this.socketService.reconnect();    
-    this.initCarta();
-    setTimeout(() => {
-      // this.navigatorService.addLink('marcas');
-      this.showHoldingMarcas = false;
-      this.showCategoria = true;
-      // Desactivar bandera después de completar la selección
-      setTimeout(() => {
-        this.isSelectingMarca = false;
-      }, 500);
-    }, 200);
-  }
 
+    this.showHoldingMarcas = false;
+    this.showCategoria = false;
+    this.showSecciones = false;
+    this.showItems = false;
+
+    this.socketService.closeConnection();
+    this.initCarta();
+  }
 }

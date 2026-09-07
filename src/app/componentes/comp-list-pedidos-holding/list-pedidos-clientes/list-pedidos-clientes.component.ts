@@ -80,7 +80,7 @@ export class ListPedidosClientesComponent implements OnInit {
 
   private playAudio() {
     const audio = new Audio();
-    audio.src = '../assets/sound/notifica-llamado.mp3';
+    audio.src = 'assets/sound/notifica-llamado.mp3';
     audio.load();
 
     try {

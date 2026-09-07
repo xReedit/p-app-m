@@ -404,7 +404,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
     _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
     _dialogConfig.data = {
       idcliente: this.infoTokenService.infoUsToken.idcliente,
-      numberphone: this.infoTokenService.infoUsToken.telefono ? this.infoTokenService.infoUsToken.telefono : '' // '+51934746830'
+      numberphone: this.infoTokenService.infoUsToken.telefono ? this.infoTokenService.infoUsToken.telefono : '', // '+51934746830'
+      sinVerificacion: true
     };
 
     const dialogRefTelefono = this.dialogTelefono.open(DialogVerificarTelefonoComponent, _dialogConfig);

@@ -228,30 +228,22 @@ export class MainComponent implements OnInit {
   }
 
   clickMarca($event: any) {
-    // Solo procesar si el clic fue directamente en el tab label (mat-tab-label)
-    const target = $event.target as HTMLElement;
-    const isTabLabel = target.closest('.mat-tab-label') !== null;
-    
-    if (!isTabLabel) {
-      return; // Ignorar clics que no sean en los tabs
-    }
-    
-    const titleTab = target.textContent?.toLowerCase().trim() || '';    
-    if ( titleTab === 'marcas' ) {
-      this.listenStatusService.setListenGoBackMarcas();
-    }
+    // No hacer nada aquí - la lógica se maneja en clickTab
   }
 
   clickTab($event: any) {
-
-
-
     console.log('event tab', $event);
     this.selectedTab = $event.index;
 
+    const _pageActive = $event.tab.textLabel.toLowerCase();
+    
+    // Si se selecciona el tab de Marcas (index 0) y es holding, volver a mostrar marcas
+    if (_pageActive === 'marcas' && this.isHolding) {
+      this.listenStatusService.setListenGoBackMarcas();
+    }
+
     // if ( this.selectedTab === 1 && !this.isScreenIsMobile ) {return false; }
 
-    const _pageActive = $event.tab.textLabel.toLowerCase();
     this.navigatorService.setPageActive(_pageActive);
     // $event.srcElement.scrollTop = 0;
     this.isVisibleToolBar = true;

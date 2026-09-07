@@ -18,19 +18,26 @@
     <p *ngIf="isNumberSuccess ===2 " class="text-danger">Número no valido.</p>
     <br>
 
-    <p class="m-0 pb-1">
-        Enviar <span class="fw-600" *ngIf="intentoVerificacion > 0 && !isContandoShow">nuevamente</span> código de verificación por:
-    </p>
-    <ng-container *ngIf="!isContandoShow; else elseTemplateMsjVerificacion">
-        <div class="d-flex">
-            <button matRipple [disabled]="!isValidForm" (click)="enviarCodigoSMS(0)"  class="btn btn-success mr-1"><i class="fa fa-whatsapp pr-1" aria-hidden="true"></i> Whatsapp</button>
-            <button matRipple [disabled]="!isValidForm" (click)="enviarCodigoSMS(1)"  class="btn btn-info"><i class="fa fa-comment pr-1" aria-hidden="true"></i> SMS</button>
-        </div>
+    <ng-container *ngIf="sinVerificacion; else templateConVerificacion">
+        <button mat-flat-button color="primary" [disabled]="!isValidForm" (click)="confirmarNumero()">
+            Confirmar
+        </button>
     </ng-container>
-    <ng-template #elseTemplateMsjVerificacion>
-        <div>
-            <p class="fw-600 text-info">{{ numSegundosActivarBtn | number: '2.'}} Enviando Mensaje...</p>
-        </div>
+    <ng-template #templateConVerificacion>
+        <p class="m-0 pb-1">
+            Enviar <span class="fw-600" *ngIf="intentoVerificacion > 0 && !isContandoShow">nuevamente</span> código de verificación por:
+        </p>
+        <ng-container *ngIf="!isContandoShow; else elseTemplateMsjVerificacion">
+            <div class="d-flex">
+                <button matRipple [disabled]="!isValidForm" (click)="enviarCodigoSMS(0)"  class="btn btn-success mr-1"><i class="fa fa-whatsapp pr-1" aria-hidden="true"></i> Whatsapp</button>
+                <button matRipple [disabled]="!isValidForm" (click)="enviarCodigoSMS(1)"  class="btn btn-info"><i class="fa fa-comment pr-1" aria-hidden="true"></i> SMS</button>
+            </div>
+        </ng-container>
+        <ng-template #elseTemplateMsjVerificacion>
+            <div>
+                <p class="fw-600 text-info">{{ numSegundosActivarBtn | number: '2.'}} Enviando Mensaje...</p>
+            </div>
+        </ng-template>
     </ng-template>
 
     <!-- <button 
@@ -56,7 +63,7 @@
     
 </div>
 <hr>
-<div class="p-4" *ngIf="isSendSMS">
+<div class="p-4" *ngIf="isSendSMS && !sinVerificacion">
     <p class="text-success fs-600">En breve recibiras un mensaje. Escribelo el código aquí:</p>
     <mat-form-field class="w-100">
         <input type="number" matInput name="txtCodigo" class="input-headline-verification"

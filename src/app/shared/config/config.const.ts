@@ -3,8 +3,8 @@ export const IS_NATIVE = Capacitor.getPlatform() !== 'web';
 export const IS_PLATAFORM_IOS = IS_NATIVE ? Capacitor.getPlatform() === 'ios' : false;
 
 // pruebas
-export const URL_SERVER = 'http://localhost:5819/v3'; // desarrollo
-export const URL_SERVER_SOCKET = 'http://localhost:5819'; // desarrollo
+export const URL_SERVER = 'http://192.168.1.52:5819/v3'; // desarrollo (IP PC para probar en celular)
+export const URL_SERVER_SOCKET = 'http://192.168.1.52:5819'; // desarrollo (IP PC para probar en celular)
 export const URL_SERVER_SOCKET_SPEECH = 'http://192.168.1.39:1337'; //
 export const URL_SERVER_FILE_AUDIO_SPEECH = 'http://192.168.1.39:1337/resources/'; //
 export const URL_IMG_CARTA = 'http://192.168.1.65/restobar/file/'; // imagenes de la carta

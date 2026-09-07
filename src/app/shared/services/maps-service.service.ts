@@ -6,6 +6,7 @@ import { IS_NATIVE } from '../config/config.const';
 import { Geolocation } from '@capacitor/geolocation';
 import { MapsAPILoader } from '@agm/core';
 import { CrudHttpService } from './crud-http.service';
+import { environment } from '../../../environments/environment';
 // import { ViewFlags } from '@angular/compiler/src/core';
 
 // import { Plugins } from '@capacitor/core';
@@ -15,7 +16,7 @@ import { CrudHttpService } from './crud-http.service';
 })
 export class MapsServiceService {
 
-  apiKeyGoogle = 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo';
+  apiKeyGoogle = environment.googleMapsApiKey;
   constructor(
     private mapsAPILoader: MapsAPILoader,
     private crudService: CrudHttpService

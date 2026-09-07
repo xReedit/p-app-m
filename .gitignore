@@ -52,3 +52,6 @@ Thumbs.db
 
 # bundles firmados/sin firmar para subir a las tiendas
 release/
+
+# notas locales con secretos (contrasena del keystore)
+CLAUDE.local.md

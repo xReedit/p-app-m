@@ -639,7 +639,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   get showPersonas(): boolean {
-    return this.modoPersonas !== '0' && !this.frmConfirma.delivery && !this.frmConfirma.solo_llevar && !this.frmConfirma.reserva;
+    // solo el formulario del personal autorizado tiene el campo; cliente QR y autopedido no se bloquean
+    return !this.isCliente && !this.isPuntoAuntoPedido && this.modoPersonas !== '0'
+      && !this.frmConfirma.delivery && !this.frmConfirma.solo_llevar && !this.frmConfirma.reserva;
   }
 
   get isRequierePersonas(): boolean {

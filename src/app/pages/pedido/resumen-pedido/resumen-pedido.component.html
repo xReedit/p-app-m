@@ -235,18 +235,19 @@
                             </div>
                             </div>
                                             
-                            <div class="w-100" *ngIf="showPersonas">
-                            <mat-form-field class="w-100 text-center">
-                                <input matInput type="number" inputmode="numeric" min="1" max="99"
-                                placeholder="{{ modoPersonas === '2' ? 'N° de personas (obligatorio)' : 'N° de personas (opcional)' }}"
-                                [(ngModel)]="frmConfirma.personas" name="personas" [required]="modoPersonas === '2'">
-                            </mat-form-field>
-                            </div>
-
                             <div class="w-100">
                             <mat-form-field class="w-100 text-center">
                                 <input matInput placeholder="Indique alguna referencia" [(ngModel)]="frmConfirma.referencia"
                                 name="referencia" maxlength="50">
+                            </mat-form-field>
+                            </div>
+
+                            <div class="w-100 text-center" *ngIf="showPersonas">
+                            <mat-form-field appearance="outline" class="text-center" style="width: 150px;">
+                                <mat-label>N° de personas</mat-label>
+                                <input matInput type="number" inputmode="numeric" min="1" max="99"
+                                [(ngModel)]="frmConfirma.personas" name="personas" [required]="modoPersonas === '2'">
+                                <mat-hint *ngIf="modoPersonas !== '2'">opcional</mat-hint>
                             </mat-form-field>
                             </div>
 

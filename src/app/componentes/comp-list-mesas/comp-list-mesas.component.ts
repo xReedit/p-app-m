@@ -102,6 +102,7 @@ export class CompListMesasComponent implements OnInit {
       _dialogConfig.hasBackdrop = true;
       _dialogConfig.data = {idMjs: 2};
 
+      _dialogConfig.autoFocus = false;
       const dialogReset = this.dialog.open(DialogDesicionComponent, _dialogConfig);
       dialogReset.afterClosed().subscribe(result => {
         if ( !result ) {return; }

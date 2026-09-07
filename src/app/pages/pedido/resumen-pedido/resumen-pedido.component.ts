@@ -558,6 +558,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     const _dialogConfig = new MatDialogConfig();
     _dialogConfig.disableClose = true;
+    _dialogConfig.autoFocus = false;
     _dialogConfig.hasBackdrop = true;
 
     const dialogReset = this.dialog.open(DialogResetComponent, _dialogConfig);
@@ -1169,6 +1170,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   private goBackOutEstablecimiento() {
     const dialogConfig = new MatDialogConfig();
         dialogConfig.data = {idMjs: 2};
+        dialogConfig.autoFocus = false;
 
         const dialogReset = this.dialog.open(DialogResetComponent, dialogConfig);
         dialogReset.afterClosed().subscribe(result => {
@@ -1354,6 +1356,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // Mostrar diálogo con opción de reintentar
     const _dialogConfig = new MatDialogConfig();
     _dialogConfig.disableClose = true;
+    _dialogConfig.autoFocus = false;
     _dialogConfig.hasBackdrop = true;
     _dialogConfig.data = { idMjs: 4 };
 

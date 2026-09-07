@@ -1,9 +1,7 @@
-<div class="p-3">
-    <span class="fw-100 fs-15">{{msj}}</span>
-    <hr>
-    <div class="d-flex">
-        <button class="btn btn-success" (click)="cerrarDlg(true)">{{titleBtnSuccess}}</button>
-        <button class="ml-2 btn btn-danger" (click)="cerrarDlg(false)">{{titleBtnCancel}}</button>
+<div class="p-3 pt-4">
+    <p class="fs-16 mb-4" style="line-height: 1.4;">{{msj}}</p>
+    <div class="d-flex justify-content-end" style="gap: 8px;">
+        <button mat-stroked-button (click)="cerrarDlg(false)">{{titleBtnCancel}}</button>
+        <button mat-flat-button color="primary" (click)="cerrarDlg(true)">{{titleBtnSuccess}}</button>
     </div>
-    <br>
 </div>

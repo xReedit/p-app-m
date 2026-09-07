@@ -24,15 +24,30 @@ cd android
 # resultado: android/app/build/outputs/bundle/release/app-release.aab (SIN firmar)
 ```
 
-Firmar con la clave de subida (`D:\Projects\Papaya.keystore`):
+Firmar con la clave de subida. OJO: `D:\Projects\Papaya.keystore` NO es la llave (es el certificado
+de depuración de Android exportado). Candidatas en `D:\Projects\capacitor\`: `key_app_pedido.jks`
+(la más probable), `key2.jks`, `key-practica1.jks`; todas piden contraseña incluso para listarse.
+
+Para saber cuál es: en Play Console > Papaya App Mozo > Configuración > Integridad de la app,
+copiar el SHA-1 del "certificado de clave de subida" y compararlo con:
+
+```bash
+"C:\Program Files\Java\jdk1.8.0_351\bin\keytool.exe" -list -v -keystore D:\Projects\capacitor\key_app_pedido.jks
+# pide la contraseña; muestra el alias y el SHA1 de cada entrada
+```
+
+Con la llave y el alias correctos:
 
 ```bash
 "C:\Program Files\Java\jdk1.8.0_351\bin\jarsigner.exe" -verbose -sigalg SHA256withRSA -digestalg SHA-256 ^
-  -keystore D:\Projects\Papaya.keystore ^
-  android\app\build\outputs\bundle\release\app-release.aab <alias-del-keystore>
+  -keystore D:\Projects\capacitor\key_app_pedido.jks ^
+  android\app\build\outputs\bundle\release\app-release.aab <alias>
 
 "C:\Program Files\Java\jdk1.8.0_351\bin\jarsigner.exe" -verify android\app\build\outputs\bundle\release\app-release.aab
 ```
+
+Si ninguna coincide, Play Console permite solicitar el cambio de clave de subida
+(Integridad de la app > Solicitar cambio de clave de subida) generando una llave nueva.
 
 (Alternativa: Android Studio > Build > Generate Signed Bundle / APK con el mismo keystore.)
 
@@ -44,6 +59,10 @@ Play Console > Producción > Crear nueva versión > subir el `.aab`. Notas de la
 ## 2. iOS (App Store), en la Mac
 
 Requisitos: Xcode 16+, CocoaPods, cuenta Apple Developer. Deployment target ya está en iOS 15.
+
+El certificado de distribución guardado en `D:\Projects\capacitor\certificados ios\mozo\`
+(Certificates.p12 / distribution.cer) venció el 22-01-2024: no sirve. En Xcode, con
+"Automatically manage signing" y la cuenta del equipo, se genera uno nuevo solo.
 
 ```bash
 git pull

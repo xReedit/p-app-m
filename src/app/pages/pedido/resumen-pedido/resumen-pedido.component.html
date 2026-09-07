@@ -340,8 +340,8 @@
 
 <!-- footer -->
 <ng-container *ngIf="hayItems && !isHayCuentaBusqueda">
-    <div class="xfooter">
-      <div class="m-0 w-100 d-flex justify-content-between">
+    <div class="xfooter" @slideFooter>
+      <div class="m-0 w-100 d-flex justify-content-between footer-botones">
         <div class="btn-footer-cancel" matRipple (click)="nuevoPedido()">
             <span [hidden]="isVisibleConfirmarAnimated" class="animated fadeInRight">
                 <ng-container *ngIf="isCliente; else elseTemplateisDeliveryCliente">

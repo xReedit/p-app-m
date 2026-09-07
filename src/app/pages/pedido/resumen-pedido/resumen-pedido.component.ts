@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { FormaPagoComponent } from 'src/app/componentes/holding/forma-pago/forma-pago.component';
 
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
@@ -44,7 +45,19 @@ import { HoldingService } from 'src/app/shared/services/holding.service';
 @Component({
   selector: 'app-resumen-pedido',
   templateUrl: './resumen-pedido.component.html',
-  styleUrls: ['./resumen-pedido.component.css']
+  styleUrls: ['./resumen-pedido.component.css'],
+  animations: [
+    // el pie con los botones entra desde abajo y sale hacia abajo
+    trigger('slideFooter', [
+      transition(':enter', [
+        style({ transform: 'translateY(100%)' }),
+        animate('220ms cubic-bezier(0.22, 1, 0.36, 1)', style({ transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('180ms cubic-bezier(0.55, 0, 1, 0.45)', style({ transform: 'translateY(100%)' }))
+      ])
+    ])
+  ]
 })
 export class ResumenPedidoComponent implements OnInit, OnDestroy {
   [x: string]: any;

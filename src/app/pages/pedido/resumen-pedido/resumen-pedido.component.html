@@ -243,11 +243,11 @@
                             </div>
 
                             <div class="w-100 text-center" *ngIf="showPersonas">
-                            <mat-form-field appearance="outline" class="text-center" style="width: 150px;">
-                                <mat-label>N° de personas</mat-label>
+                            <mat-form-field class="text-center" style="width: 150px;">
+                                <i matPrefix class="fa fa-users text-secondary pr-2" aria-hidden="true"></i>
                                 <input matInput type="number" inputmode="numeric" min="1" max="99"
+                                placeholder="Personas"
                                 [(ngModel)]="frmConfirma.personas" name="personas" [required]="modoPersonas === '2'">
-                                <mat-hint *ngIf="modoPersonas !== '2'">opcional</mat-hint>
                             </mat-form-field>
                             </div>
 

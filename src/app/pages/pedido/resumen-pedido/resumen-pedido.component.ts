@@ -80,6 +80,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   private cargandoCuenta = false;
 
   isReserva = false;
+  isTabMiPedidoActivo = window.innerWidth > 1049;
   isRequiereMesa = false;
   isDelivery = false;
   isDeliveryValid = false;
@@ -211,6 +212,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       }
 
       // this.frmDelivery = new DatosDeliveryModel();
+    });
+
+    // en celular el pie solo existe mientras la pestaña Mi Pedido esta activa, asi anima al cambiar de pestaña
+    this.navigatorService.resNavigatorSourceObserve$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((res: any) => {
+      if (window.innerWidth > 1049) { this.isTabMiPedidoActivo = true; return; } // escritorio: resumen fijo al costado
+      if (res && res.pageActive) { this.isTabMiPedidoActivo = res.pageActive === 'mipedido'; }
     });
 
     // this.navigatorService.resNavigatorSourceObserve$

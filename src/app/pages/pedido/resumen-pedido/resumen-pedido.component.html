@@ -339,7 +339,7 @@
 
 
 <!-- footer -->
-<ng-container *ngIf="hayItems && !isHayCuentaBusqueda">
+<ng-container *ngIf="hayItems && !isHayCuentaBusqueda && isTabMiPedidoActivo">
     <div class="xfooter" @slideFooter>
       <div class="m-0 w-100 d-flex justify-content-between footer-botones">
         <div class="btn-footer-cancel" matRipple (click)="nuevoPedido()">

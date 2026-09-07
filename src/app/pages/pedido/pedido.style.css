@@ -130,8 +130,7 @@
 }
 
 .titulo-detalle-seccion {
-  width: 100%;
-  color: #616161;
+  width: 80%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -178,7 +177,7 @@
 
 .li-tachado {
   text-decoration: line-through;
-  color: #f44336;
+  color: red;
 }
 
 .flag-stock-dialog{

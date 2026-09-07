@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-07T04:10:00.000Z",
+  "title": "Design System: Papaya App Mozo",
+  "extensions": {
+    "colorMeta": {
+      "indigo-papaya": { "role": "primary", "displayName": "Índigo Papaya", "canonical": "#3f51b5", "tonalRamp": ["#1a2354", "#242f73", "#2e3c92", "#3f51b5", "#5c6cc4", "#7f8cd3", "#a7b0e2", "#d3d8f1"] },
+      "azul-barra": { "role": "primary", "displayName": "Azul de barra", "canonical": "#007bff", "tonalRamp": ["#00306a", "#004494", "#005fc7", "#007bff", "#3394ff", "#66adff", "#99c7ff", "#cce3ff"] },
+      "rosa-acento": { "role": "secondary", "displayName": "Rosa de acento", "canonical": "#ff4081", "tonalRamp": ["#6b0030", "#960043", "#c8005a", "#ff4081", "#ff669a", "#ff8cb3", "#ffb3cd", "#ffd9e6"] },
+      "verde-disponible": { "role": "tertiary", "displayName": "Verde disponible", "canonical": "#43a047", "tonalRamp": ["#1b3d1c", "#255827", "#337934", "#43a047", "#64b467", "#88c78a", "#b0dab1", "#d8ecd8"] },
+      "verde-confirmar": { "role": "tertiary", "displayName": "Verde confirmar", "canonical": "#00c853", "tonalRamp": ["#004d20", "#00702e", "#009940", "#00c853", "#33d375", "#66de97", "#99e9ba", "#ccf4dc"] },
+      "ambar-poco-stock": { "role": "tertiary", "displayName": "Ámbar poco stock", "canonical": "#ffb300", "tonalRamp": ["#5c4000", "#8a6000", "#c28700", "#ffb300", "#ffc233", "#ffd166", "#ffe099", "#fff0cc"] },
+      "rojo-error": { "role": "tertiary", "displayName": "Rojo error", "canonical": "#f44336", "tonalRamp": ["#5e1510", "#8a1f18", "#bf2c22", "#f44336", "#f6695e", "#f88e87", "#fbb4af", "#fdd9d7"] },
+      "rosa-agotado": { "role": "tertiary", "displayName": "Rosa agotado", "canonical": "#d81b60", "tonalRamp": ["#4f0a23", "#7a1036", "#a8154b", "#d81b60", "#e04980", "#e876a0", "#efa4bf", "#f7d1df"] },
+      "tinta": { "role": "neutral", "displayName": "Tinta", "canonical": "#212121", "tonalRamp": ["#121212", "#212121", "#424242", "#616161", "#757575", "#9e9e9e", "#bdbdbd", "#e0e0e0"] },
+      "gris-borde": { "role": "neutral", "displayName": "Gris borde", "canonical": "#e0e0e0", "tonalRamp": ["#424242", "#616161", "#757575", "#9e9e9e", "#bdbdbd", "#e0e0e0", "#eeeeee", "#fafafa"] },
+      "gris-fondo": { "role": "neutral", "displayName": "Gris fondo", "canonical": "#eeeeee", "tonalRamp": ["#616161", "#757575", "#9e9e9e", "#bdbdbd", "#e0e0e0", "#eeeeee", "#f5f5f5", "#fafafa"] }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Cabecera", "purpose": "Nombre del local y títulos de diálogo, Ubuntu-Regular 20px." },
+      "title": { "displayName": "Nombre de plato", "purpose": "Nombres de plato y sección, 14px peso 600." },
+      "body": { "displayName": "Cuerpo", "purpose": "Precios, opciones y formularios, 14px." },
+      "detail": { "displayName": "Descripción", "purpose": "Descripción del plato, Ubuntu-Light 13px, máximo 2 líneas." },
+      "label": { "displayName": "Etiqueta", "purpose": "Estados, contadores y metadatos, 12px peso 600." }
+    },
+    "shadows": [
+      { "name": "dialogo", "value": "0 11px 15px -7px rgba(0,0,0,0.2), 0 24px 38px 3px rgba(0,0,0,0.14), 0 9px 46px 8px rgba(0,0,0,0.12)", "purpose": "Solo diálogos modales de Material, con fondo oscurecido rgba(0,0,0,0.52)." },
+      { "name": "flotante", "value": "0 2px 8px rgba(0,0,0,0.1)", "purpose": "Pie de pedido y paneles que se superponen a la lista. Uso excepcional." }
+    ],
+    "motion": [
+      { "name": "ocultar-cabecera", "value": "0.3s ease-out", "purpose": "La cabecera se desliza fuera al desplazar la lista." },
+      { "name": "franja-estado", "value": "border-left 0.3s ease-out", "purpose": "Cambio de color de la franja de estado de una fila." }
+    ],
+    "breakpoints": [
+      { "name": "tablet", "value": "600px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón primario",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal de la pantalla (Listo, continuar).",
+      "html": "<button class=\"ds-btn-primary\">Listo, continuar</button>",
+      "css": ".ds-btn-primary { background: #3f51b5; color: #ffffff; height: 36px; padding: 0 16px; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; cursor: pointer; transition: background 0.15s ease-out; } .ds-btn-primary:hover { background: #303f9f; } .ds-btn-primary:focus-visible { outline: 2px solid #3f51b5; outline-offset: 2px; } .ds-btn-primary:active { background: #283593; }"
+    },
+    {
+      "name": "Botón confirmar",
+      "kind": "button",
+      "refersTo": "button-confirm",
+      "description": "Enviar el pedido a cocina.",
+      "html": "<button class=\"ds-btn-confirm\">Enviar pedido</button>",
+      "css": ".ds-btn-confirm { background: #00c853; color: #ffffff; height: 36px; padding: 0 16px; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; cursor: pointer; transition: background 0.15s ease-out; } .ds-btn-confirm:hover { background: #00a844; } .ds-btn-confirm:focus-visible { outline: 2px solid #00c853; outline-offset: 2px; } .ds-btn-confirm:disabled { background: #e0e0e0; color: #757575; cursor: default; }"
+    },
+    {
+      "name": "Fila de carta",
+      "kind": "custom",
+      "refersTo": "list-row",
+      "description": "Plato con descripción, precio y franja de estado.",
+      "html": "<div class=\"ds-row\"><div class=\"ds-row-text\"><div class=\"ds-row-name\">Alitas BBQ picante</div><div class=\"ds-row-desc\">alitas bañadas en salsa bbq con toque picante</div></div><div class=\"ds-row-price\">25.00</div></div>",
+      "css": ".ds-row { display: flex; align-items: center; gap: 12px; background: #ffffff; border-bottom: 1px solid #e0e0e0; border-left: 5px solid #43a047; padding: 8px 15px; min-height: 52px; font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; color: #212121; } .ds-row:hover { background: #eeeeee; } .ds-row-text { flex: 1; min-width: 0; } .ds-row-name { font-size: 14px; font-weight: 600; } .ds-row-desc { font-size: 13px; font-weight: 300; color: #616161; text-transform: lowercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-row-price { font-size: 14px; font-weight: 600; }"
+    },
+    {
+      "name": "Fila agotada",
+      "kind": "custom",
+      "refersTo": "list-row",
+      "description": "Plato sin stock: tachado, precio rojo, franja rosa.",
+      "html": "<div class=\"ds-row ds-row-out\"><div class=\"ds-row-text\"><div class=\"ds-row-name\">Alitas búfalo</div></div><div class=\"ds-row-price\">20.00</div></div>",
+      "css": ".ds-row-out { display: flex; align-items: center; gap: 12px; background: #ffffff; border-bottom: 1px solid #e0e0e0; border-left: 5px solid #d81b60; padding: 8px 15px; min-height: 52px; font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; } .ds-row-out .ds-row-text { flex: 1; } .ds-row-out .ds-row-name { font-size: 14px; font-weight: 600; text-decoration: line-through; color: #212121; } .ds-row-out .ds-row-price { font-size: 14px; font-weight: 600; color: #f44336; text-decoration: line-through; }"
+    },
+    {
+      "name": "Chip obligatorio",
+      "kind": "chip",
+      "refersTo": "chip-required",
+      "description": "Marca un grupo de opciones obligatorio en el detalle de item.",
+      "html": "<span class=\"ds-chip\">Obligatorio</span>",
+      "css": ".ds-chip { display: inline-block; background: #e0e0e0; color: #424242; font-size: 12px; font-weight: 600; padding: 3px 6px; border-radius: 8px; font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; }"
+    },
+    {
+      "name": "Barra de sección",
+      "kind": "nav",
+      "refersTo": "section-bar",
+      "description": "Ruta de la carta con flecha de volver.",
+      "html": "<div class=\"ds-bar\"><span>LA CARTA / ALITAS DE CASA</span><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#ffffff\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 12H5M11 6l-6 6 6 6\"></path></svg></div>",
+      "css": ".ds-bar { display: flex; align-items: center; justify-content: space-between; height: 40px; padding: 0 15px; background: #007bff; color: #ffffff; font-size: 16px; font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; }"
+    },
+    {
+      "name": "Campo de texto",
+      "kind": "input",
+      "refersTo": "list-row",
+      "description": "Campo Material de línea inferior (número de mesa, referencia).",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Mesa</span><input class=\"ds-field-input\" value=\"12\"></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 4px; font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; } .ds-field-label { font-size: 12px; color: #757575; } .ds-field-input { border: none; border-bottom: 1px solid #9e9e9e; background: transparent; font-size: 14px; padding: 6px 0; color: #212121; outline: none; transition: border-color 0.15s ease-out; } .ds-field-input:focus { border-bottom: 2px solid #3f51b5; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La comanda de papel, pero que no falla",
+    "overview": "La app hereda la lógica de la comanda: una lista vertical de platos con precio a la derecha, secciones como separadores, y el mozo marcando cantidades. Todo es plano, blanco sobre gris claro, con un solo color de marca (índigo) en la cabecera y en la acción principal. Nada flota, nada brilla, nada se anima para lucirse. La cordialidad se expresa en textos directos y en el verde de \"listo, enviado\", no en ornamentos.\n\nLa densidad es alta a propósito: filas de 48 a 60px, tipografía de 14px, márgenes de 15px. Un mozo ve entre 8 y 10 platos por pantalla sin desplazarse. El sistema rechaza explícitamente el look de app de delivery (tarjetas con foto, chips por todos lados) y el tema Material 3 que cambió el diseño en una actualización previa y fue descartado.",
+    "keyCharacteristics": [
+      "Listas planas con divisores de 1px, sin tarjetas.",
+      "Un color de marca (índigo) y colores de estado con significado fijo.",
+      "Ubuntu solo en cabeceras y descripciones; el cuerpo usa la pila del sistema (Bootstrap).",
+      "Radios pequeños (4 a 8px), sin sombras salvo en diálogos.",
+      "Controles grandes para el pulgar: cantidad, enviar, mesa."
+    ],
+    "rules": [
+      { "name": "La regla del semáforo", "body": "Verde, ámbar y rojo/rosa son estados, nunca decoración. Si un elemento lleva uno de esos colores, el mozo debe poder decir qué significa sin leer.", "section": "colors" },
+      { "name": "La regla del único azul de marca", "body": "El índigo es la marca. El azul Bootstrap se tolera donde ya existe; ningún componente nuevo lo usa.", "section": "colors" },
+      { "name": "La regla de los 14", "body": "Nombre de plato y precio nunca bajan de 14px. Lo que baja a 12px es información que el mozo puede ignorar sin equivocarse.", "section": "typography" },
+      { "name": "La regla de la lista plana", "body": "Las filas de la carta y del pedido no llevan sombra, ni en reposo ni al tocar. El feedback de toque es cambio de fondo a gris fondo.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do mantener la lista plana: fondo blanco, divisor de 1px gris borde (#e0e0e0), sin sombra, sin radio en las filas.",
+      "Do usar índigo Papaya (#3f51b5) para una sola acción principal por pantalla y verde confirmar (#00c853) para enviar.",
+      "Do respetar 14px mínimo en nombres y precios, y 44px mínimo en cualquier control que se toque más de una vez por pedido.",
+      "Do acompañar cada color de estado con texto o tachado (\"Agotado\", \"Quedan 3\"), nunca solo el color.",
+      "Do dejar las pestañas Carta / Mi pedido / Mesas y el botón de enviar donde están."
+    ],
+    "donts": [
+      "Don't parecer una app de delivery para clientes: nada de tarjetas grandes con foto, chips por todos lados ni pantallas de \"descubrir\".",
+      "Don't adoptar el tema Material 3 ni cambiar el tema indigo-pink; la actualización previa cambió el diseño y fue rechazada.",
+      "Don't agregar chrome: ninguna barra, cabecera o panel nuevo entre el mozo y la lista de platos.",
+      "Don't decorar: sin degradados, sin texto con gradiente, sin vidrio esmerilado, sin animaciones de entrada.",
+      "Don't introducir franjas laterales nuevas. Las franjas de 5px existentes son el vocabulario de estado de stock y se conservan; cualquier estado nuevo se expresa con fondo tintado y etiqueta.",
+      "Don't usar un tercer azul ni un segundo verde fuera de los definidos."
+    ]
+  }
+}

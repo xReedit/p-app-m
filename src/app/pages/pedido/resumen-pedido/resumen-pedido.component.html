@@ -170,7 +170,7 @@
                                     <br>
                                     <div class="text-center">
                                         <button [disabled]="!nombreClienteValido" class="btn btn-footer-next transicion w-50 m-auto" matRipple (click)="prepararEnvio()"
-                                                    [ngClass]="{'xdisabled': isRequiereMesa}">
+                                                    [ngClass]="{'xdisabled': isRequiereMesa || isRequierePersonas}">
                                             <div>
                                                 <span class="animated fadeInLeft">Enviar Pedido</span>
                                             </div>
@@ -235,10 +235,18 @@
                             </div>
                             </div>
                                             
+                            <div class="w-100" *ngIf="showPersonas">
+                            <mat-form-field class="w-100 text-center">
+                                <input matInput type="number" inputmode="numeric" min="1" max="99"
+                                placeholder="{{ modoPersonas === '2' ? 'N° de personas (obligatorio)' : 'N° de personas (opcional)' }}"
+                                [(ngModel)]="frmConfirma.personas" name="personas" [required]="modoPersonas === '2'">
+                            </mat-form-field>
+                            </div>
+
                             <div class="w-100">
                             <mat-form-field class="w-100 text-center">
                                 <input matInput placeholder="Indique alguna referencia" [(ngModel)]="frmConfirma.referencia"
-                                name="referencia">
+                                name="referencia" maxlength="50">
                             </mat-form-field>
                             </div>
 
@@ -357,7 +365,7 @@
         <ng-template #divBtnEnviar>
             <ng-container *ngIf="!isDelivery; else elseTemplate">
               <div *ngIf="!isCliente && !isPuntoAuntoPedido" class="btn-footer-next transicion" matRipple (click)="prepararEnvio()"
-                [ngClass]="{'xdisabled': isRequiereMesa}">
+                [ngClass]="{'xdisabled': isRequiereMesa || isRequierePersonas}">
                 <div>
                   <span class="animated fadeInLeft">Enviar Pedido</span>
                 </div>

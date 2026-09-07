@@ -29,6 +29,7 @@ import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dia
 import { SelectorMesaModalComponent } from './selector-mesa-modal/selector-mesa-modal.component';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil, take, last, takeLast, distinctUntilChanged, debounceTime, timeout } from 'rxjs/operators';
+import { armarReferencia } from 'src/app/shared/utils/referencia-personas';
 import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedido-cliente.service';
 // import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
@@ -322,6 +323,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       nummesa: '',
       nummesa_resplado: '',
       referencia: '',
+      personas: '',
       reserva: false,
       solo_llevar: false,
       delivery: false
@@ -630,7 +632,22 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     }
   }
 
+  // cantidad de personas por mesa: '0' no pedir, '1' opcional, '2' obligatorio (sede_opciones.mozo_num_personas)
+  get modoPersonas(): string {
+    const ds = this.miPedidoService.objDatosSede && this.miPedidoService.objDatosSede.datossede;
+    return (ds && ds[0] && ds[0].mozo_num_personas) || '1';
+  }
+
+  get showPersonas(): boolean {
+    return this.modoPersonas !== '0' && !this.frmConfirma.delivery && !this.frmConfirma.solo_llevar && !this.frmConfirma.reserva;
+  }
+
+  get isRequierePersonas(): boolean {
+    return this.showPersonas && this.modoPersonas === '2' && !(parseInt(this.frmConfirma.personas, 10) > 0);
+  }
+
   private prepararEnvio(): void {
+    if ( this.isRequierePersonas ) { return; }
     if ( !this.isDeliveryCliente) {
       this.showLoaderPedido();
       // const _dialogConfig = new MatDialogConfig();
@@ -719,7 +736,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       // dataFrmConfirma.m = this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00';
       dataFrmConfirma.m_respaldo = this.frmConfirma.nummesa_resplado;
       dataFrmConfirma.m = this.frmConfirma.nummesa ? this.frmConfirma.nummesa : this.arrReqFrm.isRequiereMesa ? this.frmConfirma.nummesa_resplado : '00';
-      dataFrmConfirma.r = this.frmConfirma.delivery ? this.frmDelivery.nombre : this.utilService.addslashes(this.frmConfirma.referencia) || '';
+      dataFrmConfirma.r = this.frmConfirma.delivery
+        ? this.frmDelivery.nombre
+        : this.utilService.addslashes(armarReferencia(this.frmConfirma.referencia, this.showPersonas ? this.frmConfirma.personas : '')) || '';
       dataFrmConfirma.nom_us = dataUsuario.nombres.split(' ')[0].toUpperCase();
     }
 

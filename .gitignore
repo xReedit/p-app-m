@@ -49,3 +49,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# bundles firmados/sin firmar para subir a las tiendas
+release/

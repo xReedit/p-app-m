@@ -18,6 +18,7 @@ import { BusquedaComponent } from './busqueda/busqueda.component';
 // import { DialogSubitemRemoveComponent } from './resumen-pedido/dialog-subitem-remove/dialog-subitem-remove.component';
 
 import { DialogResetComponent } from './resumen-pedido/dialog-reset/dialog-reset.component';
+import { FooterPedidoComponent } from './resumen-pedido/footer-pedido/footer-pedido.component';
 import { DialogLoadingComponent } from './resumen-pedido/dialog-loading/dialog-loading.component';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 import { DialogVerificarTelefonoComponent } from 'src/app/componentes/dialog-verificar-telefono/dialog-verificar-telefono.component';
@@ -39,6 +40,7 @@ import { SelectorMesaModalComponent } from './resumen-pedido/selector-mesa-modal
     BuscarItemComponent,
     // DialogItemComponent,
     DialogResetComponent,
+    FooterPedidoComponent,
     DialogLoadingComponent,
     // DialogSubitemRemoveComponent,
     DialogItemEditComponent,

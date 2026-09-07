@@ -72,51 +72,6 @@
 }
 
 
-/* separacion entre los dos botones para no confundir el toque */
-.footer-botones {
-    gap: 6px;
-    background: #ffffff;
-}
-
-.btn-footer-cancel {
-    padding: 14px 12px;
-    background: #f44336;
-    color: white;
-    text-align: center;
-    flex: 1;
-    min-height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 500;
-    letter-spacing: 0.2px;
-    cursor: pointer;
-    user-select: none;
-}
-
-.btn-footer-next {
-    padding: 14px 12px;
-    background: #00c853;
-    color: white;
-    text-align: center;
-    white-space: nowrap;
-    flex: 1;
-    min-height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 500;
-    letter-spacing: 0.2px;
-    cursor: pointer;
-    user-select: none;
-}
-
-.btn-footer-next.xdisabled {
-    pointer-events: none;
-    white-space: nowrap;
-    background: #bdbdbd;
-    color: #616161;
-}
 
 /* RESUMEN pedido */
 .div-resumen-pedido {
@@ -245,26 +200,6 @@
         /* height: calc(100vh - 212px); */
     }
 
-    .xfooter {
-        bottom: 0px;
-        position: fixed;
-        background: #e0e0e0;
-        /* height: 48px; */
-        box-sizing: border-box;
-        /* position: sticky; */
-        min-width: 230px;
-        max-width: 360px;
-        width: calc(100% / 9.8 * 3);
-    }
-
-    /* .btn-footer-cancel {
-        width: auto;
-    }
-
-    .btn-footer-next {
-        width: auto;
-    } */
-
     .div-content-all {
         font-size: 14px !important;
     }
@@ -280,10 +215,6 @@
         display: none;
     }
 
-    .xfooter{
-        width: 100%;
-        max-width: 100%;
-    }
     
 }
 

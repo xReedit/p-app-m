@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
 import { FormaPagoComponent } from 'src/app/componentes/holding/forma-pago/forma-pago.component';
 
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
@@ -45,19 +44,7 @@ import { HoldingService } from 'src/app/shared/services/holding.service';
 @Component({
   selector: 'app-resumen-pedido',
   templateUrl: './resumen-pedido.component.html',
-  styleUrls: ['./resumen-pedido.component.css'],
-  animations: [
-    // el pie con los botones entra desde abajo y sale hacia abajo
-    trigger('slideFooter', [
-      transition(':enter', [
-        style({ transform: 'translateY(100%)' }),
-        animate('220ms cubic-bezier(0.22, 1, 0.36, 1)', style({ transform: 'translateY(0)' }))
-      ]),
-      transition(':leave', [
-        animate('180ms cubic-bezier(0.55, 0, 1, 0.45)', style({ transform: 'translateY(100%)' }))
-      ])
-    ])
-  ]
+  styleUrls: ['./resumen-pedido.component.css']
 })
 export class ResumenPedidoComponent implements OnInit, OnDestroy {
   [x: string]: any;
@@ -80,7 +67,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   private cargandoCuenta = false;
 
   isReserva = false;
-  isTabMiPedidoActivo = window.innerWidth > 1049;
+  esMovil = window.innerWidth <= 1049; // en celular el pie lo monta main fuera de las pestañas
   isRequiereMesa = false;
   isDelivery = false;
   isDeliveryValid = false;
@@ -212,14 +199,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       }
 
       // this.frmDelivery = new DatosDeliveryModel();
-    });
-
-    // en celular el pie solo existe mientras la pestaña Mi Pedido esta activa, asi anima al cambiar de pestaña
-    this.navigatorService.resNavigatorSourceObserve$
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((res: any) => {
-      if (window.innerWidth > 1049) { this.isTabMiPedidoActivo = true; return; } // escritorio: resumen fijo al costado
-      if (res && res.pageActive) { this.isTabMiPedidoActivo = res.pageActive === 'mipedido'; }
     });
 
     // this.navigatorService.resNavigatorSourceObserve$
@@ -671,7 +650,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     return this.showPersonas && this.modoPersonas === '2' && !(parseInt(this.frmConfirma.personas, 10) > 0);
   }
 
-  private prepararEnvio(): void {
+  get self(): ResumenPedidoComponent { return this; } // para pasar el resumen al pie
+
+  prepararEnvio(): void {
     if ( this.isRequierePersonas ) { return; }
     if ( !this.isDeliveryCliente) {
       this.showLoaderPedido();

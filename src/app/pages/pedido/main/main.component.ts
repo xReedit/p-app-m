@@ -1,4 +1,5 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { ResumenPedidoComponent } from '../resumen-pedido/resumen-pedido.component';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
@@ -15,7 +16,15 @@ import { VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, AfterViewInit {
+  @ViewChild(ResumenPedidoComponent) resumenVc: ResumenPedidoComponent;
+  resumenRef: ResumenPedidoComponent = null; // el pie (fuera de las pestañas) opera sobre este resumen
+
+  ngAfterViewInit() {
+    this.resumenRef = this.resumenVc || null;
+    this.cdr.detectChanges(); // el resumen se resuelve en la misma vuelta de deteccion
+  }
+
 
   isVisibleToolBar = true;
   isBusqueda = false;
@@ -47,6 +56,7 @@ export class MainComponent implements OnInit {
 
   constructor(
     private miPedidoService: MipedidoService,
+    private cdr: ChangeDetectorRef,
     private navigatorService: NavigatorLinkService,
     public listenStatusService: ListenStatusService,
     public socketService: SocketService,

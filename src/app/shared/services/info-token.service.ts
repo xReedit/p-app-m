@@ -339,9 +339,21 @@ export class InfoTockenService {
     this.set();
   }
 
+  // token corrupto (app cerrada a media escritura, formato de version vieja): se descarta en vez de romper el arranque
+  private parseTokenLocal(): any {
+    try {
+      return JSON.parse(atob(localStorage.getItem('::token').split('.')[1]));
+    } catch (error) {
+      console.error('token local invalido, se descarta', error);
+      localStorage.removeItem('::token');
+      return null;
+    }
+  }
+
   converToJSON(): void {
     if (localStorage.getItem('::token')) {
-      let _token =  JSON.parse(atob(localStorage.getItem('::token').split('.')[1]));
+      let _token = this.parseTokenLocal();
+      if (!_token) { return; }
 
       // si existe idcliente, setea al usuario
       if ( _token?.idcliente ) {

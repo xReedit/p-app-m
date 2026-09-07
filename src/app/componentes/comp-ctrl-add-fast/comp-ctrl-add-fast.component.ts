@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 
 
 @Component({
@@ -7,7 +7,7 @@ import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy
   styleUrls: ['./comp-ctrl-add-fast.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CompCtrlAddFastComponent implements OnInit {
+export class CompCtrlAddFastComponent implements OnInit, OnDestroy {
 
   private _objItem: any;
   public cantidad = 0;
@@ -83,6 +83,7 @@ export class CompCtrlAddFastComponent implements OnInit {
   }
 
   private timerShowView() {
+    clearInterval(this.intervalShowaAfter); // no apilar intervalos si se toca varias veces
     this.intervalShowaAfter = setInterval(() => {
       // console.log('this.timerViewAfter', this.timerViewAfter);
       this.timerViewAfter--;
@@ -148,4 +149,7 @@ export class CompCtrlAddFastComponent implements OnInit {
     this.objResponse.emit(this._objItem);
   }
 
+  ngOnDestroy(): void {
+    clearInterval(this.intervalShowaAfter);
+  }
 }

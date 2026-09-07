@@ -1,4 +1,6 @@
-import { Component, OnInit, HostListener, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ResumenPedidoComponent } from '../resumen-pedido/resumen-pedido.component';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
@@ -16,7 +18,9 @@ import { VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit, AfterViewInit {
+export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
+  private destroy$ = new Subject<boolean>(); // corta las suscripciones al salir de /pedido (evita handlers duplicados)
+
   @ViewChild(ResumenPedidoComponent) resumenVc: ResumenPedidoComponent;
   resumenRef: ResumenPedidoComponent = null; // el pie (fuera de las pestañas) opera sobre este resumen
 
@@ -94,7 +98,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     // console.log('this.infoTokenService.infoUsToken', this.infoTokenService.infoUsToken);
     // console.log('pedido main verifyClient');
     // console.log('verifyClient from main pedido');
-    this.verifyClientService.verifyClient().subscribe((res: SocketClientModel) => {
+    this.verifyClientService.verifyClient().pipe(takeUntil(this.destroy$)).subscribe((res: SocketClientModel) => {
       // console.log('desde main pedido', res);
       // console.log('this.infoTokenService', this.infoTokenService);
       if ( !res ) { this.isUsuarioCliente = this.infoTokenService.infoUsToken.isCliente; } else {
@@ -131,19 +135,19 @@ export class MainComponent implements OnInit, AfterViewInit {
       this.navigatorService.setPageActive('carta');      
     }
 
-    this.listenStatusService.isBusqueda$.subscribe(res => {
+    this.listenStatusService.isBusqueda$.pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.isBusqueda = res;
     });
 
-    this.listenStatusService.hayCuentaBusqueda$.subscribe(res => {
+    this.listenStatusService.hayCuentaBusqueda$.pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.isHayCuentaBusqueda = res;
     });
 
-    this.listenStatusService.isPagePagarCuentaShow$.subscribe(res => {
+    this.listenStatusService.isPagePagarCuentaShow$.pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.isPagePagarShow = res;
     });
 
-    this.listenStatusService.isFinishLoaderSendPedido$.subscribe((isOpen: boolean) => {
+    this.listenStatusService.isFinishLoaderSendPedido$.pipe(takeUntil(this.destroy$)).subscribe((isOpen: boolean) => {
       if ( isOpen === true && !this.isUsuarioCliente ) {
         setTimeout(() => {
           this.closeMsjLoaderPedido();
@@ -155,7 +159,7 @@ export class MainComponent implements OnInit, AfterViewInit {
 
     // });
 
-    this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {      
+    this.navigatorService.resNavigatorSourceObserve$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {      
       switch (res.pageActive) {
         case 'carta':
           this.selectedTab = 0;
@@ -183,12 +187,12 @@ export class MainComponent implements OnInit, AfterViewInit {
 
     });
 
-    this.miPedidoService.countItemsObserve$.subscribe((res) => {
+    this.miPedidoService.countItemsObserve$.pipe(takeUntil(this.destroy$)).subscribe((res) => {
       this.countTotalItems = res;
       this.importeTotalProductos = this.miPedidoService.getSubTotalMiPedido();
     });
 
-    this.listenStatusService.isLoaderCarta$.subscribe(res => {
+    this.listenStatusService.isLoaderCarta$.pipe(takeUntil(this.destroy$)).subscribe(res => {
       console.log('isLoaderCarta', res);
       this.loaderPage = res;
       if ( this.loaderPage ) {
@@ -295,5 +299,10 @@ export class MainComponent implements OnInit, AfterViewInit {
 
   goBackCarta() {
     this.listenStatusService.setListenGoCarta();
+  }
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+    clearTimeout(this.timeLoader);
   }
 }

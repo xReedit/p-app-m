@@ -14,7 +14,7 @@ import { ResumenPedidoComponent } from '../resumen-pedido.component';
       transition(':enter', [
         style({ transform: 'translateY(100%)' }),
         // espera 0,5s abajo y recien sube; la salida no espera
-        animate('220ms 500ms cubic-bezier(0.22, 1, 0.36, 1)', style({ transform: 'translateY(0)' }))
+        animate('220ms 400ms cubic-bezier(0.22, 1, 0.36, 1)', style({ transform: 'translateY(0)' }))
       ]),
       transition(':leave', [
         animate('180ms cubic-bezier(0.55, 0, 1, 0.45)', style({ transform: 'translateY(100%)' }))

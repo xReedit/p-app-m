@@ -23,6 +23,7 @@
           <mat-progress-bar [hidden]="!loading" mode="indeterminate"></mat-progress-bar>
           <span class="fs-14 font-weight-bold text-danger animated flash" [hidden]="!msjErr">Credenciales
             Incorrectas.</span>
+          <span class="fs-14 font-weight-bold text-danger animated flash" [hidden]="!msjErrRed">No se pudo conectar. Verifique su internet e intente de nuevo.</span>
         </div>
 
         <mat-checkbox [(ngModel)] = "usuario.recordar" [checked]="usuario.recordar" >Recordar</mat-checkbox>

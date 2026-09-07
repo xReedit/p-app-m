@@ -707,6 +707,12 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private enviarPedido(): void {
 
+    // sin datos de sede (socket aun no respondio o llego vacio) no se puede armar la cabecera
+    if (!(this.miPedidoService.objDatosSede && this.miPedidoService.objDatosSede.datossede && this.miPedidoService.objDatosSede.datossede[0])) {
+      this.errorSendPedido(new Error('Datos de la sede no cargados, verifique su conexión'));
+      return;
+    }
+
     // this.verificarConexionSocket();
 
     // para asegurar que marque delivery si es
@@ -746,10 +752,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
         ? this.frmDelivery.nombre
         : this.utilService.addslashes(armarReferencia(this.frmConfirma.referencia, this.showPersonas ? this.frmConfirma.personas : '')) || '';
       dataFrmConfirma.nom_us = dataUsuario.nombres.split(' ')[0].toUpperCase();
-    }
-
-
-    console.log('this.infoToken.infoUsToken' , this.infoToken.infoUsToken);
+    }    
 
 
     const _p_header = {
@@ -935,7 +938,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       isMesaValid = this.frmConfirma.nummesa ? this.frmConfirma.nummesa.trim() !== '' : false;
     } else {
       // Para mesas numéricas, validar contra el número total de mesas
-      let numMesasSede = parseInt(this.miPedidoService.objDatosSede.datossede[0].mesas, 0);
+      const ds = this.miPedidoService.objDatosSede && this.miPedidoService.objDatosSede.datossede && this.miPedidoService.objDatosSede.datossede[0];
+      let numMesasSede = parseInt(ds ? ds.mesas : '0', 10);
       numMesasSede = isNaN(numMesasSede) ? 0 : numMesasSede;
       
       const numMesaIngresado = this.frmConfirma.nummesa ? parseInt(this.frmConfirma.nummesa, 0) : 0;

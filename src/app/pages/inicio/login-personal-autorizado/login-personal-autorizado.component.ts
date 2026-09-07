@@ -17,6 +17,7 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
   usuario: UsuarioAutorizadoModel;
   loading = false;
   msjErr = false;
+  msjErrRed = false;
 
   constructor(
     private socketService: SocketService,
@@ -64,8 +65,9 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
   logear(): void {
     this.loading = true;
     this.msjErr = false;
+    this.msjErrRed = false;
     this.authService.setLocalToken('');
-    this.authService.getUserLogged(this.usuario).subscribe(res => {
+    this.authService.getUserLogged(this.usuario).subscribe({ next: (res: any) => {
       setTimeout(() => {
         console.log('res logear', res);
         if (res.success) {
@@ -91,7 +93,10 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
           this.msjErr = true;
         }
       }, 2000);
-    });
+    }, error: () => { // sin red o servidor caido: no dejar el spinner girando
+      this.loading = false;
+      this.msjErrRed = true;
+    } });
   }
 
 

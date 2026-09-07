@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/operators';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
@@ -16,7 +16,7 @@ import { MipedidoService } from 'src/app/shared/services/mipedido.service';
   templateUrl: './comp-list-mesas.component.html',
   styleUrls: ['./comp-list-mesas.component.css']
 })
-export class CompListMesasComponent implements OnInit {
+export class CompListMesasComponent implements OnInit, OnDestroy {
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   listMesas = [];
@@ -60,12 +60,12 @@ export class CompListMesasComponent implements OnInit {
     });
 
     this.socketService.onGetMesaPagada()
-      .subscribe((res: any) => {
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.removeMesaList(res.num_mesa);
       });
 
     this.socketService.onGetNewPedidoMesa()
-      .subscribe((res: any) => {
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.listMesas.push(res);
         // this.removeMesaList(res.num_mesa);
       });
@@ -148,4 +148,8 @@ export class CompListMesasComponent implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+  }
 }

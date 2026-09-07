@@ -42,6 +42,7 @@ export class SocketService {
   private resTipoConsumo: any = [];
 
   private verificandoConexion = false;
+  private navigatorListenersOn = false;
 
   constructor(
     private infoTockenService: InfoTockenService,
@@ -503,7 +504,9 @@ export class SocketService {
       // console.log('conected socket finishLoadDataInitial');
     });
 
-    // estados del navigator
+    // estados del navigator: una sola vez por sesion (connect() se llama en cada reconexion)
+    if (!this.navigatorListenersOn) {
+    this.navigatorListenersOn = true;
 
     window.addEventListener('focus', (event) => {
       this.verifyConexionSocket();
@@ -521,7 +524,7 @@ export class SocketService {
       console.log('out focus');
       // this.showStatusConexNavigator(false, 'navigator_offline');
     });
-
+    }
 
     // estado del socket
     this.socket.on('connect', () => {

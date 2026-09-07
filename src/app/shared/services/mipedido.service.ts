@@ -123,6 +123,10 @@ export class MipedidoService {
         'recomendados': null
       };
 
+      if (!(res && res[0])) {
+        console.error('getLaCarta llego vacio, se ignora', res);
+        return;
+      }
       this.objCarta.carta = <CartaModel[]>res[0].carta;
       this.objCarta.bodega = <SeccionModel[]>res[0].bodega;
       this.objCarta.promociones = <any[]>res[0].promociones;
@@ -1951,6 +1955,10 @@ export class MipedidoService {
     // tiempo limite
 
     this.socketService.onGetDatosSede().subscribe((res: any) => {
+      if (!(res && res[0] && res[0].datossede && res[0].datossede[0])) {
+        console.error('getDataSede llego vacio, se ignora', res); // sin datos de sede no se puede armar el pedido
+        return;
+      }
       this.objDatosSede = res[0];
       this.objDatosSede.datossede[0].longitude = parseFloat(this.objDatosSede.datossede[0].longitude);
       this.objDatosSede.datossede[0].latitude = parseFloat(this.objDatosSede.datossede[0].latitude);

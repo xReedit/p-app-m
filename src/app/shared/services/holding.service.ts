@@ -45,8 +45,9 @@ export class HoldingService {
         
         // Check cache
         const cachedData = localStorage.getItem(CACHE_KEY);
-        if (cachedData) {
-            const parsed: CachedData<any> = JSON.parse(cachedData);
+        let parsed: CachedData<any> = null;
+        try { parsed = cachedData ? JSON.parse(cachedData) : null; } catch (error) { parsed = null; } // cache corrupto = cache miss
+        if (parsed) {
             const now = new Date().getTime();
             
             if (now - parsed.timestamp < ONE_DAY) {

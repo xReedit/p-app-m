@@ -26,18 +26,20 @@ cd android
 
 Llave de subida (la registró Android Studio en `android/.idea/workspace.xml`):
 
-- Keystore: `D:\certificados\host-papayapp-mozondroid\certificado android\key-mozo.jks`
+- Keystore: `D:\certificados\host-papaya\app-mozo\android\certificado android\key-mozo.jks`
 - Alias: `key-mozo`
-- En la misma carpeta está `private_key.pepk` (Play App Signing) y en `..elease\` el último `.aab` subido.
+- En la misma carpeta está `private_key.pepk` (Play App Signing) y en `..\release\` el último `.aab` subido,
+  firmado por el certificado `CN=marcelo, O=papaya.com.pe` con SHA-1
+  `39:2D:8D:5E:81:7A:7E:50:DF:0E:BA:97:63:82:B5:24:FC:40:39:FB` (debe coincidir con el de Play Console).
 
 Firmar y verificar:
 
 ```bash
-"C:\Program Files\Java\jdk1.8.0_351in\jarsigner.exe" -verbose -sigalg SHA256withRSA -digestalg SHA-256 ^
-  -keystore "D:\certificados\host-papayapp-mozondroid\certificado android\key-mozo.jks" ^
-  androidppuild\outputsundleeleasepp-release.aab key-mozo
+"C:\Program Files\Java\jdk1.8.0_351\bin\jarsigner.exe" -verbose -sigalg SHA256withRSA -digestalg SHA-256 ^
+  -keystore "D:\certificados\host-papaya\app-mozo\android\certificado android\key-mozo.jks" ^
+  android\app\build\outputs\bundle\release\app-release.aab key-mozo
 
-"C:\Program Files\Java\jdk1.8.0_351in\jarsigner.exe" -verify androidppuild\outputsundleeleasepp-release.aab
+"C:\Program Files\Java\jdk1.8.0_351\bin\jarsigner.exe" -verify android\app\build\outputs\bundle\release\app-release.aab
 ```
 
 (Alternativa: Android Studio > Build > Generate Signed Bundle / APK con el mismo keystore.)

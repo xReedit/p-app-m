@@ -49,9 +49,17 @@ Play Console > Producción > Crear nueva versión > subir el `.aab`. Notas de la
 
 `npx cap run` no funciona en esta PC (`NoDefaultCurrentDirectoryInExePath=1`); usar `gradlew.bat` directo.
 
-## 2. iOS (App Store), en la Mac
+## 2. iOS (App Store), en Ionic Appflow
 
-Requisitos: Xcode 16+, CocoaPods, cuenta Apple Developer. Deployment target ya está en iOS 15.
+No hay Mac ni Xcode: el build lo hace Appflow desde `origin/master`.
+
+1. Todo subido a git (commit + push). Archivos nuevos bajo `ios/` van con `git add -f` (la carpeta está en `.gitignore`).
+2. Appflow > Build > iOS, tipo **App Store**, certificado `papaya-mozo-ios-26` (es el `Certificates-2026.p12` +
+   `papayamozoios26.mobileprovision`, ver abajo), commit de `master`.
+3. El `.ipa` resultante se sube a App Store Connect desde Appflow (Deploy) o con Transporter.
+
+El `.npmrc` con `legacy-peer-deps` es necesario para que `npm install` pase en Appflow (`@zxing/ngx-scanner`).
+Los pasos de Xcode que siguen quedan solo como referencia por si algún día hay una Mac.
 
 Certificado de distribución vigente (Apple Distribution, equipo HQ75D833B3, vence 08-09-2027) en
 `D:\certificados\host-papayapp-mozo\certificados ios6\`: `Certificates-2026.p12` (contraseña en

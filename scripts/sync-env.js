@@ -38,7 +38,8 @@ function loadEnv(filePath) {
 }
 
 const env = loadEnv(envPath);
-const googleMapsApiKey = env.GOOGLE_MAPS_API_KEY || '';
+// .env en local; variable de entorno en CI (Appflow > Environments)
+const googleMapsApiKey = env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY || '';
 
 if (!fs.existsSync(envPath)) {
   console.warn('[sync-env] No se encontró .env. Copia .env.example a .env y define GOOGLE_MAPS_API_KEY.');

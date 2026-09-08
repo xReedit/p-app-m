@@ -383,3 +383,13 @@ Pedidos en espera/holding
 ---
 
 *Última actualización: Marzo 2026*
+
+---
+
+## Firma y publicación (Android)
+
+- **Keystore de subida:** `D:\certificados\host-papaya\app-mozo\android\certificado android\key-mozo.jks`
+- **Alias:** `key-mozo`
+- **Contraseña:** está en `CLAUDE.local.md` (archivo local, ignorado por git; NO ponerla aquí porque este repo se sube a GitHub).
+- Certificado del bundle subido a Play: `CN=marcelo, O=papaya.com.pe`, SHA-1 `39:2D:8D:5E:81:7A:7E:50:DF:0E:BA:97:63:82:B5:24:FC:40:39:FB`.
+- Pasos completos de release (Play y App Store) en `RELEASE.md`.

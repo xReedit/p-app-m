@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {CrudHttpService} from '../../../../../pwa-app-pedido/src/app/shared/services/crud-http.service';
+import {CrudHttpService} from 'src/app/shared/services/crud-http.service';
 import { UsuarioAutorizadoModel } from 'src/app/modelos/usuario-autorizado.model';
 import { AuthServiceSotrage } from 'src/app/shared/services/auth.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';

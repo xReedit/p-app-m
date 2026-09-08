@@ -10,7 +10,6 @@ declare var google: any;
 import {
   insideCircle, distanceTo
 } from 'geolocation-utils';
-import { MapsServiceService } from './maps-service.service';
 
 
 @Injectable({
@@ -18,16 +17,11 @@ import { MapsServiceService } from './maps-service.service';
 })
 export class CalcDistanciaService {
   // se crea al usarse: el script de Google Maps carga tarde y el servicio se inyecta en /pedido antes de eso
-  private get directionsService() { return new google.maps.DirectionsService(); }
-  // private directionsDisplay = new google.maps.DirectionsRenderer();
 
-  private origin = {};
-  private destination = {};
 
 
   constructor(
-    private estableciminetoService: EstablecimientoService,
-    private mapsService: MapsServiceService
+    private estableciminetoService: EstablecimientoService
   ) { }
 
 
@@ -74,237 +68,17 @@ export class CalcDistanciaService {
   }
 
 
+  // ponytail: sin Google Maps (la app mozo no hace delivery); distancia en linea recta.
+  // Si algun dia se necesita ruta real, volver a un servicio de rutas aqui.
   calculateRoute(dirCliente: DeliveryDireccionCliente, dirEstablecimiento: DeliveryEstablecimiento, buscarEnCache: boolean = true): any {
-    // console.log('calcular google');
-    // return new Observable(observer => {
-        let c_servicio = 0;
-      // si tiene repartidores propios y no esta suscrito al servicio de calcular distancia
-      // if ( dirEstablecimiento.pwa_delivery_servicio_propio === 1 && dirEstablecimiento.pwa_delivery_hablitar_calc_costo_servicio === 0) {
-        // c_servicio = 0;
-      // } else {
-
-        c_servicio = dirEstablecimiento.c_minimo;
-
-        const c_km = dirEstablecimiento.c_km; // costo x km adicional
-
-
-        dirEstablecimiento.latitude = typeof dirEstablecimiento.latitude === 'string' ? parseFloat(dirEstablecimiento.latitude) : dirEstablecimiento.latitude;
-        dirEstablecimiento.longitude = typeof dirEstablecimiento.longitude === 'string' ? parseFloat(dirEstablecimiento.longitude) : dirEstablecimiento.longitude;
-
-        dirCliente.latitude = typeof dirCliente.latitude === 'string' ? parseFloat(dirCliente.latitude) : dirCliente.latitude;
-        dirCliente.longitude = typeof dirCliente.longitude === 'string' ? parseFloat(dirCliente.longitude) : dirCliente.longitude;
-
-        // // no google
-        // // calculamos la distancia - return metros
-        // let km = 0;
-        // const distanciaMetros = distanceTo({lat: dirEstablecimiento.latitude, lon: dirEstablecimiento.longitude}, {lat: dirCliente.latitude, lon: dirCliente.longitude});
-        // const inKm = distanciaMetros / 1000;
-        // dirEstablecimiento.distancia_km = (inKm).toFixed(2);
-
-        // km = Math.ceil(inKm);
-
-        // // console.log('establecimeinto', dirEstablecimiento.nombre);
-        // // console.log('km distancia', km);
-        // // console.log('metros distancia', distanciaMetros);
-
-        // if ( km > 1 ) {
-        //   // const kmAddicionales = km / 0.5
-        //   const kmMenos = km > 2 ? 0 : 1; // si es mayor a 2 no resta
-        //   c_servicio = (( km - kmMenos ) * c_km) + c_servicio;
-        //   dirEstablecimiento.c_servicio = c_servicio;
-
-        //   // console.log('c_servicio', c_servicio);
-        //   // return c_servicio;
-        // }
-
-
-        // buscamos primero la direccion del cliente en cache
-        // console.log('buscarEnCache', buscarEnCache);
-        if ( buscarEnCache ) {
-          const _establecimientoCacheado = <any>this.estableciminetoService.getFindDirClienteCacheEstableciemto(dirCliente, dirEstablecimiento);
-          if ( _establecimientoCacheado ) {
-            // console.log('from calcDistance cache', _establecimientoCacheado);
-
-            dirEstablecimiento.distancia_km = _establecimientoCacheado.distancia_km;
-            dirEstablecimiento.c_servicio = this.calCostoDistancia(dirEstablecimiento, _establecimientoCacheado.distancia_km);
-
-            // si el costo del delivery es mayor a 15 lo vuelve a calcular
-            if ( dirEstablecimiento.c_servicio <= 15 ) {
-              return dirEstablecimiento.c_servicio;
-            }
-          }
-        }
-
-        // // con google // //
-        //  // cordenadas
-        this.origin = {
-          lat: dirCliente.latitude, lng: dirCliente.longitude
-        };
-
-        // console.log('this.origin', this.origin);
-
-        this.destination = {
-          lat: dirEstablecimiento.latitude, lng: dirEstablecimiento.longitude
-        };
-
-        const request = {
-          origin: this.origin,
-          destination: this.destination,
-          travelMode: google.maps.TravelMode.DRIVING
-        };
-
-        let km = 0;
-        this.directionsService.route(request, (result: any, status) => {
-          if (status === 'OK') {
-            // this.directionsRenderer.setDirections(result);
-            km = result.routes[0].legs[0].distance.value;
-            const _kmReal =  km / 1000;
-            dirEstablecimiento.distancia_mt = km.toString();
-            dirEstablecimiento.distancia_km = (_kmReal).toFixed(2);
-
-            dirEstablecimiento.isCalcApiGoogle = true;
-
-            // km = parseInt((km / 1000).toFixed(), 0);
-
-            c_servicio = this.calCostoDistancia(dirEstablecimiento, _kmReal);
-            dirEstablecimiento.c_servicio = c_servicio;
-
-            // km = Math.ceil(_kmReal); // lo redondea
-            // if ( km > 2 ) {
-            //   // const kmMenos = _kmReal > 1.5 ? 0 : 1; // si es mayor a 2 no resta
-            //   c_servicio = (( km - 1 ) * c_km) + c_servicio;
-            //   dirEstablecimiento.c_servicio = c_servicio;
-            //   // return c_servicio;
-            // }
-
-            // cachear direccion establecimineto
-            const listCache = [];
-            listCache.push(dirEstablecimiento);
-
-            // guardar lista en cache
-            const establecimientoToCache = {
-              idcliente_pwa_direccion: dirCliente.idcliente_pwa_direccion,
-              listEstablecimientos: listCache
-            };
-
-            this.estableciminetoService.setEstableciminetosCache(establecimientoToCache);
-
-
-            // console.log('km from calculateRoute', km);
-            // console.log(result.routes[0].legs[0]);
-            // console.log('c_servicio', c_servicio);
-            // console.log('dirEstablecimiento', dirEstablecimiento);
-            // return c_servicio;
-            // callback(c_servicio);
-          }
-        });
-
-      // }
-
-
-      // // con google // //
-      setTimeout(() => {
-        dirEstablecimiento.c_servicio = c_servicio;
-        return c_servicio;
-      }, 500);
-
-      dirEstablecimiento.c_servicio = c_servicio;
-      return c_servicio;
-    // });
+    return this.calculateRouteNoApi(dirCliente, dirEstablecimiento, buscarEnCache);
   }
 
-
   calculateRouteObserver(dirCliente: DeliveryDireccionCliente, dirEstablecimiento: DeliveryEstablecimiento, buscarEnCache: boolean = true): Observable<DeliveryEstablecimiento> {
-
-    
-
-      return new Observable(observer => {
-        let c_servicio = 0;
-
-        c_servicio = dirEstablecimiento.c_minimo;
-
-        const c_km = dirEstablecimiento.c_km; // costo x km adicional
-
-        // calcular la distancia
-        const _origen = `${dirEstablecimiento.latitude},${dirEstablecimiento.longitude}`
-        const _destino = `${dirCliente.latitude},${dirCliente.longitude}`
-        this.mapsService.calcularRuta(_origen, _destino).subscribe(reskm => {          
-            dirEstablecimiento.distancia_mt = reskm.toString();
-            dirEstablecimiento.distancia_km = reskm.toString();
-            dirEstablecimiento.isCalcApiGoogle = true;
-            c_servicio = this.calCostoDistancia(dirEstablecimiento, reskm);
-            console.log('reskm', reskm);
-            console.log('c_servicio', c_servicio);
-            dirEstablecimiento.c_servicio = c_servicio;
-            
-            observer.next(dirEstablecimiento);
-            observer.complete();
-        });
-        
-
-        
-
-
-        // dirEstablecimiento.latitude = typeof dirEstablecimiento.latitude === 'string' ? parseFloat(dirEstablecimiento.latitude) : dirEstablecimiento.latitude;
-        // dirEstablecimiento.longitude = typeof dirEstablecimiento.longitude === 'string' ? parseFloat(dirEstablecimiento.longitude) : dirEstablecimiento.longitude;
-        // dirCliente.latitude = typeof dirCliente.latitude === 'string' ? parseFloat(dirCliente.latitude) : dirCliente.latitude;
-        // dirCliente.longitude = typeof dirCliente.longitude === 'string' ? parseFloat(dirCliente.longitude) : dirCliente.longitude;
-
-
-
-
-        // if ( buscarEnCache ) {
-        //   const _establecimientoCacheado = <any>this.estableciminetoService.getFindDirClienteCacheEstableciemto(dirCliente, dirEstablecimiento);
-        //   if ( _establecimientoCacheado ) {
-        //     // console.log('from calcDistance cache', _establecimientoCacheado);
-
-        //     dirEstablecimiento.distancia_km = _establecimientoCacheado.distancia_km;
-        //     dirEstablecimiento.c_servicio = this.calCostoDistancia(dirEstablecimiento, _establecimientoCacheado.distancia_km);
-        //     // console.log('rpt a', dirEstablecimiento);
-        //     observer.next(dirEstablecimiento);
-        //     return;
-        //   }
-        // }
-
-        // // con google // //
-        //  // cordenadas
-        // this.origin = {
-        //   lat: dirCliente.latitude, lng: dirCliente.longitude
-        // };
-
-        // // console.log('this.origin', this.origin);
-
-        // this.destination = {
-        //   lat: dirEstablecimiento.latitude, lng: dirEstablecimiento.longitude
-        // };
-
-        // const request = {
-        //   origin: this.origin,
-        //   destination: this.destination,
-        //   travelMode: google.maps.TravelMode.DRIVING
-        // };
-
-        // let km = 0;
-        // // console.log('calculando.. 1');
-        // this.directionsService.route(request, (result: any, status) => {
-        //   if (status === 'OK') {
-        //     // this.directionsRenderer.setDirections(result);            
-        //     km = result.routes[0].legs[0].distance.value;
-        //     const _kmReal =  km / 1000;
-
-        //     dirEstablecimiento.distancia_mt = km.toString();
-        //     dirEstablecimiento.distancia_km = (_kmReal).toFixed(2);
-        //     dirEstablecimiento.isCalcApiGoogle = true;
-
-        //     // km = parseInt((km / 1000).toFixed(), 0);
-
-        //     c_servicio = this.calCostoDistancia(dirEstablecimiento, _kmReal);
-        //     dirEstablecimiento.c_servicio = c_servicio;           
-        //     observer.next(dirEstablecimiento);
-
-        //   }
-        // });
-
+    return new Observable(observer => {
+      this.calculateRouteNoApi(dirCliente, dirEstablecimiento, buscarEnCache);
+      observer.next(dirEstablecimiento);
+      observer.complete();
     });
   }
 

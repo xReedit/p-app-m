@@ -3,10 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MaterialModule } from '../core/material/material.module';
 import { DebounceClickDirective } from '../shared/directivas/debounce-click.directive';
-import { AgmCoreModule } from '@agm/core';
-import { environment } from '../../environments/environment';
 
-import { DirectionsMapDirectiveDirective } from '../shared/directivas/directions-map-directive.directive';
 import { DialogMetodoPagoComponent } from './dialog-metodo-pago/dialog-metodo-pago.component';
 import { DialogVerificarTelefonoComponent } from './dialog-verificar-telefono/dialog-verificar-telefono.component';
 import { DialogTipoComprobanteComponent } from './dialog-tipo-comprobante/dialog-tipo-comprobante.component';
@@ -44,7 +41,6 @@ import { ListPedidosClientesComponent } from './comp-list-pedidos-holding/list-p
 @NgModule({
   declarations: [
     DebounceClickDirective,
-    DirectionsMapDirectiveDirective,
     DialogMetodoPagoComponent,
     DialogVerificarTelefonoComponent,
     DialogTipoComprobanteComponent,
@@ -77,10 +73,6 @@ import { ListPedidosClientesComponent } from './comp-list-pedidos-holding/list-p
     ListPedidosClientesComponent,
   ],
   imports: [
-    AgmCoreModule.forRoot({
-      apiKey: environment.googleMapsApiKey,
-      libraries: ['places']
-    }),
     CommonModule,
     ReactiveFormsModule,
     FormsModule,

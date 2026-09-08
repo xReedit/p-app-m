@@ -53,9 +53,12 @@ Play Console > Producción > Crear nueva versión > subir el `.aab`. Notas de la
 
 Requisitos: Xcode 16+, CocoaPods, cuenta Apple Developer. Deployment target ya está en iOS 15.
 
-El certificado de distribución guardado en `D:\Projects\capacitor\certificados ios\mozo\`
-(Certificates.p12 / distribution.cer) venció el 22-01-2024: no sirve. En Xcode, con
-"Automatically manage signing" y la cuenta del equipo, se genera uno nuevo solo.
+Certificado de distribución vigente (Apple Distribution, equipo HQ75D833B3, vence 08-09-2027) en
+`D:\certificados\host-papayapp-mozo\certificados ios6\`: `Certificates-2026.p12` (contraseña en
+CLAUDE.local.md), `distribution.cer` y la clave privada `apple-distribution-2026.key` (conservarla: sin ella el
+certificado queda inservible). Se hizo con OpenSSL en Windows (CSR + `openssl pkcs12 -export`), sin Mac.
+El build se hace en Ionic Appflow: subir ahí el `.p12` y el `.mobileprovision` App Store del App ID
+`mozo.papaya.com.pe` (regenerar el perfil después de activar Push en el App ID).
 
 ```bash
 git pull

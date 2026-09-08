@@ -80,3 +80,17 @@ Si Maps no carga en el celular: en Google Cloud, la clave debe permitir el refer
 - Migración `restobar/migraciones/2026-09-07_021_sede_opciones_mozo_num_personas.sql` en producción.
 - Desplegar `backend-pedidos` (idempotencia de `nuevoPedido`, `mozo_num_personas` en `getDataSede`).
 - Regenerar `dist/` del POS con `minify.sh` (opción "Cantidad de personas por mesa").
+
+## 3. Push notifications (llamado de mesa)
+
+- Proyecto Firebase: **`push-papaya-com-pe`** (el mismo de repartidor y app cliente; el backend firma con su
+  `serviceAccountKey.json`). NO usar `push-notification-app-papaya` (solo Firestore): da `SenderId mismatch`.
+- Archivos nativos (ignorados por `.gitignore`, van con `git add -f`):
+  `android/app/google-services.json` y `ios/App/App/GoogleService-Info.plist` (Appflow los necesita en el repo).
+- iOS: `App.entitlements` (aps-environment), `Info.plist` con `remote-notification`, pod `FirebaseMessaging`,
+  `AppDelegate.swift` convierte el token APNs en token FCM. Falta de tu lado: capability Push en el App ID,
+  perfil de aprovisionamiento regenerado y subido a Appflow, llave APNs `.p8` cargada en Firebase (proyecto de arriba).
+- Backend: tabla `usuario_push_token` (migracion 2026-09-07_027), endpoint `POST mozo/push-token`,
+  envio en `service/push.mozo.service.js` (solo a mozos con socket conectado en las ultimas 24 h).
+- Probar: entrar como mozo, cerrar la app desde recientes (no "forzar detencion": Android bloquea el push hasta reabrir),
+  pedir atencion desde un cliente. Debe sonar/vibrar con el icono morado y "Mesa N solicita atencion".

@@ -4,6 +4,7 @@ import { UsuarioAutorizadoModel } from 'src/app/modelos/usuario-autorizado.model
 import { AuthServiceSotrage } from 'src/app/shared/services/auth.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { MatDialogRef } from '@angular/material/dialog';
+import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 
 @Component({
   selector: 'dialog-change-user.',
@@ -26,7 +27,8 @@ export class DialogChangeUser implements OnInit {
         private crudService: CrudHttpService,
         private authService: AuthServiceSotrage,
         private infoToken: InfoTockenService,
-        private dialogRef: MatDialogRef<DialogChangeUser>
+        private dialogRef: MatDialogRef<DialogChangeUser>,
+        private notificacionPush: NotificacionPushService
     ) { }
 
     ngOnInit(): void {
@@ -89,6 +91,7 @@ export class DialogChangeUser implements OnInit {
                 this.authService.setLoggedStatus(true);
                 this.authService.setLocalUsuario(this.usuario);
                 this.infoToken.changeUserMozo(this.nomUsuarioChange);
+                this.notificacionPush.registrarMozo(); // el push pasa al nuevo mozo
                 this.infoToken.setIsUsuarioAutorizacion(true);
                 // this.infoToken.converToJSON();
                 this.dialogRef.close(this.nomUsuarioChange);

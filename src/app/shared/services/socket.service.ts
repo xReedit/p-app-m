@@ -17,6 +17,7 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { MipedidoService } from './mipedido.service';
 import { Router } from '@angular/router';
 import { ListenStatusService } from './listen-status.service';
+import { NotificacionPushService } from './notificacion-push.service';
 
 
 @Injectable({
@@ -47,7 +48,8 @@ export class SocketService {
   constructor(
     private infoTockenService: InfoTockenService,
     private router: Router,
-    private listenStatusService: ListenStatusService
+    private listenStatusService: ListenStatusService,
+    private notificacionPush: NotificacionPushService
     ) {
 
   }
@@ -67,6 +69,9 @@ export class SocketService {
     // });
 
     const infToken = this.infoTockenService.infoUsToken || infoUser;
+
+    // app mozo nativa: registra el dispositivo para el push de llamado de mesa
+    this.notificacionPush.registrarMozo();
 
     const idHolding = infToken?.holding?.idsede_holding || 0;
     const isHolding = idHolding ? '1' : '0';

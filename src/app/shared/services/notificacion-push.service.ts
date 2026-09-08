@@ -1,176 +1,101 @@
 import { Injectable } from '@angular/core';
-import { SwPush } from '@angular/service-worker';
+import { Capacitor } from '@capacitor/core';
+import { PushNotifications, Token } from '@capacitor/push-notifications';
+import { Observable, of } from 'rxjs';
+import { catchError, timeout } from 'rxjs/operators';
 import { CrudHttpService } from './crud-http.service';
 import { InfoTockenService } from './info-token.service';
-import { VAPID_PUBLIC, IS_NATIVE } from '../config/config.const';
+import { IS_NATIVE } from '../config/config.const';
 
-
-
-import {
-  ActionPerformed,
-  PushNotificationSchema,
-  PushNotifications,
-  Token,
-} from '@capacitor/push-notifications';
-// import { Observable } from 'rxjs/internal/Observable';
-// import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-// import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
+// Push FCM para la app mozo nativa: "mesa X solicita atencion".
+// El backend (mozo/push-token) guarda el token por dispositivo y solo envia
+// a los que conectaron el socket en las ultimas 24h.
+// ponytail: solo nativo (Android/iOS); el web push VAPID de clientes quedo en git si se necesita.
+const CANAL_LLAMADO_MESA = 'llamado_mesa'; // mismo id que usa el backend en android.notification.channelId
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificacionPushService {
 
-  // private VAPID_PUBLIC = 'BC7ietauZE99Hx9HkPyuGVr8jaYETyEJgH-gLaYIsbORYobppt9dX49_K_wubDqphu1afi7XrM6x1zAp4kJh_wU';
+  private fcmToken = '';
+  private idusuarioRegistrado = 0;
+  private listenersOn = false;
 
   constructor(
-    private swPush: SwPush,
     private crudService: CrudHttpService,
-    private infoTokenService: InfoTockenService,    
-    // private dialog: MatDialog,
-  ) {
+    private infoTokenService: InfoTockenService,
+  ) { }
 
-    // this.showMessages();
+  // se llama cada vez que el mozo conecta el socket (login, reconexion, cambio de usuario)
+  registrarMozo(): void {
+    if (!IS_NATIVE || !this.idusuarioActual()) { return; }
+    if (this.fcmToken) { this.guardarToken(); return; } // ya registrado en FCM: solo re-asocia al usuario actual
 
-    // this.swPush.notificationClicks.subscribe( event => {
-    //   // console.log('Received notification: ', event);
-    //   const url = event.notification.data.url;
-    //   window.open(url, '_blank');
-    // });
+    this.addListeners();
+    PushNotifications.requestPermissions()
+      .then(result => {
+        if (result.receive === 'granted') { PushNotifications.register(); }
+      })
+      .catch(err => console.error('push requestPermissions', err));
+  }
 
-    this.swPush.notificationClicks.subscribe( event => {
-      alert('aaaaaaaaaaa');
-      console.log('clic notification', event);
-      // const url = event.notification.data.url;
-      // window.location.reload();
-      // window.open('reparto.papaya.com.pe');
+  // al cerrar sesion: el dispositivo deja de recibir llamados. Nunca bloquea el logout.
+  eliminarRegistroMozo(): Observable<any> {
+    if (!this.fcmToken) { return of(null); }
+    const data = { fcm_token: this.fcmToken, idusuario: this.idusuarioRegistrado, op: 'del' };
+    this.idusuarioRegistrado = 0;
+    return this.crudService.postFree(data, 'mozo', 'push-token').pipe(
+      timeout(3000),
+      catchError(err => { console.error('push eliminar token', err); return of(null); })
+    );
+  }
+
+  private addListeners(): void {
+    if (this.listenersOn) { return; }
+    this.listenersOn = true;
+
+    // Android: canal con prioridad alta (heads-up) y vibracion. Sin `sound` usa el tono de
+    // notificacion del sistema (`sound` espera un archivo en res/raw). En iOS no existe y se ignora.
+    PushNotifications.createChannel({
+      id: CANAL_LLAMADO_MESA,
+      name: 'Llamado de mesa',
+      description: 'Un cliente solicita atención en su mesa',
+      importance: 5,
+      vibration: true,
+      visibility: 1,
+    }).catch(() => { /* iOS: createChannel no implementado */ });
+
+    PushNotifications.addListener('registration', (token: Token) => {
+      this.fcmToken = token.value;
+      this.guardarToken();
     });
 
-
-    if (IS_NATIVE) {
-      PushNotifications.addListener('registration',
-        (token: Token) => {
-          console.log('addListener token.value ', token.value);
-          this.saveSuscripcion(token.value);
-        }
-      );
-  
-      PushNotifications.addListener('registrationError',
-        (error: any) => {
-          alert('Error en registrar: ' + JSON.stringify(error));
-        }
-      );
-    }
+    // falta google-services.json / APNs: se registra en consola, no se molesta al mozo
+    PushNotifications.addListener('registrationError', (error: any) => {
+      console.error('push registrationError', error);
+    });
   }
 
-  async getIsTienePermiso(): Promise<boolean> {
-    if (IS_NATIVE) {
-      let permStatus = await PushNotifications.checkPermissions();
-      return permStatus.receive === 'granted' ? true : false;
-    } else {
-      return Notification.permission === 'granted' ? true : false;
-    }
-  }
+  private guardarToken(): void {
+    const idusuario = this.idusuarioActual();
+    if (!this.fcmToken || !idusuario || idusuario === this.idusuarioRegistrado) { return; }
 
-
-  // se suscribe a la notificacion
-  suscribirse(): void {
-    // console.log('llego a suscribirse estado this.swPush.isEnabled: ', this.swPush.isEnabled);
-    // if ( this.swPush.isEnabled ) {
-      // this.swPush.subscription.subscribe(res => {
-        // if (!res) {return; }
-        // this.lanzarPermisoNotificationPush(option);
-        // });
-        // }
-    
-    //0123 cambiamos
-    if (IS_NATIVE ) {      
-      PushNotifications.requestPermissions().then(result => {
-        console.log('result.receive', result.receive);
-        if (result.receive === 'granted') {
-          // Register with Apple / Google to receive push via APNS/FCM
-          PushNotifications.register()
-        } else {
-          // Show some error
-          console.log('error al registrar');
-        }
-      });
-    } else {
-      this.keySuscribtion();
-    }
-
-  }
-
-  //  suscriberse
-  private keySuscribtion() {
-    // console.log('keySuscribtion');
-    this.swPush
-    .requestSubscription({
-      serverPublicKey: VAPID_PUBLIC,
-    })
-    .then(subscription => {
-      // send subscription to the server
-      console.log('suscrito a notificaciones push', subscription);
-      this.saveSuscripcion(subscription);
-    })
-    .catch(console.error);
-  }
-
-  private saveSuscripcion(_subscription: any): void {
-    const _data = {
-      suscripcion: _subscription,
-      idcliente: this.infoTokenService.infoUsToken.idcliente
+    const data = {
+      fcm_token: this.fcmToken,
+      idusuario,
+      plataforma: Capacitor.getPlatform(),
+      op: 'set',
     };
-
-    // console.log('push', _data);
-
-    this.crudService.postFree(_data, 'push', 'suscripcion', false)
-      .subscribe(res => console.log(res));
+    this.crudService.postFree(data, 'mozo', 'push-token').subscribe({
+      next: () => this.idusuarioRegistrado = idusuario,
+      error: err => console.error('push guardar token', err),
+    });
   }
 
-  // private lanzarPermisoNotificationPush(option: number = 0) {
-  //   const _dialogConfig = new MatDialogConfig();
-  //   _dialogConfig.disableClose = true;
-  //   _dialogConfig.hasBackdrop = true;
-  //   _dialogConfig.data = {idMjs: option};
-
-  //   console.log('show dialog DialogDesicionComponent');
-  //   const dialogReset = this.dialog.open(DialogDesicionComponent, _dialogConfig);
-  //   dialogReset.afterClosed().subscribe(result => {
-  //     if (result ) {
-  //       console.log('result dialog DialogDesicionComponent', result);
-  //       // this.suscribirse();
-  //       this.keySuscribtion();
-  //     }
-  //   });
-  // }
-
-
-  // showMessages() {
-
-  //   // this.swPush.messages
-  //   //   .subscribe(message => {
-
-  //   //     console.log('[App] Push message received', message);
-
-  //   //     // let notification = message['notification'];
-
-  //   //     // this.tweets.unshift({
-  //   //     //   text: notification['body'],
-  //   //     //   id_str: notification['tag'],
-  //   //     //   favorite_count: notification['data']['favorite_count'],
-  //   //     //   retweet_count: notification['data']['retwe<et_count'],
-  //   //     //   user: {
-  //   //     //     name: notification['title']
-  //   //     //   }
-  //   //     // })
-
-  //   //   });
-
-  // }
-
-  // onNotification() {
-  //   this.swPush.messages
-  // }
-
+  private idusuarioActual(): number {
+    const info = this.infoTokenService.infoUsToken;
+    if (!info || info.isCliente) { return 0; }
+    return Number(info.idusuario) || 0;
+  }
 }

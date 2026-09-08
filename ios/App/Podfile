@@ -19,6 +19,7 @@ end
 
 target 'App' do
   capacitor_pods
+  pod 'FirebaseMessaging'  # push FCM: token APNs -> FCM en AppDelegate
   # Add your Pods here
 end
 

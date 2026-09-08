@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- color de acento de las notificaciones push (morado del logo) -->
+    <color name="notification_color">#6F118F</color>
+</resources>

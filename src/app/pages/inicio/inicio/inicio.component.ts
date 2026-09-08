@@ -14,6 +14,8 @@ import { mergeMap } from 'rxjs/operators';
 import { App } from '@capacitor/app';
 import { AuthServiceSotrage } from 'src/app/shared/services/auth.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
+import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
+import { finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 // import { SpechTotextService } from 'src/app/shared/services/speech/spech-totext.service';
 // import { SpechTTSService } from 'src/app/shared/services/speech/spech-tts.service';
@@ -38,7 +40,7 @@ export class InicioComponent implements OnInit, OnDestroy {
   isNativePlataform = IS_NATIVE;
   isSessionActive = false;
 
-  APP_VERSION_ACTUAL = 'v.3e';
+  APP_VERSION_ACTUAL = 'v.3f';
   
   private countnDev = 0;
   private countLogo = 0;  
@@ -51,6 +53,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     public authNative: AuthService, //@auth0/auth0-angular
     private crudHttpService: CrudHttpService,
     private ngZone: NgZone  
+    , private notificacionPush: NotificacionPushService
     // private webSocketService: WebsocketService
     ) { }
 
@@ -222,13 +225,16 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.verifyClientService.loginOut();    
   }
 
-  cerrarAllSession(): void { 
-    this.authServiceStore.loggedOutUser();
-    this.authServiceStore.setLocalToken('');
-    this.authNativeService.logout()
-    localStorage.clear();
-    this.router.navigate(['../']);
-    window.location.reload();
+  cerrarAllSession(): void {
+    // primero se da de baja el push (necesita el token aun en storage); nunca bloquea el logout
+    this.notificacionPush.eliminarRegistroMozo().pipe(finalize(() => {
+      this.authServiceStore.loggedOutUser();
+      this.authServiceStore.setLocalToken('');
+      this.authNativeService.logout()
+      localStorage.clear();
+      this.router.navigate(['../']);
+      window.location.reload();
+    })).subscribe();
   }
 
   // showClienteProfile() {

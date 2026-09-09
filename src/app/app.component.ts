@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { IS_NATIVE } from './shared/config/config.const';
 // import { SwUpdate } from '@angular/service-worker';
 // import { ActivatedRoute } from '@angular/router';
 // import { App } from '@capacitor/app';
@@ -32,6 +33,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    // app nativa: da de baja el service worker de versiones anteriores para que cada actualizacion cargue al primer arranque
+    if (IS_NATIVE && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister())).catch(() => {});
+    }
     // if (this.swUpdate.isEnabled) {
     //   this.swUpdate.available.subscribe(() => {
     //       console.log('nueva version');

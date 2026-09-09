@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatInput } from '@angular/material/input';
+import { MapsAPILoader } from '@agm/core';
 import { NgxMaterialTimepickerHoursFace } from 'ngx-material-timepicker/src/app/material-timepicker/components/timepicker-hours-face/ngx-material-timepicker-hours-face';
 import { debounceTime, distinctUntilChanged } from 'rxjs/internal/operators';
 import { Subject } from 'rxjs/internal/Subject';
@@ -64,7 +65,8 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     private utilService: UtilitariosService,
     private plazaDelivery: SedeDeliveryService,
     private establecimientoService: EstablecimientoService,
-    private mapsService: MapsServiceService
+    private mapsService: MapsServiceService,
+    private mapsAPILoader: MapsAPILoader
   ) {
     this.idClienteBuscar = data.idcliente;
     this.isFromComercio = data.isFromComercio || false;
@@ -82,7 +84,11 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
       });
   }
 
+  // el SDK de Google Maps ya no viene en index.html: lo carga AGM con la key del environment
+  private sdkMaps: Promise<void>;
+
   ngOnInit(): void {
+    this.sdkMaps = this.mapsAPILoader.load();
     this.dataCliente = new DeliveryDireccionCliente();
     this.loadDireccionesAgregadas();
 
@@ -104,7 +110,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
       .subscribe((res: any) => {
         const direccionGuardada = this.getDireccionStorage();
 
-        this.listDirecciones = res.data;
+        this.listDirecciones = (res && res.data) || [];
         this.listDirecciones.map(d => {
           d.direccion = d.direccion.split(',')[0];
           if ( direccionGuardada ) {
@@ -118,6 +124,10 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
 
   getPlacesPredictionsChange(value: string) {
+    this.sdkMaps.then(() => this.buscarPredicciones(value));
+  }
+
+  private buscarPredicciones(value: string) {
 
     const sessionToken = new google.maps.places.AutocompleteSessionToken();
     // si es comercio adjunta la ciudad

@@ -105,3 +105,14 @@ Si Maps no carga en el celular: en Google Cloud, la clave debe permitir el refer
   envio en `service/push.mozo.service.js` (solo a mozos con socket conectado en las ultimas 24 h).
 - Probar: entrar como mozo, cerrar la app desde recientes (no "forzar detencion": Android bloquea el push hasta reabrir),
   pedir atencion desde un cliente. Debe sonar/vibrar con el icono morado y "Mesa N solicita atencion".
+
+## 4. Google Maps (delivery del mozo)
+
+La app SI usa Google Maps: el dialogo de direccion del delivery usa Places (autocompletar) y el mapa, y el costo
+de delivery usa Directions. El SDK lo carga AGM con `GOOGLE_MAPS_API_KEY` (`.env` en local, variable del
+environment en Appflow). En Google Cloud Console la key debe permitir como referentes `https://localhost/*`
+(Android) y `capacitor://localhost/*` (iOS); si no, sale `RefererNotAllowedMapError` y la busqueda de
+direcciones no devuelve nada.
+
+No mover ni borrar componentes "sin uso": `app.module.ts` tiene `CUSTOM_ELEMENTS_SCHEMA` y una etiqueta
+`<app-xxx>` sin componente compila igual y se pinta vacia (asi se perdio el formulario de delivery en 1.0.5/1.0.6).

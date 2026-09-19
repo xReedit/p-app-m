@@ -69,6 +69,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   isReserva = false;
   esMovil = window.innerWidth <= 1049; // en celular el pie lo monta main fuera de las pestañas
   isRequiereMesa = false;
+  mesasAlfanumericas = false;
   isDelivery = false;
   isDeliveryValid = false;
   frmConfirma: any = {};
@@ -133,7 +134,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    // this.establecimientoService.get();
+    this.mesasAlfanumericas = this.establecimientoService.get().mesas_alfanumerica === '1';
 
     console.log('this.infoToken', this.infoToken);  
 
@@ -913,8 +914,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   checkIsRequierMesa(num: string = ''): void {
     // console.log('check mesa', num);
-    const establecimiento = this.establecimientoService.get();
-    const mesasAlfanumericas = establecimiento.mesas_alfanumerica === '1';
+    const mesasAlfanumericas = this.mesasAlfanumericas;
 
     if ( num !== '' ) {
       // Solo eliminar caracteres no numéricos si las mesas NO son alfanuméricas
@@ -1429,8 +1429,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       }
       
       // Crear un área por defecto con todas las mesas
-      const mesasAlfanumericas = establecimiento.mesas_alfanumerica === 'si';
-      
+      const mesasAlfanumericas = this.mesasAlfanumericas;
+
       areasMesas = [{
         titulo: 'MESAS',
         prefijo_mesa: mesasAlfanumericas ? 'M' : '',

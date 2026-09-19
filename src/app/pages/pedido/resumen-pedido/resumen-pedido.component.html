@@ -217,8 +217,12 @@
                             <span class="fw-100 fs-20">Indique # de mesa</span>
                             <div class="w-100" style="display: flex; align-items: center; gap: 10px; justify-content: center;">
                                 <mat-form-field class="text-center fs-20" style="flex: 1; max-width: 200px;">
-                                <input 
+                                <input
                                     type="text"
+                                    [attr.inputmode]="mesasAlfanumericas ? null : 'numeric'"
+                                    [attr.pattern]="mesasAlfanumericas ? null : '[0-9]*'"
+                                    [readonly]="mesasAlfanumericas"
+                                    (click)="mesasAlfanumericas && abrirSelectorMesa()"
                                     matInput
                                     [(ngModel)]="frmConfirma.nummesa" name="mesa"
                                     [required]="isRequiereMesa" (keyup)="checkIsRequierMesa(txtNumMesa.value)" #txtNumMesa>

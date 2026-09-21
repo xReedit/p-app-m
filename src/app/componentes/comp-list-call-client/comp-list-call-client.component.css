@@ -23,3 +23,10 @@
   .div-call-client p {
     margin: 0px;
   }
+
+  /* pedido/plato listo: distinto del llamado del cliente (amarillo con manito) */
+  .div-call-listo {
+    background: #a5d6a7;
+    border-color: #388e3c;
+    color: #1b5e20;
+  }

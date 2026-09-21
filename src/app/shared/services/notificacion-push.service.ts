@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
-import { PushNotifications, Token } from '@capacitor/push-notifications';
-import { Observable, of } from 'rxjs';
+import { PushNotifications, PushNotificationSchema, Token } from '@capacitor/push-notifications';
+import { Observable, of, Subject } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
 import { CrudHttpService } from './crud-http.service';
 import { InfoTockenService } from './info-token.service';
@@ -22,9 +22,14 @@ export class NotificacionPushService {
   private idusuarioRegistrado = 0;
   private listenersOn = false;
 
+  // push "pedido/plato listo" recibido con la app abierta (Android no lo muestra en primer plano):
+  // lo pinta la tarjeta "Pedido Listo" de comp-list-call-client
+  pedidoListo$ = new Subject<{ idpedido: string; idpedido_detalle: string; ref: string; plato: string }>();
+
   constructor(
     private crudService: CrudHttpService,
     private infoTokenService: InfoTockenService,
+    private zone: NgZone,
   ) { }
 
   // se llama cada vez que el mozo conecta el socket (login, reconexion, cambio de usuario)
@@ -74,6 +79,18 @@ export class NotificacionPushService {
     // falta google-services.json / APNs: se registra en consola, no se molesta al mozo
     PushNotifications.addListener('registrationError', (error: any) => {
       console.error('push registrationError', error);
+    });
+
+    PushNotifications.addListener('pushNotificationReceived', (n: PushNotificationSchema) => {
+      const d = n.data || {};
+      if (d.tipo !== 'pedido_listo') { return; } // el llamado de mesa ya llega por socket con la app abierta
+      // el callback del plugin corre fuera de Angular: sin zone.run la tarjeta no se pinta hasta el siguiente click
+      this.zone.run(() => this.pedidoListo$.next({
+        idpedido: String(d.idpedido || ''),
+        idpedido_detalle: String(d.idpedido_detalle || '0'),
+        ref: String(d.ref || ''),
+        plato: String(d.plato || ''),
+      }));
     });
   }
 

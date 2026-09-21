@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { delay } from 'rxjs/operators';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 
 @Component({
@@ -20,11 +21,24 @@ export class CompListCallClientComponent implements OnInit {
   constructor(
     private infoToken: InfoTockenService,
     private socketService: SocketService,
+    private notificacionPush: NotificacionPushService,
   ) { }
 
   ngOnInit(): void {
     this.isCliente = this.infoToken.infoUsToken.isCliente || false;
-    
+
+    // push "pedido/plato listo" desde la zona de despacho, con la app abierta: misma tarjeta que el holding.
+    // Un plato y el pedido completo del mismo pedido son tarjetas distintas (clave idpedido-detalle).
+    this.notificacionPush.pedidoListo$.subscribe(n => {
+      const esPlato = n.idpedido_detalle !== '0';
+      this.addItemCallListLLamadaMarca({
+        idpedido: esPlato ? `${n.idpedido}-${n.idpedido_detalle}` : n.idpedido,
+        nom_marca: esPlato ? n.plato : 'Pedido completo',
+        referencia: n.ref,
+        fromPush: true,
+      });
+    });
+
     
     this.socketService.isSocketOpen$
       .subscribe(isOpen => {
@@ -121,9 +135,10 @@ export class CompListCallClientComponent implements OnInit {
     this.listCallsMarcas = this.listCallsMarcas.filter(x =>  x.idpedido !== idpedido);
   }
 
-  goCallMarca(marca: any) {    
+  goCallMarca(marca: any) {
     // marca.en_camino = true;
-    this.socketService.emit('notificar-marca-mozo-en-camino', marca); 
+    // las tarjetas que vienen del push de cocina no tienen marca de holding a quien avisar
+    if ( !marca.fromPush ) { this.socketService.emit('notificar-marca-mozo-en-camino', marca); }
     this.removeItemCallMarcaList(marca.idpedido);
   }
 

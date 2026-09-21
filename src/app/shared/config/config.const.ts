@@ -32,9 +32,11 @@ export const URL_IMG_ICONS = 'https://restobar.papaya.com.pe/images/'; // imagen
 export const VIEW_APP_MOZO = true; // true = app solo mozo // solo para vista incial
 
 // Configuracion del punto (dialog-config-punto) cuando la instalacion es nueva y no hay nada guardado en sys::punto:
-// "Tomar pedido rapido" activo y canal "consumir en el local". Se compara por descripcion del tipo_consumo de la sede.
-export const TOMA_PEDIDO_RAPIDO_DEFAULT = true;
-export const CANAL_CONSUMO_DEFAULT = 'CONSUMIR EN EL LOCAL';
+// "Tomar pedido rapido" arranca activo SOLO si la sede tiene un canal "consumir en el local" (o parecido),
+// que queda como canal predeterminado; si la sede no lo tiene, arranca desactivado. Se compara por descripcion.
+export const CANAL_CONSUMO_LOCAL_REGEX = /local|mesa/i;
+export const findCanalConsumoLocal = <T extends { descripcion?: string }>(canales: T[]): T | undefined =>
+  (canales || []).filter(c => CANAL_CONSUMO_LOCAL_REGEX.test(c.descripcion || ''))[0];
 export const URL_CONSULTA_RUC_DNI = 'https://apifac.papaya.com.pe/api/services/'; // consulta dni o ruc
 export const TOKEN_CONSULTA = 'tLKbDncvyKIPcgdVAGqt7rmy7W9mU9cnbawpZdc7JJv7l6h9cU'; // token de prueba
 export const TOKEN_SMS = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoicGFwYXlhLXNtcyIsImlhdCI6MTAwMDIwMDAzMDAwfQ.bKnTHEEGW_SustFir-40ZAYcHtfIo7Gyjq7c2onsAj0'; // token de prueba

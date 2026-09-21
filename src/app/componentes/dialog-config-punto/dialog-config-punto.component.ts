@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
-import { CANAL_CONSUMO_DEFAULT, TOMA_PEDIDO_RAPIDO_DEFAULT } from 'src/app/shared/config/config.const';
+import { findCanalConsumoLocal } from 'src/app/shared/config/config.const';
 
 @Component({
   selector: 'app-dialog-config-punto',
@@ -17,6 +17,7 @@ export class DialogConfigPuntoComponent implements OnInit {
   selectedValueCanConsumo: any;
   isPuntoAutoPedidoCheck: boolean;
   isTomaPedidoRapido: boolean;
+  private isConfigGuardada = false; // false = instalacion nueva, se aplica el default al cargar los canales
 
   constructor(
     private crudService: CrudHttpService,
@@ -30,12 +31,13 @@ export class DialogConfigPuntoComponent implements OnInit {
 
     this.loadCanalesConsumo();
 
-    // cargar de localstorage; instalacion nueva = pedido rapido activo (mismo default que carta.component)
+    // cargar de localstorage; instalacion nueva = default segun los canales de la sede (mismo criterio que carta.component)
     const _puntoConfig = JSON.parse(localStorage.getItem('sys::punto')) || {};
+    this.isConfigGuardada = _puntoConfig.istoma_pedido_rapido !== undefined;
     this.isPuntoAutoPedidoCheck = _puntoConfig.ispunto_autopedido || false;
     this.selectedValueImpresora = _puntoConfig.impresora;
 
-    this.isTomaPedidoRapido = _puntoConfig.istoma_pedido_rapido ?? TOMA_PEDIDO_RAPIDO_DEFAULT;
+    this.isTomaPedidoRapido = _puntoConfig.istoma_pedido_rapido || false;
     this.selectedValueCanConsumo = _puntoConfig.canal_consumo;
 
     this.infoTokenService.setIsPuntoAutoPedido(this.isPuntoAutoPedidoCheck);
@@ -70,11 +72,12 @@ export class DialogConfigPuntoComponent implements OnInit {
     .subscribe(res => {
       // console.log('res', res);
       this.listCanalConsumo = res.data || [];
-      // sin canal guardado: "consumir en el local" (o el primero de la sede si no existe con ese nombre)
-      if ( !this.selectedValueCanConsumo ) {
-        this.selectedValueCanConsumo = this.listCanalConsumo
-          .filter((c: any) => (c.descripcion || '').toLocaleLowerCase() === CANAL_CONSUMO_DEFAULT.toLocaleLowerCase())[0]
-          || this.listCanalConsumo[0];
+      // instalacion nueva: pedido rapido activo solo si la sede tiene canal "consumir en el local"
+      if ( !this.isConfigGuardada ) {
+        const _canalLocal = findCanalConsumoLocal(this.listCanalConsumo);
+        this.isTomaPedidoRapido = !!_canalLocal;
+        this.selectedValueCanConsumo = _canalLocal;
+        this.infoTokenService.setIsTomaPedidoRapido(this.isTomaPedidoRapido);
       }
     });
   }

@@ -17,7 +17,7 @@ import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/di
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
-import { CANAL_CONSUMO_DEFAULT, TOMA_PEDIDO_RAPIDO_DEFAULT, URL_IMG_CARTA } from 'src/app/shared/config/config.const';
+import { findCanalConsumoLocal, URL_IMG_CARTA } from 'src/app/shared/config/config.const';
 import { Subscription } from 'rxjs';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
@@ -96,6 +96,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   isPuntoAutoPedido = false;
   isTomaPedidoRapido = false;
   canalConsumoTomaPedidoRapido: any;
+  private isConfigPuntoGuardada = false;
   dataCalificacion: any;
 
   isCantidadCero = true;
@@ -141,11 +142,12 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isViewMercado = this.establecimientoService.get().pwa_show_item_view_mercado === 1;
     this.isCliente = !!this.infoToken.infoUsToken.isCliente; // this.infoToken.infoUsToken.isCliente;
     this.isPuntoAutoPedido = _configPunto.ispunto_autopedido || false;
-    // instalacion nueva (sin sys::punto): pedido rapido activo; el mozo lo puede desactivar en Configuraciones
-    this.isTomaPedidoRapido = _configPunto.istoma_pedido_rapido ?? TOMA_PEDIDO_RAPIDO_DEFAULT;
+    this.isTomaPedidoRapido = _configPunto.istoma_pedido_rapido || false;
+    // instalacion nueva (sin sys::punto): el default se decide al recibir los tipos de consumo de la sede
+    this.isConfigPuntoGuardada = _configPunto.istoma_pedido_rapido !== undefined;
 
     if ( this.isTomaPedidoRapido ) {
-      this.canalConsumoTomaPedidoRapido = _configPunto?.canal_consumo || { descripcion: CANAL_CONSUMO_DEFAULT };
+      this.canalConsumoTomaPedidoRapido = _configPunto?.canal_consumo;
     }
 
     this.initCarta();
@@ -388,6 +390,13 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.miPedidoService.setObjNewItemTiposConsumo(this.objNewItemTiposConsumo);
 
+        // instalacion nueva (sin sys::punto): pedido rapido activo solo si la sede tiene canal "consumir en el local";
+        // el mozo lo puede cambiar en Configuraciones (dialog-config-punto aplica el mismo criterio)
+        if ( !this.isConfigPuntoGuardada && !this.isCliente ) {
+          const _canalLocal = findCanalConsumoLocal(this.objNewItemTiposConsumo);
+          this.isTomaPedidoRapido = !!_canalLocal;
+          this.canalConsumoTomaPedidoRapido = _canalLocal;
+        }
 
         // HOLDING MARCAS
         if ( this.infoToken.getIsHolding() ) {
@@ -854,7 +863,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     let tpcSelect =  this.objItemTipoConsumoSelected[0];
     if ( this.isTomaPedidoRapido ) {
       // si el canal predeterminado no existe en la sede se usa el primero, en vez de fallar al agregar
-      const _descCanal = this.canalConsumoTomaPedidoRapido.descripcion.toLocaleLowerCase();
+      const _descCanal = (this.canalConsumoTomaPedidoRapido?.descripcion || '').toLocaleLowerCase();
       tpcSelect = this.objItemTipoConsumoSelected.filter(x => x.descripcion.toLocaleLowerCase() === _descCanal)[0] || tpcSelect;
     }
     const _isSuma = isSuma_selected ? 0 : _selectedItem.isSuma_selected ? 0 : 1;

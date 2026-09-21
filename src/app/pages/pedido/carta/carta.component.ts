@@ -17,7 +17,7 @@ import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/di
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
-import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
+import { CANAL_CONSUMO_DEFAULT, TOMA_PEDIDO_RAPIDO_DEFAULT, URL_IMG_CARTA } from 'src/app/shared/config/config.const';
 import { Subscription } from 'rxjs';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
@@ -141,10 +141,11 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isViewMercado = this.establecimientoService.get().pwa_show_item_view_mercado === 1;
     this.isCliente = !!this.infoToken.infoUsToken.isCliente; // this.infoToken.infoUsToken.isCliente;
     this.isPuntoAutoPedido = _configPunto.ispunto_autopedido || false;
-    this.isTomaPedidoRapido = _configPunto.istoma_pedido_rapido || false;
+    // instalacion nueva (sin sys::punto): pedido rapido activo; el mozo lo puede desactivar en Configuraciones
+    this.isTomaPedidoRapido = _configPunto.istoma_pedido_rapido ?? TOMA_PEDIDO_RAPIDO_DEFAULT;
 
     if ( this.isTomaPedidoRapido ) {
-      this.canalConsumoTomaPedidoRapido = _configPunto?.canal_consumo;
+      this.canalConsumoTomaPedidoRapido = _configPunto?.canal_consumo || { descripcion: CANAL_CONSUMO_DEFAULT };
     }
 
     this.initCarta();
@@ -852,7 +853,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
     let tpcSelect =  this.objItemTipoConsumoSelected[0];
     if ( this.isTomaPedidoRapido ) {
-      tpcSelect = this.objItemTipoConsumoSelected.filter(x => x.descripcion.toLocaleLowerCase() === this.canalConsumoTomaPedidoRapido.descripcion.toLocaleLowerCase())[0];
+      // si el canal predeterminado no existe en la sede se usa el primero, en vez de fallar al agregar
+      const _descCanal = this.canalConsumoTomaPedidoRapido.descripcion.toLocaleLowerCase();
+      tpcSelect = this.objItemTipoConsumoSelected.filter(x => x.descripcion.toLocaleLowerCase() === _descCanal)[0] || tpcSelect;
     }
     const _isSuma = isSuma_selected ? 0 : _selectedItem.isSuma_selected ? 0 : 1;
 

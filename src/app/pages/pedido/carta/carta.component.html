@@ -293,13 +293,29 @@
                         <p class="titlo-detalle" >{{item.seccion}}: {{item.detalles}}</p>                    
                       </ng-container>                    
                   </div>
-    
+
                 </div>
 
-                
-              </div>            
-            </li>          
-          </ul>        
+                <!-- mismo control que la lista de items: muestra la cantidad agregada con pedido rapido -->
+                <ng-container *ngIf="isPuntoAutoPedido || isTomaPedidoRapido || isCliente">
+                  <div class="control-more-clic control-busqueda" *ngIf="item.is_visible_control_last_add || item.cantidad_seleccionada > 0">
+                    <app-comp-ctrl-add-fast class="float-left mr-1"
+                        (objResponse)="resultCantItemMercado($event)"
+                        [cantidad_show] = "item.cantidad_seleccionada"
+                        [objItem]="item"
+                        [comprimir] = "false"
+                        [quitarFadeUp] = "true"
+                        [limitAdd]="item.cantidad">
+                    </app-comp-ctrl-add-fast>
+                    <div class="btn-indicacion-last-control" (click)="selectedItem(item, true)">
+                      <i class="fa fa-pencil pr-1"></i>
+                      <span class="fs-11">Indicaciones</span>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </li>
+          </ul>
         </ng-container>
       </div>
       <br>

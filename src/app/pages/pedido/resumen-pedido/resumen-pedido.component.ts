@@ -522,7 +522,12 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     if ( this.isHayCuentaBusqueda ) { return; }
 
     const dialogConfig = new MatDialogConfig();
-    const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
+    const _itemFromCarta = this.miPedidoService.findItemCarta(_item) || _item;
+    // sin tipos de consumo el dialog revienta al abrir (pantalla en blanco): se toman del pedido o los de la sede
+    if ( !_itemFromCarta.itemtiposconsumo ) {
+      _itemFromCarta.itemtiposconsumo = this.miPedidoService.findItemListPedido(_item)?.itemtiposconsumo
+        || JSON.parse(JSON.stringify(this.miPedidoService.getObjNewItemTiposConsumo() || []));
+    }
     _itemFromCarta.indicaciones = _itemFromCarta.indicaciones ? _itemFromCarta.indicaciones :  _item.indicaciones || '';
 
     // dialogConfig.panelClass = 'dialog-item-edit';

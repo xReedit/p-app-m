@@ -18,6 +18,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { findCanalConsumoLocal, URL_IMG_CARTA } from 'src/app/shared/config/config.const';
+import { itemsBusquedaDesdeCarta } from './items-busqueda';
 import { Subscription } from 'rxjs';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
@@ -44,6 +45,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   // objCartaCarta: any;
   objCartaBus: any = [];
   isBusqueda = false;
+  private charBusqueda = '';
   rutaImgItem = URL_IMG_CARTA;
   imgNull = 'assets/images/icon-app/img-null.png';
   private isCargado = true;
@@ -282,6 +284,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
             this.miPedidoService.setObjCarta(res);
 
             this.resetParamsCarta();
+            this.loadItemsBusqueda(); // la busqueda debe apuntar a la carta nueva
 
             if ( this.miPedidoService.findIsHayItems() ) {
               this.miPedidoService.updatePedidoFromStrorage();
@@ -584,27 +587,10 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /// busqueda
   loadItemsBusqueda() {
-    let _objFind: any;
-    // _objFind = this.miPedidoService.getObjCartaLibery();
-    _objFind = this.miPedidoService.getObjCarta();
-
-    // extraemos
-    let _itemFind: any;
-    if ( !_objFind.carta ) { return; }
-    _objFind.carta.map((c: CategoriaModel) => {
-      c.secciones.map((s: SeccionModel) => {
-        s.items.map((i: ItemModel) => {
-          _itemFind = i;
-          _itemFind.seccion = s.des;
-          _itemFind.idimpresora = s.idimpresora;
-          _itemFind.sec_orden = s.sec_orden;
-          _itemFind.ver_stock_cero = s.ver_stock_cero;
-          _itemFind.selected = false;
-          _itemFind.visible = true;
-          this.objCartaBus.push(_itemFind);
-        });
-      });
-    });
+    const _objFind: any = this.miPedidoService.getObjCarta();
+    if ( !_objFind?.carta ) { return; }
+    this.objCartaBus = itemsBusquedaDesdeCarta(_objFind.carta);
+    if ( this.charBusqueda ) { this.isBusquedaFindNow(this.charBusqueda); } // si la carta se recarga en plena busqueda
 
     // reset busqueda
     window.localStorage.setItem('sys::find', '');
@@ -821,8 +807,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private isBusquedaFindNow(charFind: string): void {
-    charFind = charFind.toLowerCase();
-    // console.log(charFind);
+    charFind = (charFind || '').toLowerCase();
+    this.charBusqueda = charFind;
     let _charConcat = '';
     this.objCartaBus.map((i: any) => {
       _charConcat = `${i.des} ${i.seccion} ${i.detalles}`;

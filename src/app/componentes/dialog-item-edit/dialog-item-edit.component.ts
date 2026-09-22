@@ -63,7 +63,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
     this.item = data.item;
     this.item.cantidad = this.getCantidadItemCarta(); // trae el stock del item carta
-    this.objItemTipoConsumoSelected = <ItemTipoConsumoModel[]>data.objItemTipoConsumoSelected;
+    this.objItemTipoConsumoSelected = <ItemTipoConsumoModel[]>data.objItemTipoConsumoSelected || [];
 
     // console.log('set this.objItemTipoConsumoSelected', this.objItemTipoConsumoSelected);
 
@@ -189,7 +189,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   }
 
   getCantidadItemCarta(): number {
-    return parseInt(this.miPedidoService.findItemCarta(this.item).cantidad.toString(), 0);
+    const _itemCarta = this.miPedidoService.findItemCarta(this.item) || this.item;
+    return parseInt(String(_itemCarta.cantidad), 0);
   }
 
   // get subitems item seleccionado

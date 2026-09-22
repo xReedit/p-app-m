@@ -34,6 +34,15 @@
     margin-bottom: 10px;
   }
 
+/* en la busqueda el fondo de la lista es gris: el control va en blanco, como parte de la fila */
+.control-busqueda {
+    background: #fff;
+    margin-bottom: 0;
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+
 .btn-indicacion-last-control {    
     width: fit-content;
     background: mediumseagreen;

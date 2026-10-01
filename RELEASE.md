@@ -1,6 +1,6 @@
 # Publicar Papaya App Mozo
 
-Estado al 2026-09-22: versión **1.0.10**, `versionCode` / build **13**, `targetSdk 36`, Capacitor 8.
+Estado al 2026-09-30: versión **1.0.11**, `versionCode` / build **14** (escritorio: 1.0.13), `targetSdk 36`, Capacitor 8.
 
 ## 0. Antes de compilar (cualquier plataforma)
 

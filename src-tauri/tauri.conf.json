@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Papaya App Mozo",
   "mainBinaryName": "papaya-app-mozo",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "identifier": "mozo.papaya.com.pe",
   "build": {
     "frontendDist": "../dist/pwa-app-pedido-mozo",

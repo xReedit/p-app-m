@@ -14,6 +14,7 @@
     "cap:sync": "npx cap sync",
     "android": "npx cap open android",
     "ios": "npx cap open ios",
+    "exe": "node scripts/publicar-escritorio.js",
     "postinstall": "npm run sync-env"
   },
   "private": true,
@@ -67,6 +68,7 @@
     "@angular/compiler-cli": "^15.2.10",
     "@angular/language-service": "^15.2.10",
     "@capacitor/cli": "^8.5.0",
+    "@tauri-apps/cli": "^2.11.5",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",

@@ -14,6 +14,9 @@
 <!-- notifica llamado cliente mesa -->
 <app-comp-list-call-client></app-comp-list-call-client>
 
+<!-- punto de toma de pedidos (Configuraciones): elegir mozo, clave y cierre por inactividad -->
+<app-punto-bloqueo *ngIf="isPuntoTomaPedidos"></app-punto-bloqueo>
+
 <!-- loader send pedido or transaction -->
 <div class="animated fadeIn div-loader-2" *ngIf="listenStatusService.isLoaderSendPedido$ | async">
   <!-- <div class="animated fadeIn div-loader-2"> -->
@@ -133,7 +136,7 @@
           </ng-template>
           <div class="x100-toolbar-hidden" [ngClass]="{'fondo-gris': isUsuarioCliente}" (scroll)="onScroll($event)">
             <ng-container *ngIf="isScreenIsMobile">              
-              <app-resumen-pedido></app-resumen-pedido>
+              <app-resumen-pedido class="resumen-centrado"></app-resumen-pedido>
             </ng-container>
             
             <br>

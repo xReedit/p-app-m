@@ -1,0 +1,109 @@
+<!-- seleccion de mozo / clave -->
+<div class="pb-overlay" *ngIf="estado.bloqueado">
+
+  <!-- 1. quien entra -->
+  <div class="pb-lista" *ngIf="paso === 'lista'">
+    <header class="pb-head">
+      <div>
+        <h1>¿Quién va a ingresar pedidos?</h1>
+        <p>Toca tu nombre para entrar</p>
+      </div>
+      <div class="pb-acciones">
+        <button type="button" class="pb-actualizar" *ngIf="actualizacion.versionNueva$ | async as version"
+          (click)="actualizacion.instalar()" [disabled]="actualizacion.instalando$ | async"
+          title="Descarga e instala la nueva versión; la app se reinicia sola">
+          <ng-container *ngIf="!(actualizacion.instalando$ | async); else instalandoTpl">
+            <i class="fa fa-download"></i> Actualizar a {{ version }}
+          </ng-container>
+          <ng-template #instalandoTpl><i class="fa fa-circle-o-notch fa-spin"></i> Actualizando…</ng-template>
+        </button>
+        <button type="button" class="pb-completa" *ngIf="isEscritorio" (click)="pantallaCompleta()"
+          [class.pb-solo-icono]="isPantallaCompleta"
+          [title]="isPantallaCompleta ? 'Salir de pantalla completa (F11)' : 'Pantalla completa (F11)'">
+          <i class="fa" [ngClass]="isPantallaCompleta ? 'fa-compress' : 'fa-expand'"></i>
+          <span *ngIf="!isPantallaCompleta">Pantalla completa</span>
+        </button>
+        <div class="pb-buscar" *ngIf="mozos.length > 8">
+          <i class="fa fa-search"></i>
+          <input type="text" placeholder="Buscar mozo" [(ngModel)]="filtro" autocomplete="off">
+        </div>
+      </div>
+    </header>
+
+    <p class="pb-error-actualizar" *ngIf="actualizacion.error$ | async as err">{{ err }}</p>
+
+    <div class="pb-cargando" *ngIf="cargandoMozos"><i class="fa fa-circle-o-notch fa-spin"></i> Cargando mozos…</div>
+
+    <div class="pb-vacio" *ngIf="!cargandoMozos && mozosFiltrados.length === 0">
+      No hay mozos activos{{ filtro ? ' con ese nombre' : '' }}.
+    </div>
+
+    <div class="pb-grid">
+      <button type="button" class="pb-mozo" *ngFor="let m of mozosFiltrados" (click)="elegir(m)">
+        <span class="pb-avatar" [style.background]="color(m.idusuario)">{{ iniciales(m.nombres) }}</span>
+        <span class="pb-nombre">{{ m.nombres | titlecase }}</span>
+      </button>
+    </div>
+
+    <footer class="pb-pie" *ngIf="estado.cancelable">
+      <button type="button" class="pb-link" (click)="punto.volverAlMozoActual()">
+        <i class="fa fa-arrow-left"></i> Volver{{ nombreMozoActual ? ' con ' + (nombreMozoActual | titlecase) : '' }}
+      </button>
+    </footer>
+  </div>
+
+  <!-- 2. clave (y cambio de clave) -->
+  <div class="pb-clave" *ngIf="paso !== 'lista'">
+    <section class="pb-quien">
+      <span class="pb-avatar pb-avatar-xl" [style.background]="color(mozo?.idusuario)">{{ iniciales(mozo?.nombres) }}</span>
+      <h2>Hola, {{ (mozo?.nombres || '') | titlecase }}</h2>
+      <button type="button" class="pb-link" (click)="noSoyYo()"><i class="fa fa-arrow-left"></i> No soy yo</button>
+    </section>
+
+    <section class="pb-teclado" [class.pb-sacudir]="sacudir">
+      <h3>{{ titulo }}</h3>
+
+      <div class="pb-puntos">
+        <span *ngFor="let i of puntos" class="pb-punto" [class.lleno]="i < clave.length"></span>
+      </div>
+
+      <p class="pb-msg pb-error" *ngIf="error">{{ error }}</p>
+      <p class="pb-msg pb-exito" *ngIf="exito"><i class="fa fa-check-circle"></i> {{ exito }}</p>
+      <p class="pb-msg" *ngIf="!error && !exito && paso === 'clave'">También puedes usar el teclado</p>
+
+      <div class="pb-keys">
+        <button type="button" *ngFor="let t of teclas" (click)="teclear(t)" [disabled]="enviando">{{ t }}</button>
+        <button type="button" class="pb-key-sec" (click)="borrar()" [disabled]="enviando" title="Borrar"><i class="fa fa-long-arrow-left"></i></button>
+        <button type="button" (click)="teclear('0')" [disabled]="enviando">0</button>
+        <button type="button" class="pb-key-ok" (click)="confirmar()" [disabled]="enviando || !clave" title="Entrar">
+          <i class="fa" [ngClass]="enviando ? 'fa-circle-o-notch fa-spin' : 'fa-check'"></i>
+        </button>
+      </div>
+
+      <button type="button" class="pb-link" *ngIf="paso === 'clave'" (click)="iniciarCambioClave()">
+        <i class="fa fa-key"></i> Cambiar mi clave
+      </button>
+      <button type="button" class="pb-link" *ngIf="esCambioClave && !enviando" (click)="cancelarCambioClave()">
+        Cancelar cambio de clave
+      </button>
+    </section>
+  </div>
+
+  <div class="pb-marca">Potenciado por <strong>papaya.com.pe</strong></div>
+</div>
+
+<!-- aviso de cierre por inactividad -->
+<div class="pb-aviso-fondo" *ngIf="aviso !== null && !estado.bloqueado">
+  <div class="pb-aviso">
+    <div class="pb-cuenta">
+      <svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="44" class="pista"></circle>
+        <circle cx="50" cy="50" r="44" class="avance" [style.stroke-dashoffset]="276.5 * (1 - aviso / segundosAviso)"></circle>
+      </svg>
+      <span>{{ aviso }}</span>
+    </div>
+    <h3>¿Sigues ahí?</h3>
+    <p>Por inactividad se cerrará tu sesión.<br>Tu pedido quedará guardado.</p>
+    <button type="button" class="pb-btn" (click)="punto.seguirTrabajando()">Seguir trabajando</button>
+  </div>
+</div>

@@ -1,4 +1,6 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer2} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Renderer2, HostListener} from '@angular/core';
+import { IS_TAURI } from 'src/app/shared/config/config.const';
+import { alternarPantallaCompleta, esPantallaCompleta } from 'src/app/shared/config/pantalla-completa';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -15,6 +17,8 @@ import { DialogConfigPuntoComponent } from 'src/app/componentes/dialog-config-pu
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { ComandAnalizerService } from 'src/app/shared/services/speech/comand-analizer.service';
 import { DialogChangeUser } from 'src/app/componentes/dialog-change-user/dialog-change-user.component';
+import { PuntoTomaPedidosService } from 'src/app/shared/services/punto-toma-pedidos.service';
+import { ActualizacionEscritorioService } from 'src/app/shared/services/actualizacion-escritorio.service';
 
 
 export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
@@ -44,6 +48,8 @@ export class ToolBarComponent implements OnInit {
   isSpeechVoiceAcivado = false;
   isActiveMozoVoz = false;
   isPuntoTomaPedidos = false;
+  readonly isEscritorio = IS_TAURI;
+  isPantallaCompleta = false;
 
 
   nomSede = '';
@@ -66,7 +72,9 @@ export class ToolBarComponent implements OnInit {
     private utilitariosSerivce: UtilitariosService,
     private crudService: CrudHttpService,
     private establecimientoService: EstablecimientoService,
-    private comandAnalizerService: ComandAnalizerService
+    private comandAnalizerService: ComandAnalizerService,
+    public puntoTomaPedidos: PuntoTomaPedidosService,
+    public actualizacion: ActualizacionEscritorioService
     ) { }
 
   ngOnInit() {
@@ -74,9 +82,9 @@ export class ToolBarComponent implements OnInit {
     // console.log('establecimientoService', this.establecimientoService.get());
     this.isSpeechVoiceAcivado = this.establecimientoService.get().speech_disabled === 1;
 
-    this.isPuntoTomaPedidos = this.infoTokenService.infoUsToken.isPuntoTomaPedidos;
+    this.isPuntoTomaPedidos = this.puntoTomaPedidos.activo;
+    this.onResizeVentana(); // estado real del icono de pantalla completa
     this.nomUsuario = this.infoTokenService.infoUsToken.usuario;
-    console.log('this.isPuntoTomaPedidos', this.isPuntoTomaPedidos);
     
     this.listenStatusService.isBusqueda$.subscribe(res => {
       this.isBusqueda = res;
@@ -205,6 +213,27 @@ stopRecordingToolbar(): void {
 
 actualizarPage() {
   location.reload();
+}
+
+// el pedido sin enviar queda guardado (localStorage) y vuelve al reiniciar
+actualizarApp(version: string) {
+  if (!confirm(`Se instalará la versión ${version} y la aplicación se reiniciará. ¿Actualizar ahora?`)) { return; }
+  this.actualizacion.instalar();
+}
+
+async pantallaCompleta() {
+  try {
+    this.isPantallaCompleta = await alternarPantallaCompleta();
+  } catch (e) {
+    // si la ventana no lo permite, el boton queda como estaba
+  }
+}
+
+// F11 (app.component) o la ventana restaurada desde Windows: el icono sigue al estado real
+@HostListener('window:resize')
+onResizeVentana() {
+  if (!this.isEscritorio) { return; }
+  esPantallaCompleta().then(v => this.isPantallaCompleta = v).catch(() => {});
 }
 
 changeUser() {

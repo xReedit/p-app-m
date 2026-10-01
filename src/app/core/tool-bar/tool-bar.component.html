@@ -18,10 +18,17 @@
      </button> -->
 
                <!-- informacion del usuario si es punto de toma de pedidos -->
-               <div *ngIf="isPuntoTomaPedidos" class="d-flex">
-                    <button class="btn btn-sm btn-dark" (click)="changeUser()">Cambiar</button>
-                    <span class="fs-15 ml-2 mr-2">|</span>
-                    <span class="fs-15">{{ nomUsuario }}</span>
+               <div *ngIf="isPuntoTomaPedidos" class="punto-usuario">
+                    <span class="punto-chip" title="Mozo con la sesión abierta">
+                         <i class="fa fa-user-circle"></i>
+                         {{ (puntoTomaPedidos.nombreMozo$ | async) | titlecase }}
+                    </span>
+                    <button type="button" class="punto-btn" (click)="puntoTomaPedidos.cambiarUsuario()">
+                         <i class="fa fa-exchange"></i> Cambiar usuario
+                    </button>
+                    <button type="button" class="punto-btn punto-btn-salir" (click)="puntoTomaPedidos.cerrarSesion()">
+                         <i class="fa fa-sign-out"></i> Salir
+                    </button>
                </div>
 
                <div [matMenuTriggerFor]="menu" class="example-ripple-container fs-15" matRipple matRippleCentered="true"
@@ -83,6 +90,20 @@
                <div class="example-ripple-container fs-15" matRipple matRippleCentered="true"
                     [matRippleColor]="rippleColor" title="Buscar" (click)="activaBusqueda()">
                     <i title="Buscar" class="fa fa-search" aria-hidden="true"></i>
+               </div>
+
+               <!-- actualizacion disponible (solo app de escritorio) -->
+               <button type="button" class="punto-btn punto-btn-actualizar" *ngIf="actualizacion.versionNueva$ | async as version"
+                    [disabled]="actualizacion.instalando$ | async" (click)="actualizarApp(version)">
+                    <i class="fa" [ngClass]="(actualizacion.instalando$ | async) ? 'fa-circle-o-notch fa-spin' : 'fa-download'"></i>
+                    {{ (actualizacion.instalando$ | async) ? 'Actualizando…' : 'Actualizar a ' + version }}
+               </button>
+
+               <!-- pantalla completa (solo app de escritorio) -->
+               <div *ngIf="isEscritorio" class="example-ripple-container fs-15" matRipple matRippleCentered="true"
+                    [matRippleColor]="rippleColor" [title]="isPantallaCompleta ? 'Salir de pantalla completa (F11)' : 'Pantalla completa (F11)'"
+                    (click)="pantallaCompleta()">
+                    <i class="fa" [ngClass]="isPantallaCompleta ? 'fa-compress' : 'fa-expand'" aria-hidden="true"></i>
                </div>
 
                <!-- actualizar -->

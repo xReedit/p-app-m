@@ -46,12 +46,29 @@
     color: #616161;
 }
 
-/* escritorio: el resumen va al costado y el pie ocupa solo esa columna */
-@media only screen and (min-width: 1050px) {
+/* vista en pestañas: mismo ancho maximo que Mi Pedido (550px) y centrado; en celular sigue a todo el ancho */
+@media only screen and (max-width: 1049px) {
     .xfooter {
-        box-sizing: border-box;
-        min-width: 230px;
-        max-width: 360px;
-        width: calc(100% / 9.8 * 3);
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        max-width: 550px;
+    }
+}
+
+/* escritorio: el resumen va al costado y el pie queda pegado al fondo de esa columna, con su mismo ancho
+   (fixed con ancho calculado quedaba corrido a un lado). Movil no cambia. */
+@media only screen and (min-width: 1050px) {
+    :host {
+        display: block;
+        position: sticky;
+        bottom: 0;
+        margin-top: auto;
+        z-index: 5;
+    }
+
+    .xfooter {
+        position: static;
+        width: 100%;
     }
 }

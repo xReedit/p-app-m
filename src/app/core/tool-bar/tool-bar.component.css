@@ -43,3 +43,46 @@
   text-overflow: ellipsis;
   overflow: hidden;
 }
+/* punto de toma de pedidos: mozo activo + cambiar / salir */
+.punto-usuario {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 12px;
+}
+
+.punto-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, .18);
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.punto-chip .fa { font-size: 18px; }
+
+.punto-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, .5);
+  border-radius: 18px;
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.punto-btn:hover { background: rgba(255, 255, 255, .15); }
+.punto-btn-salir { border-color: #ffab91; color: #ffccbc; }
+
+/* app de escritorio: hay una version nueva */
+.punto-btn-actualizar { background: #00c853; border-color: #00c853; color: #fff; font-weight: 600; margin-right: 8px; }
+.punto-btn-actualizar:hover { background: #00b248; }

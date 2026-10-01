@@ -67,6 +67,8 @@ import { CompListPedidosHoldingComponent } from './comp-list-pedidos-holding/com
 import { MainTabPedidosHoldingComponent } from './comp-list-pedidos-holding/main/main.component';
 import { ListPedidosListoMarcasComponent } from './comp-list-pedidos-holding/list-pedidos-listo-marcas/list-pedidos-listo-marcas.component';
 import { ListPedidosClientesComponent } from './comp-list-pedidos-holding/list-pedidos-clientes/list-pedidos-clientes.component';
+import { PuntoBloqueoComponent } from './punto-bloqueo/punto-bloqueo.component';
+import { DialogInvitarPuntoComponent } from './dialog-invitar-punto/dialog-invitar-punto.component';
 
 @NgModule({
   declarations: [
@@ -124,6 +126,8 @@ import { ListPedidosClientesComponent } from './comp-list-pedidos-holding/list-p
     MainTabPedidosHoldingComponent,
     ListPedidosListoMarcasComponent,
     ListPedidosClientesComponent,
+    PuntoBloqueoComponent,
+    DialogInvitarPuntoComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
@@ -187,6 +191,8 @@ import { ListPedidosClientesComponent } from './comp-list-pedidos-holding/list-p
     MainTabPedidosHoldingComponent,
     ListPedidosListoMarcasComponent,
     ListPedidosClientesComponent,
+    PuntoBloqueoComponent,
+    DialogInvitarPuntoComponent,
     // DialogDesicionComponent
   ],
 

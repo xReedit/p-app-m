@@ -1,0 +1,30 @@
+<div class="ip">
+  <header class="ip-head">
+    <span class="ip-icono"><i class="fa fa-desktop"></i></span>
+    <div>
+      <h2>¿Usar esta computadora como punto de toma de pedidos?</h2>
+      <p>Cada mozo ingresa aquí los pedidos que anotó en las mesas, con su propio usuario.</p>
+    </div>
+  </header>
+
+  <ol class="ip-pasos">
+    <li *ngFor="let p of pasos; let i = index">
+      <span class="ip-num">{{ i + 1 }}</span>
+      <i class="fa ip-paso-icono" [ngClass]="p.icono"></i>
+      <strong>{{ p.titulo }}</strong>
+      <span>{{ p.texto }}</span>
+    </li>
+  </ol>
+
+  <p class="ip-nota">
+    <i class="fa fa-info-circle"></i>
+    Puedes cambiarlo cuando quieras en <strong>Menú ⋮ → Configuraciones</strong>.
+  </p>
+
+  <footer class="ip-botones">
+    <button type="button" class="ip-no" (click)="responder(false)">Ahora no</button>
+    <button type="button" class="ip-si" (click)="responder(true)">
+      <i class="fa fa-check"></i> Sí, usar como punto de pedidos
+    </button>
+  </footer>
+</div>

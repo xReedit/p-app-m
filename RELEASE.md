@@ -86,6 +86,21 @@ En Xcode:
 Si Maps no carga en el celular: en Google Cloud, la clave debe permitir el referrer
 `https://localhost/*` (origen del WebView de Capacitor) además de los dominios web.
 
+## 2b. Escritorio Windows (Tauri) con actualización automática
+
+La app de escritorio (`src-tauri/`, punto de toma de pedidos) se actualiza sola: al abrir y cada 30 min consulta
+`https://papaya-comercio-files.s3.us-east-2.amazonaws.com/installers/latest_app_mozo.json` y, si hay versión nueva,
+muestra el botón verde **"Actualizar a X"** (pantalla de mozos y barra superior). Celular y web no cambian.
+
+1. Subir `version` en `src-tauri/tauri.conf.json` (independiente de la versión de Android/iOS).
+2. `npm run exe` → compila, firma con la llave del updater (ver CLAUDE.local.md) y deja en
+   `D:\certificados\host-papaya\app-mozo\windows\<version>\`:
+   `Papaya-App-Mozo_<version>_x64-setup.exe` y `latest_app_mozo.json`.
+3. Subir a S3 `installers/` **primero el .exe**, luego el `latest_app_mozo.json` con `Cache-Control: no-cache`
+   (lectura pública). Si se sube el json antes, las PCs intentan bajar un .exe que aún no existe.
+
+Sin la llave de firma no compila (`createUpdaterArtifacts`). Mac: pendiente (se compila en macOS / GitHub Actions).
+
 ## 3. Backend y POS que acompañan esta versión
 
 - Migración `restobar/migraciones/2026-09-07_021_sede_opciones_mozo_num_personas.sql` en producción.

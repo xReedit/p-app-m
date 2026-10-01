@@ -1,0 +1,60 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Papaya App Mozo",
+  "mainBinaryName": "papaya-app-mozo",
+  "version": "1.0.12",
+  "identifier": "mozo.papaya.com.pe",
+  "build": {
+    "frontendDist": "../dist/pwa-app-pedido-mozo",
+    "devUrl": "http://localhost:4200",
+    "beforeDevCommand": "npm start",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Papaya App Mozo",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 360,
+        "minHeight": 600,
+        "center": true,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM4MTM3QUY1QUI3NzVCNUUKUldSZVczZXI5WG9UT0JscmtYNEgzMEJWUGVEZnlvcWJHaERWaW5JTGt6czkzbVlTOG9FVGR6VWcK",
+      "endpoints": [
+        "https://papaya-comercio-files.s3.us-east-2.amazonaws.com/installers/latest_app_mozo.json"
+      ],
+      "windows": { "installMode": "passive" }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "createUpdaterArtifacts": true,
+    "publisher": "Papaya",
+    "shortDescription": "Papaya App Mozo",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "webviewInstallMode": { "type": "embedBootstrapper" },
+      "nsis": {
+        "languages": ["Spanish"],
+        "installMode": "currentUser",
+        "installerIcon": "icons/icon.ico"
+      }
+    }
+  }
+}

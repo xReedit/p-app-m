@@ -95,7 +95,10 @@
         border: 2px solid #bdbdbd;
         height: calc(100vh - 110px);
         overflow: auto;
+        overflow-x: hidden; /* el panel de "Continuar" entra deslizando desde la derecha: sin esto sale scroll horizontal */
         background: #eeeeee;
+        display: flex;
+        flex-direction: column;
     }
 
   }

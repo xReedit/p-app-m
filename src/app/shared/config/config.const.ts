@@ -1,6 +1,8 @@
 import { Capacitor } from '@capacitor/core';
 export const IS_NATIVE = Capacitor.getPlatform() !== 'web';
 export const IS_PLATAFORM_IOS = IS_NATIVE ? Capacitor.getPlatform() === 'ios' : false;
+// app de escritorio (Windows, Tauri): para Capacitor es 'web', pero igual que la nativa no debe usar service worker
+export const IS_TAURI = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
 
 // pruebas
 // export const URL_SERVER = 'http://192.168.1.52:5819/v3'; // desarrollo (IP PC para probar en celular)

@@ -10,7 +10,7 @@ import { CoreModule } from './core/core.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 // import { GlobalErrorHandler } from './shared/services/error.global.handler';
 import { environment } from '../environments/environment';
-import { IS_NATIVE } from './shared/config/config.const';
+import { IS_NATIVE, IS_TAURI } from './shared/config/config.const';
 // import { SocketIoModule } from 'ngx-socket-io';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
@@ -51,7 +51,7 @@ const configAuth: AuthConfig = {
     CoreModule,
     // SocketIoModule,
     // Solo web: en la app nativa los archivos ya estan en el dispositivo y el SW servia la version anterior tras actualizar
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production && !IS_NATIVE }),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production && !IS_NATIVE && !IS_TAURI }),
     // AgmCoreModule.forRoot({
     //   apiKey: environment.googleMapsApiKey,
     //   libraries: ['places']

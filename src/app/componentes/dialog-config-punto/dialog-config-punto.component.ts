@@ -3,6 +3,9 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { findCanalConsumoLocal } from 'src/app/shared/config/config.const';
+import {
+  leerConfigPuntoTomaPedidos, OPCIONES_INACTIVIDAD, SEGUNDOS_INACTIVIDAD_DEFAULT,
+} from 'src/app/shared/config/punto-toma-pedidos';
 
 @Component({
   selector: 'app-dialog-config-punto',
@@ -14,9 +17,13 @@ export class DialogConfigPuntoComponent implements OnInit {
   listImpresoras: any;
   listCanalConsumo: any;
   selectedValueImpresora: any;
+  selectedValueImpresoraPrecuenta: any; // punto de toma de pedidos: la pre-cuenta sale en esta impresora
   selectedValueCanConsumo: any;
   isPuntoAutoPedidoCheck: boolean;
   isTomaPedidoRapido: boolean;
+  isPuntoTomaPedidos = false;
+  segundosInactividad = SEGUNDOS_INACTIVIDAD_DEFAULT;
+  readonly opcionesInactividad = OPCIONES_INACTIVIDAD;
   private isConfigGuardada = false; // false = instalacion nueva, se aplica el default al cargar los canales
 
   constructor(
@@ -36,9 +43,14 @@ export class DialogConfigPuntoComponent implements OnInit {
     this.isConfigGuardada = _puntoConfig.istoma_pedido_rapido !== undefined;
     this.isPuntoAutoPedidoCheck = _puntoConfig.ispunto_autopedido || false;
     this.selectedValueImpresora = _puntoConfig.impresora;
+    this.selectedValueImpresoraPrecuenta = _puntoConfig.impresora_precuenta || null;
 
     this.isTomaPedidoRapido = _puntoConfig.istoma_pedido_rapido || false;
     this.selectedValueCanConsumo = _puntoConfig.canal_consumo;
+
+    const _tomaPedidos = leerConfigPuntoTomaPedidos(localStorage.getItem('sys::punto'));
+    this.isPuntoTomaPedidos = _tomaPedidos.activo;
+    this.segundosInactividad = _tomaPedidos.segundosInactividad;
 
     this.infoTokenService.setIsPuntoAutoPedido(this.isPuntoAutoPedidoCheck);
     this.infoTokenService.setIsTomaPedidoRapido(this.isTomaPedidoRapido);
@@ -46,11 +58,16 @@ export class DialogConfigPuntoComponent implements OnInit {
 
   setConifg() {
     this.isPuntoAutoPedidoCheck = this.isTomaPedidoRapido ? false : this.isPuntoAutoPedidoCheck;
+    // autopedido es para clientes y toma de pedidos para mozos: no van juntos
+    this.isPuntoAutoPedidoCheck = this.isPuntoTomaPedidos ? false : this.isPuntoAutoPedidoCheck;
     const dataStorage = {
       istoma_pedido_rapido: this.isTomaPedidoRapido,
       canal_consumo: this.selectedValueCanConsumo,
       ispunto_autopedido: this.isPuntoAutoPedidoCheck,
-      impresora: this.selectedValueImpresora
+      impresora: this.selectedValueImpresora,
+      ispunto_toma_pedidos: this.isPuntoTomaPedidos,
+      impresora_precuenta: this.selectedValueImpresoraPrecuenta || null,
+      segundos_inactividad: this.segundosInactividad
     };
 
     localStorage.setItem('sys::punto', JSON.stringify(dataStorage));

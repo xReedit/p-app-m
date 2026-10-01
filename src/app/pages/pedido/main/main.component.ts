@@ -11,7 +11,11 @@ import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { ComandAnalizerService } from 'src/app/shared/services/speech/comand-analizer.service';
-import { VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
+import { IS_TAURI, VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
+import { MatDialog } from '@angular/material/dialog';
+import { activarPuntoTomaPedidos, KEY_INVITACION_PUNTO_VISTA } from 'src/app/shared/config/punto-toma-pedidos';
+import { DialogInvitarPuntoComponent } from 'src/app/componentes/dialog-invitar-punto/dialog-invitar-punto.component';
+import { PuntoTomaPedidosService } from 'src/app/shared/services/punto-toma-pedidos.service';
 
 @Component({
   selector: 'app-main',
@@ -40,6 +44,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
   isClienteReserva = false;
   isPagePagarShow = false;
   isPuntoAutoPedido = false;
+  isPuntoTomaPedidos = false;
   loaderPage = false;
   timeLoader = null;
   isSpeechVoiceAcivado = false;
@@ -68,11 +73,28 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
     private infoTokenService: InfoTockenService,
     // private comandAnalizerService: ComandAnalizerService,
     private establecimientoService: EstablecimientoService,
+    private puntoTomaPedidos: PuntoTomaPedidosService,
+    private dialog: MatDialog,
     ) {
       // console.log('verifyClientService', this.verifyClientService.get);
       // this.comandAnalizerService.getIsActive();
       // this.comandAnalizerService.getComands();
     }
+
+  // app de escritorio, primera vez que se entra: invitar a usarla como punto de toma de pedidos (una sola vez)
+  private invitarPuntoTomaPedidos(): void {
+    if ( !IS_TAURI || this.puntoTomaPedidos.activo || localStorage.getItem(KEY_INVITACION_PUNTO_VISTA) ) { return; }
+    localStorage.setItem(KEY_INVITACION_PUNTO_VISTA, '1');
+
+    setTimeout(() => {
+      this.dialog.open(DialogInvitarPuntoComponent, { autoFocus: false, disableClose: true, maxWidth: '96vw' })
+        .afterClosed().subscribe((acepta: boolean) => {
+          if ( !acepta ) { return; }
+          localStorage.setItem('sys::punto', activarPuntoTomaPedidos(localStorage.getItem('sys::punto')));
+          location.reload(); // igual que Configuraciones: arranca como punto (lista de mozos y pantalla completa)
+        });
+    }, 1200);
+  }
 
   private detectScreenSize() {
     this.isScreenIsMobile = window.innerWidth > 1049 ? false : true;
@@ -90,6 +112,9 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.infoTokenService.getInfoUs();
     this.isPuntoAutoPedido = this.infoTokenService.isPuntoAutoPedido();
+    this.isPuntoTomaPedidos = this.puntoTomaPedidos.activo;
+    this.puntoTomaPedidos.iniciar();
+    this.invitarPuntoTomaPedidos();
     this.isSpeechVoiceAcivado = this.establecimientoService.get().speech_disabled === 1;
     this.isHolding = this.infoTokenService.getIsHolding();
     this.labelTabOne = this.isHolding === true  ? `Marcas` : `Carta`;

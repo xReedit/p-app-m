@@ -210,6 +210,15 @@
     background: #eeeeee;
 }
 
+/* escritorio: ocupa todo el alto de la columna para que el pie (sticky) baje hasta el fondo */
+@media only screen and (min-width: 1050px) {
+    :host {
+        display: flex;
+        flex-direction: column;
+        flex: 1 0 auto;
+    }
+}
+
 @media only screen and (max-width: 1050px) {
     .content-resumen{
         display: none;

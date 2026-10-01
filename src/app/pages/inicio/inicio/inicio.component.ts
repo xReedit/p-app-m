@@ -15,6 +15,8 @@ import { App } from '@capacitor/app';
 import { AuthServiceSotrage } from 'src/app/shared/services/auth.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
+import { PuntoTomaPedidosService } from 'src/app/shared/services/punto-toma-pedidos.service';
+import { tokenVigente } from 'src/app/shared/config/punto-toma-pedidos';
 import { finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 // import { SpechTotextService } from 'src/app/shared/services/speech/spech-totext.service';
@@ -54,10 +56,18 @@ export class InicioComponent implements OnInit, OnDestroy {
     private crudHttpService: CrudHttpService,
     private ngZone: NgZone  
     , private notificacionPush: NotificacionPushService
+    , private puntoTomaPedidos: PuntoTomaPedidosService
     // private webSocketService: WebsocketService
     ) { }
 
   ngOnInit() {
+    // punto de toma de pedidos con sesion vigente: directo a la pantalla de elegir mozo (sin "Empezar" ni login);
+    // si la sesion vencio sigue el inicio normal para volver a entrar
+    if ( this.puntoTomaPedidos.activo && tokenVigente(localStorage.getItem('::token')) ) {
+      this.router.navigate([this.infoToken.getIsHolding() ? '/pedido/holding' : '/pedido'], { replaceUrl: true });
+      return;
+    }
+
     // console.log('llego a inicio');
     // this.router.navigate(['/lector-qr']);
 

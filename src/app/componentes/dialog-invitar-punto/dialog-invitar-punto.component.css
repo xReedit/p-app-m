@@ -1,0 +1,80 @@
+.ip { max-width: 760px; color: #263238; }
+
+.ip-head { display: flex; gap: 18px; align-items: center; margin-bottom: 26px; }
+.ip-head h2 { font-size: 22px; font-weight: 600; margin: 0 0 6px; line-height: 1.3; }
+.ip-head p { margin: 0; color: #607d8b; font-size: 15px; }
+
+.ip-icono {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(160deg, #3f51b5, #1a237e);
+  color: #fff;
+  font-size: 28px;
+}
+
+.ip-pasos {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 22px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.ip-pasos li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 22px 12px 16px;
+  background: #f3f4fb;
+  border-radius: 16px;
+}
+.ip-pasos strong { font-size: 15px; }
+.ip-pasos span { font-size: 13px; color: #607d8b; line-height: 1.35; }
+
+.ip-num {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #3f51b5;
+  color: #fff !important;
+  font-size: 13px !important;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ip-paso-icono { font-size: 34px; color: #3f51b5; margin-bottom: 4px; }
+
+.ip-nota { font-size: 14px; color: #607d8b; margin: 0 0 22px; }
+.ip-nota .fa { color: #3f51b5; margin-right: 6px; }
+
+.ip-botones { display: flex; justify-content: flex-end; gap: 12px; }
+.ip-botones button {
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.ip-no { background: transparent; border: 1px solid #cfd8dc; color: #546e7a; }
+.ip-no:hover { background: #f5f5f5; }
+.ip-si { background: #3f51b5; border: 0; color: #fff; }
+.ip-si:hover { background: #303f9f; }
+.ip-si .fa { margin-right: 6px; }
+
+/* ventana angosta: 2 columnas */
+@media (max-width: 760px) {
+  .ip-pasos { grid-template-columns: repeat(2, 1fr); }
+}

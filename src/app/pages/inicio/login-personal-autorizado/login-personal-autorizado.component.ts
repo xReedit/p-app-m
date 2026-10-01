@@ -35,9 +35,12 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
     this.usuario = new UsuarioAutorizadoModel();
 
     const configPunto = localStorage.getItem('sys::punto');
-    let _us: any = localStorage.getItem('::us');    
+    // punto de toma de pedidos: los pedidos guardados de cada mozo sobreviven al login
+    const _punto = Object.keys(localStorage).filter(k => k.startsWith('sys::punto::')).map(k => [k, localStorage.getItem(k)]);
+    let _us: any = localStorage.getItem('::us');
     // this.authService.loggedOutUser(false);
     localStorage.clear();
+    _punto.forEach(([k, v]) => localStorage.setItem(k, v));
 
     if (_us) {       
       localStorage.setItem('::us', _us)

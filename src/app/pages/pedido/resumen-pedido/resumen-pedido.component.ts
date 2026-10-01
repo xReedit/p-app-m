@@ -38,6 +38,7 @@ import { UtilitariosService } from 'src/app/shared/services/utilitarios.service'
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech-data-provider.service';
 import { HoldingService } from 'src/app/shared/services/holding.service';
+import { elegirSubtotalesEnvio, leerSubtotalesGuardados } from './subtotales-envio';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -733,8 +734,16 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.infoToken.setMetodoPagoSelected(this.infoToken.getInfoUs().metodoPago);
     // this.infoToken.setMetodoPagoSelected(this.infoToken.infoUsToken.metodoPago);
 
-    // saca del local por que puede que se haya puestro propina
-    this._arrSubtotales = JSON.parse(atob(localStorage.getItem('sys::st')));
+    // saca del local por que puede que se haya puestro propina (u opcionales, recojo, entrega),
+    // pero solo si corresponde a ESTE carrito: con la app en dos pestanas la otra pisa sys::st (ver subtotales-envio.ts)
+    let _recalculado = null;
+    try {
+      _recalculado = this.rulesSubtoTales ? this.miPedidoService.getArrSubTotales(this.rulesSubtoTales) : null;
+    } catch (e) {
+      _recalculado = null;
+    }
+    this._arrSubtotales = elegirSubtotalesEnvio(
+      leerSubtotalesGuardados(localStorage.getItem('sys::st')), this._arrSubtotales, _recalculado);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
     
 
@@ -981,9 +990,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       });
   }
 
-  imprimirPrecuenta() {
+  async imprimirPrecuenta() {
     this.loadPrinterPrecuenta = true;
-    const _getPrinterCaja = this.jsonPrintService.getPrinterPrecuenta();
+    // reglas de impresión por área de mesas (null si no se pudieron cargar: se usa la impresora de siempre)
+    const reglasArea = await this.jsonPrintService.obtenerReglasArea();
+    const _getPrinterCaja = this.jsonPrintService.getPrinterPrecuenta(this.numMesaCuenta, reglasArea);
     if ( !_getPrinterCaja ) {return; }
     const xArrayEncabezado = {
             'm': this.numMesaCuenta,
